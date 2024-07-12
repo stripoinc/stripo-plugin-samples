@@ -1,0 +1,1 @@
+# stripo-plugin-samples
