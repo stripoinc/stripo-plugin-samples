@@ -258,7 +258,7 @@
     function initPlugin(template) {
       const script = document.createElement('script');
       script.id = 'UiEditorScript';
-      script.type = 'text/javascript';
+      script.type = 'module';
       script.src = 'https://plugins.stripo.email/resources/uieditor/latest/UIEditor.js';
       script.onload = function () {
         window.UIEditor.initEditor(
