@@ -98,8 +98,9 @@
       <button id="mobileViewButton">Mobile</button>
     </div>
     <div>
-      <button id="saveButton" class="control-button">Save</button>
-      <button id="exportButton" class="control-button">Export</button>
+      <button id="saveButton" class="control-button">Manual Save</button>
+      <button id="getTemplateButton" class="control-button">getTemplate</button>
+      <button id="compileEmailButton" class="control-button">compileEmail</button>
     </div>
     <div class="avatars"></div>
   </div>
@@ -222,9 +223,19 @@
 
   <!--External code to demonstrate Stripo API calls in action -->
   <script>
-    //the getTemplate() function example
+    //the manule save() function example
     document.querySelector('#saveButton').addEventListener('click', function () {
-      window.StripoEditorApi.actionsApi.getTemplate(function (html, css) {
+      window.StripoEditorApi.actionsApi.save(function(error) {
+         if (error){
+            notifications.error('Operation is not successful. Something went wrong!');
+         } else {
+            notifications.success('The operation is successful. All changed were saved!');
+         }
+      }) 
+    });
+    //the getTemplateData() function example
+    document.querySelector('#getTemplateButton').addEventListener('click', function () {
+      window.StripoEditorApi.actionsApi.getTemplateData(function ({html, css}) {
         //your save logic should be here
         console.log('%cThis method returns the HTML and CSS codes with the Plugin internal extra styles and editor markup.', 'background-color: #d8f0d8');
         console.log('The HTML:');
@@ -236,7 +247,7 @@
     });
 
     //the compileEmail() function example
-    document.querySelector('#exportButton').addEventListener('click', function () {
+    document.querySelector('#compileEmailButton').addEventListener('click', function () {
       window.StripoEditorApi.actionsApi.compileEmail(
         {
           callback: function (error, html, ampHtml, ampErrors) {
