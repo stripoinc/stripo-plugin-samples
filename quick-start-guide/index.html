@@ -361,7 +361,8 @@
 
 
       StripoEditorApi.versionHistoryApi.openVersionHistory(
-        // a callback function for updating the state of the version history
+        // a callback function that is called each time when the state of the version history changes
+        // it is called after the "undo()" and "redo()" functions executed
         function(versionHistoryState) {
           isVersionHistoryOpened = true;
           previousPatch = versionHistoryState.previousPatch;
@@ -379,7 +380,7 @@
             document.querySelector('#versionHistoryRedoButton').setAttribute('disabled', 'true');
           }
         },
-        // a callback function for infort outer environment about version history closed
+        // a callback function that is called when the version history is closed
         function() {
           isVersionHistoryOpened = false;
         },
