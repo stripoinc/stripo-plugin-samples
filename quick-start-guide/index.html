@@ -32,13 +32,10 @@
         cursor: pointer;
         float: left;
       }
-      .btn-group button:first-child {
+      .btn-group button.rounded-left {
         border-radius: 17px 0 0 17px;
       }
-      .btn-group button:not(:last-child) {
-        border-right: none;
-      }
-      .btn-group button:last-child {
+      .btn-group button.rounded-right {
         border-radius: 0 17px 17px 0;
       }
       .btn-group button.active {
@@ -86,16 +83,23 @@
     </div>
 
     <div class="btn-group">
-      <button id="undoButton">Undo</button>
-      <button id="versionHistoryButton">History</button>
-      <button id="redoButton">Redo</button>
+      <button id="undoButton" class="rounded-left">Undo</button>
+      <button id="versionHistoryUndoButton" class="rounded-left" style="display: none;" disabled onclick="undo()">Undo</button>
+      <button id="versionHistoryButton" onclick="toggleVersionHistory()">History</button>
+      <button id="redoButton" class="rounded-right">Redo</button>
+      <button id="versionHistoryRedoButton" class="rounded-right" style="display: none;" disabled onclick="redo()">Redo</button>
     </div>
     <div>
       <button id="codeEditor" class="control-button">Code editor</button>
     </div>
-    <div class="btn-group viewSwitcher">
-      <button id="desktopViewButton" class="active">Desktop</button>
-      <button id="mobileViewButton">Mobile</button>
+    <div id="viewSwitcher" class="btn-group viewSwitcher">
+      <button id="desktopViewButton" class="active rounded-left">Desktop</button>
+      <button id="mobileViewButton" class="rounded-right">Mobile</button>
+    </div>
+
+    <div id="versionHistoryViewSwitcher" class="btn-group" style="display: none;">
+      <button class="active rounded-left" onclick="switchVersionHistoryToDesktopPreview()">Desktop</button>
+      <button class="rounded-right" onclick="switchVersionHistoryToMobilePreview()">Mobile</button>
     </div>
     <div>
       <button id="saveButton" class="control-button">Manual Save</button>
@@ -305,7 +309,6 @@
             codeEditorButtonSelector: '#codeEditor',
             undoButtonSelector: '#undoButton',
             redoButtonSelector: '#redoButton',
-            versionHistoryButtonSelector: '#versionHistoryButton',
             mobileViewButtonSelector: '#mobileViewButton',
             desktopViewButtonSelector: '#desktopViewButton',
             notifications: {
@@ -323,6 +326,116 @@
     }
 
     loadDemoTemplate(initPlugin);
+  </script>
+
+  <script>
+    // Version history interaction example
+    isVersionHistoryOpened = false;
+    /**
+     * @description the patch before current.
+     * undefined in case if a current patch is the first patch in version history
+     */
+    previousPatch = undefined;
+    /**
+     * @description the patch after current.
+     * undefined in case if a current patch is the latest patch in version history
+     */
+    nextPatch = undefined;
+    function toggleVersionHistory() {
+      if (isVersionHistoryOpened) {
+        closeVersionHistory();
+      } else {
+        openVersionHistory();
+      }
+    }
+    function openVersionHistory() {
+
+      document.querySelector('#undoButton').style.display = 'none';
+      document.querySelector('#redoButton').style.display = 'none';
+
+      document.querySelector('#versionHistoryUndoButton').style.display = 'block';
+      document.querySelector('#versionHistoryRedoButton').style.display = 'block';
+
+      document.querySelector('#viewSwitcher').style.display = 'none';
+      document.querySelector('#versionHistoryViewSwitcher').style.display = 'block';
+
+
+      StripoEditorApi.versionHistoryApi.openVersionHistory(
+        // a callback function for updating the state of the version history
+        function(versionHistoryState) {
+          isVersionHistoryOpened = true;
+          previousPatch = versionHistoryState.previousPatch;
+          nextPatch = versionHistoryState.nextPatch;
+
+          if (previousPatch) {
+            document.querySelector('#versionHistoryUndoButton').removeAttribute('disabled');
+          } else {
+            document.querySelector('#versionHistoryUndoButton').setAttribute('disabled', 'true');
+          }
+
+          if (nextPatch) {
+            document.querySelector('#versionHistoryRedoButton').removeAttribute('disabled');
+          } else {
+            document.querySelector('#versionHistoryRedoButton').setAttribute('disabled', 'true');
+          }
+        },
+        // a callback function for infort outer environment about version history closed
+        function() {
+          isVersionHistoryOpened = false;
+        },
+      );
+    }
+    function closeVersionHistory() {
+      StripoEditorApi.versionHistoryApi.closeVersionHistory();
+      document.querySelector('#undoButton').style.display = 'block';
+      document.querySelector('#redoButton').style.display = 'block';
+
+      document.querySelector('#versionHistoryUndoButton').style.display = 'none';
+      document.querySelector('#versionHistoryRedoButton').style.display = 'none';
+
+      document.querySelector('#versionHistoryViewSwitcher').style.display = 'none';
+      document.querySelector('#viewSwitcher').style.display = 'block';
+    }
+    function undo() {
+      if (!isVersionHistoryOpened) {
+        return;
+      }
+      if (!previousPatch) {
+        return;
+      }
+      StripoEditorApi.versionHistoryApi.previewVersion(previousPatch.id);
+    }
+    function redo() {
+      if (!isVersionHistoryOpened) {
+        return;
+      }
+      if (!nextPatch) {
+        return;
+      }
+      StripoEditorApi.versionHistoryApi.previewVersion(nextPatch.id);
+    }
+
+    function switchVersionHistoryToMobilePreview() {
+      if (!isVersionHistoryOpened) {
+        return;
+      }
+      // remove active class from desktop button
+      document.querySelector('#versionHistoryViewSwitcher button.active').classList.remove('active');
+      // add active class to mobile button
+      document.querySelector('#versionHistoryViewSwitcher button:nth-child(2)').classList.add('active');
+      StripoEditorApi.versionHistoryApi.switchToMobilePreview();
+    }
+    function switchVersionHistoryToDesktopPreview() {
+      if (!isVersionHistoryOpened) {
+        return;
+      }
+      // remove active class from mobile button
+      document.querySelector('#versionHistoryViewSwitcher button.active').classList.remove('active');
+      // add active class to desktop button
+      document.querySelector('#versionHistoryViewSwitcher button:nth-child(1)').classList.add('active');
+
+      StripoEditorApi.versionHistoryApi.switchToDesktopPreview();
+    }
   </script>
   </body>
 </html>
