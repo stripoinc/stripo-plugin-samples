@@ -11,6 +11,7 @@
 ```
 npm install
 ```
+3. Set `PLUGIN_ID` and `SECRET_KEY` in const.js
 
 ## Development
 
@@ -19,11 +20,3 @@ To start the development server:
 npm run dev
 ```
 This will start Vite's development server with hot module replacement.
-
-## Building for Production
-
-To build the extension for production:
-```
-npm run build
-```
-This will create optimized production files in the `dist` directory.

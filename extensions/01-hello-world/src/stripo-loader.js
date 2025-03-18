@@ -28,13 +28,13 @@ function runPlugin(template, extension) {
                     username: 'Plugin Demo User',
                     avatarUrl: 'https://plugin.stripocdn.email/content/guids/CABINET_eab4e7d5a4603ac03f4120652a3a5a540f0c79c688514939f095f67433ed4a67/images/photo256.png'
                 },
-                locale: 'uk',
+                locale: 'en',
                 onTokenRefreshRequest: function (callback) {
                     request('POST', 'https://plugins.stripo.email/api/v1/auth',
                         JSON.stringify({
                             pluginId: PLUGIN_ID,
                             secretKey: SECRET_KEY,
-                            userId: '1',
+                            userId: '12',
                             role: 'user'
                         }),
                         function (data) {
