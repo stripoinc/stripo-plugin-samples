@@ -1,0 +1,838 @@
+# Stripo Editor Extensions Documentation
+
+## Introduction
+
+# Table of Contents
+
+- [Introduction](#introduction)
+    - [About Stripo Editor Extensions](#about-stripo-editor-extensions)
+    - [Key Benefits](#key-benefits)
+- [Core Concepts](#core-concepts)
+    - [Extension Architecture](#extension-architecture)
+    - [Implementation Details](#implementation-details)
+    - [Template Modification Constraints](#template-modification-constraints)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Setting Up Your Extension Project](#setting-up-your-extension-project)
+    - [Creating Your First Extension](#creating-your-first-extension)
+- [Extension Components](#extension-components)
+    - [ExtensionBuilder](#extensionbuilder)
+    - [Block](#block)
+    - [UI Element](#ui-element)
+    - [Control](#control)
+    - [Settings Panel](#settings-panel)
+    - [Context Action](#context-action)
+    - [Tag Registry](#tag-registry)
+- [Template Modification System](#template-modification-system)
+    - [ImmutableNode Classes](#immutablenode-classes)
+    - [TemplateModifier Class](#templatemodifier-class)
+    - [Chaining Modifications](#chaining-modifications)
+- [Advanced Topics](#advanced-topics)
+    - [Internationalization](#internationalization)
+    - [Custom Styling](#custom-styling)
+    - [Custom Renderers](#custom-renderers)
+- [Examples and Tutorials](#examples-and-tutorials)
+
+### About Stripo Editor Extensions
+
+The Stripo Editor Extensions system allows developers to extend the functionality of Stripo editor with custom components, controls, and behaviors. This modular approach enables you to create tailored editing experiences while maintaining compatibility with the core editor.
+
+### Key Benefits
+
+- **Modularity**: Add only the components you need
+- **Customization**: Create custom UI elements, blocks, and controls
+- **Integration**: Seamlessly integrate with the existing editor functionality
+- **Internationalization**: Built-in support for multiple languages
+- **Styling**: Add custom styles for your extensions
+
+## Core Concepts
+
+### Extension Architecture
+
+Extensions are specially structured JavaScript objects that enhance the Stripo editor's functionality. During initialization, the editor accepts an array of these extensions, which are created by extending existing abstract classes and implementing custom logic.
+
+Each extension can include various optional components:
+- Styles
+- Translations
+- Custom blocks
+- UI controls
+- Other extension-specific functionality
+
+You only need to define the components required for your specific extension.
+
+### Implementation Details
+
+Extensions can be written in either JavaScript or TypeScript, as the editor requires compiled JavaScript code for execution. The implementation language choice is flexible as long as the final output is JavaScript.
+
+### Template Modification Constraints
+
+The Stripo Editor Extensions system enforces strict rules regarding HTML and CSS template modifications:
+
+- Direct modification of HTML or CSS templates is not permitted
+- All HTML and CSS elements are exposed as immutable nodes with getter methods only
+- This design is necessary to support collaborative editing features, ensuring changes are properly tracked and synchronized between users
+- To modify templates within the extension system, use the `TemplateModifier` API, which provides controlled methods for template manipulation while maintaining synchronization across users in collaborative environments.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14.x or higher)
+- npm or yarn
+- Understanding of TypeScript/JavaScript
+- Familiarity with UI development concepts
+
+### Setting Up Your Extension Project
+
+Add to your package.json the dependency:
+```
+"dependencies": {
+    "@stripo/ui-editor-extensions": "{LATEST_VERSION}"
+},
+```
+
+### Creating Your First Extension
+
+```javascript
+// Import the ExtensionBuilder from the package
+import { ExtensionBuilder } from '@stripo/ui-editor-extensions';
+
+// Create a new extension using the builder pattern
+const extension = new ExtensionBuilder()
+    // Add custom CSS styles to change the color of blocks panel
+    .withStyles('ue-ui-simple-panel {background-color: darkgray;}')
+    .build();
+
+// Initialize the Stripo editor with your extension
+window.UIEditor.initEditor(
+    document.querySelector('#stripoEditorContainer'), // Target container for the editor
+    {
+        // Your editor configuration options go here
+        ...,
+        // Register your extensions
+        extensions: [
+            extension
+        ]
+    }
+);
+```
+
+The complete example of extension you can find [here](https://github.com/stripoinc/stripo-plugin-samples/tree/extensions/extensions/01-hello-world).
+
+## Extension Components
+
+The extension system is built around a core set of interfaces and abstract classes that developers can implement to extend functionality.
+
+The main components you can include in an extension are:
+1. **Blocks**: Custom content blocks that can be added to the editor
+2. **UI Elements**: Custom UI elements to extend the editor interface
+3. **Controls**: Form controls for settings panels
+4. **Settings Panels**: Panels for configuring blocks
+5. **Context Actions**: Actions that appear in block's context menus
+6. **Tag Registry**: Helps to override default UiElements with custom HTML tags
+
+![](./assets/stripo_extensions_components.png)
+
+### ExtensionBuilder
+
+The `ExtensionBuilder` class provides a fluent interface for creating editor extensions.
+
+#### Methods
+
+| Method | Description | Parameters | Return Type |
+|--------|-------------|------------|-------------|
+| `constructor()` | Creates a new ExtensionBuilder instance. | None | `ExtensionBuilder` |
+| `withLocalization(localizationMap)` | Adds localization data to the extension. | `localizationMap`: Object mapping language codes to objects containing key-value pairs for translations. | `ExtensionBuilder` |
+| `withStyles(stylesString)` | Adds custom CSS styles to the extension. | `stylesString`: String containing CSS rules. | `ExtensionBuilder` |
+| `withBlock(blockClass)` | Registers a custom block with the extension. | `blockClass`: Custom Block class implementation. | `ExtensionBuilder` |
+| `withUiElement(uiElementClass)` | Registers a custom UI element with the extension. | `uiElementClass`: Custom UiElement class implementation. | `ExtensionBuilder` |
+| `withContextAction(contextActionClass)` | Registers a custom context action with the extension. | `contextActionClass`: Custom ContextAction class implementation. | `ExtensionBuilder` |
+| `withControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom UiControl class implementation. | `ExtensionBuilder` |
+| `withSettingsPanel(settingsPanelClass)` | Registers a custom settings panel registry with the extension. | `settingsPanelClass`: Custom SettingsPanelRegistry class implementation. | `ExtensionBuilder` |
+| `withTagRegistry(tagRegistryClass)` | Registers a custom tag registry with the extension. | `tagRegistryClass`: Custom UiElementTagRegistry class implementation. | `ExtensionBuilder` |
+| `build()` | Finalizes and returns the extension instance. | None | `Extension` |
+
+### Block
+
+#### Overview
+
+Block is the custom content block that can be dragged&dropped to the editor.
+
+#### Creating a Custom Block
+
+To create a custom block, extend the `Block` abstract class:
+
+```javascript
+import { Block } from '@stripo/ui-editor-extensions';
+
+export class MyCustomBlock extends Block {
+    getId() {
+        return 'my-custom-block';
+    }
+
+    getTemplate() {
+        return `
+            <td align="left">
+                <h2>${this.api.translate('My Custom Block')}</h2>
+            </td>
+        `;
+    }
+}
+```
+
+#### Block Class and Methods
+
+The `Block` abstract class provides the foundation for creating custom content blocks. Here's an overview of its methods:
+
+| Method                      | Description                                                                       | Required | Default Value                          |
+|-----------------------------|-----------------------------------------------------------------------------------|----------|----------------------------------------|
+| `getId()`                   | Returns a unique identifier for the block. This must be unique within the editor. | Yes      |                                        |
+| `getIcon()`                 | Returns the icon representation for the block in the blocks panel.                | Yes      |                                        |
+| `getName()`                 | Returns the display name of the block shown in the blocks panel.                  | Yes      |                                        |
+| `getDescription()`          | Returns the descriptive text for the block shown in the blocks panel.             | Yes      |                                        |
+| `getTemplate()`             | Returns an HTML string template that defines the structure of your block.         | Yes      |                                        |
+| `getContextActionsIds()`    | Returns an array of context action IDs that apply to this block.                  | No       | `['esd-move','esd-copy','esd-delete']` |
+| `getCustomRenderer()`       | Returns a custom renderer class for the block, if needed.                         | No       | `undefined`                            |
+| `getUniqueBlockClassname()` | Returns a unique CSS class name for the block.                                    | No       | `esd-${this.getId()}`                  |
+| `isEnabled()`               | Returns whether the block is enabled in the current editor context.               | No       | `true`                                 |
+| `canBeSavedAsModule()`      | Returns whether the block can be saved as a reusable module.                      | No       | `false`                                |
+
+The `Block` class also provides several lifecycle hooks:
+
+| Lifecycle Hook                  | Description                                                                                                                                                                                                        |
+|---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `onDocumentInit()`              | Called when the document is initialized. Returns a HtmlNodeModifier if the block needs to modify its HTML structure. This is useful for performing initial setup or validation of block instances in the document. |
+| `onSelect(node)`                | Called when the block is selected. Returns a HtmlNodeModifier if the block needs to modify its HTML structure.                                                                                                     |
+| `onDrop(node)`                  | Called when the block is dropped into the editor. Returns a HtmlNodeModifier if the block needs to modify its HTML structure.                                                                                      |
+| `onCopy(targetNode,sourceNode)` | Called when the block is copied. Returns a HtmlNodeModifier if the block needs to modify its HTML structure.                                                                                                       |
+| `onDelete(node)`                | Called when the block is deleted. Returns a HtmlNodeModifier if the block needs to modify its HTML structure.                                                                                                      |
+
+The `Block` class provides access to the editor API through the `api` property, which offers these useful methods:
+
+| API Method                | Description                                                 |
+|---------------------------|-------------------------------------------------------------|
+| `getDocumentModifier()`   | Returns a modifier that can be used to modify the document. |
+| `getEditorConfig()`       | Returns the current editor configuration.                   |
+| `translate(key, params)`  | Translates a text key using the current language settings.  |
+| `setViewOnly(isViewOnly)` | Sets whether the block should be view-only.                 |
+| `getDocumentRoot()`       | Returns the root element of the document.                   |
+
+
+### UI Element
+
+#### Overview
+
+UI Element is a fundamental building block of a user interface. It represents a reusable component that enhances consistency and maintainability.
+Extract repeating HTML code into standalone UI elements whenever possible. For example, custom-designed input fields or buttons can be converted into reusable components.
+Think of UI elements as bricks that will later come together to form a complete interface.
+
+#### Creating a Custom UI Element
+
+To create a custom UI element, extend the `UiElement` abstract class:
+
+```javascript
+import { UiElement } from '@stripo/ui-editor-extensions';
+
+export class CustomDesignedSwitcherUiElement extends UiElement {
+    // Required: Provide a unique ID for your UI element. This also will be the tag name of UI element by default.
+    getId() {
+        return 'custom-designed-switcher-ui-element';
+    }
+    
+    // Required: Define the HTML template for your UI element
+    getTemplate() {
+        return `
+            <div class="custom-switcher-container">
+                <input type="checkbox" title="${this.api.translate('Custom Switcher')}" class="custom-switcher">
+            </div>`;
+    }
+    
+    // Called after the element is rendered
+    onRender(container) {
+        this.inputElement = container.querySelector('input');
+        this.inputElement.addEventListener('change', this._onChange.bind(this));
+    }
+    
+    // Clean up event listeners when the element is destroyed
+    onDestroy() {
+        this.inputElement.removeEventListener('change', this._onChange.bind(this));
+    }
+    
+    // Internal event handler for input changes
+    _onChange(event) {
+        this.api.onValueChanged(event.target.value);
+    }
+    
+    // Get the current value of the UI element
+    getValue() {
+        return this.inputElement.value;
+    }
+    
+    // Set the value of the UI element
+    setValue(value) {
+        this.inputElement.value = value.brand;
+    }
+}
+```
+
+#### UiElement Class and Methods
+
+The `UiElement` abstract class provides the foundation for creating custom UI components. Here's an overview of its methods:
+
+| Method                | Description                                                                                                                                                                              | Required |
+|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `getId()`             | Returns a unique identifier for the UI element. This must be unique within the editor. This also will be the tag name of UI element by default.                                          | Yes      |
+| `getTemplate()`       | Returns an HTML string template that defines the structure of your UI element.                                                                                                           | Yes      |
+| `onRender(container)` | Called after the element is rendered. Use this to set up event listeners and initialize your UI element. The `container` parameter is the DOM element containing your rendered template. | No       |
+| `onDestroy()`         | Called when the element is being destroyed. Use this to clean up event listeners and resources.                                                                                          | No       |
+| `getValue()`          | Returns the current value of the UI element. Implement this if your UI element maintains state.                                                                                          | No       |
+| `setValue(value)`     | Sets the value of the UI element. The `value` parameter is the data to set.                                                                                                              | No       |
+
+The `UiElement` class also provides access to the editor API through the `api` property, which offers these useful methods:
+
+| API Method               | Description                                                  |
+|--------------------------|--------------------------------------------------------------|
+| `onValueChanged(value)`  | Notifies the editor that the UI element's value has changed. |
+| `getEditorConfig()`      | Returns the current editor configuration.                    |
+| `translate(key, params)` | Translates a text key using the current language settings.   |
+
+When implementing a custom UI element, focus on creating a clean, reusable component that follows these best practices:
+- Keep UI elements simple and focused on a single responsibility
+- Handle proper cleanup in the `onDestroy` method
+- Use the translation API for all user-facing text
+- Follow the editor's visual style guidelines for consistency
+
+### Control
+
+Control is an interactive form element specifically designed for settings panel that allows users to modify properties of selected block within the editor.
+
+#### Creating a Custom Control
+
+To create a custom control, extend the `UiControl` abstract class:
+
+```javascript
+import { ModificationDescription, UiControl } from '@stripo/ui-editor-extensions';
+
+export class EventIdControl extends UiControl {
+    // Required: Provide a unique ID for your control
+    getId() {
+        return 'event-id-control';
+    }
+
+    // Required: Define the HTML template for your control
+    getTemplate() {
+        return `
+            <div>
+                <ue-label value="${this.api.translate('Enable Event Id')}:"></ue-label>
+                <event-id-switcher name="eventIdSwitcher"></event-id-switcher>
+            </div>`;
+    }
+
+    // Called after the control is rendered
+    onRender() {
+        this.api.onValueChanged('eventIdSwitcher', (newValue, oldValue) => {
+            if (newValue) {
+                const eventId = '1';
+                this.api.getDocumentModifier()
+                    .modifyHtml(this.firstNodeLink)
+                    .setAttribute('event-id', eventId)
+                    .apply(new ModificationDescription('Added event id {eventId}')
+                        .withParams({eventId: eventId}));
+            } else {
+                this.api.getDocumentModifier()
+                    .modifyHtml(this.firstNodeLink)
+                    .removeAttribute('event-id')
+                    .apply(new ModificationDescription('Removed event id')
+                        .withParams({eventId: oldValue}));
+            }
+        });
+    }
+
+    // Called when the template node is updated
+    onTemplateNodeUpdated(node) {
+        this.firstNodeLink = node.querySelector('a');
+        let eventIdFromTemplate = this.firstNodeLink.getAttribute('event-id');
+
+        this.api.updateValues({
+            'eventIdSwitcher': !!eventIdFromTemplate
+        });
+    }
+}
+```
+
+#### UiControl Class and Methods
+
+The `UiControl` abstract class provides the foundation for creating custom settings controls. Here's an overview of its methods:
+
+| Method                        | Description                                                                                                           | Required |
+|-------------------------------|-----------------------------------------------------------------------------------------------------------------------|----------|
+| `getId()`                     | Returns a unique identifier for the control. This must be unique within the editor.                                   | Yes      |
+| `getTemplate()`               | Returns an HTML string template that defines the structure of your control.                                           | Yes      |
+| `onRender()`                  | Called after the control is rendered. Use this to set up event listeners.                                             | No       |
+| `onDestroy()`                 | Called when the control is being destroyed. Use this to clean up event listeners and resources.                       | No       |
+| `onTemplateNodeUpdated(node)` | Called when the template node is updated. Use this to extract settings values from the node (block, structure, etc.). | No       |
+
+
+The `UiControl` class provides access to the editor API through the `api` property, which offers these useful methods:
+
+| API Method                                | Description                                                                         |
+|-------------------------------------------|-------------------------------------------------------------------------------------|
+| `getDocumentModifier()`                   | Returns a modifier that can be used to modify the document.                         |
+| `getEditorConfig()`                       | Returns the current editor configuration.                                           |
+| `translate(key, params)`                  | Translates a text key using the current language settings.                          |
+| `getDocumentRootHtmlNode()`               | Returns the root HTML node of the document.                                         |
+| `getDocumentRootCssNode()`                | Returns the root CSS node of the document.                                          |
+| `setVisibility(uiElementName, isVisible)` | Sets the visibility of the UiElement by its name.                                   |
+| `updateValues(valuesMap)`                 | Updates the values of UiElements with the provided values (uiElementName -> value). |
+| `onValueChanged(uiElementName, callback)` | Registers a callback for value changes of the UiELement.                            |
+
+
+### Settings Panel
+
+Settings panel is an element that organizes controls into tabs and manages the flow of settings data between the UI and the document.
+
+#### Creating a Settings Panel
+
+To create a settings panel, implement the `SettingsPanelRegistry` abstract class:
+
+```javascript
+import { SettingsPanelRegistry, SettingsPanelTab } from '@stripo/ui-editor-extensions';
+
+export class CustomSettingsPanelRegistry extends SettingsPanelRegistry {
+    registerBlockControls(blockControlsMap) {
+        blockControlsMap['BLOCK_TEXT'] = [
+            new SettingsPanelTab(
+                'settings',
+                [
+                    'paragraphStyleForm'
+                ]),
+            new SettingsPanelTab(
+                'customStyles',
+                [
+                    'backgroundColor'
+                ])
+                .withLabel('Custom styles'),
+        ]
+
+        // Add a control to an existing tab for a built-in block
+        blockControlsMap['BLOCK_BUTTON'].find(tabs => tabs.getTabId() == 'settings').addControl('my-custom-control', 2);
+        
+    }
+}
+```
+
+#### SettingsPanelRegistry Class and Methods
+
+The `SettingsPanelRegistry` abstract class provides the foundation for creating custom settings panels. Here's an overview of its methods:
+
+| Method                                    | Description                                                                                                                                       | Required |
+|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `registerBlockControls(blockControlsMap)` | Configures which controls appear in which tabs for specific blocks. The `blockControlsMap` parameter is a mapping of block IDs to arrays of tabs. | Yes      |
+
+The `SettingsPanelRegistry` class provides access to the editor API through the `api` property, which offers these useful methods:
+
+| API Method               | Description                                                |
+|--------------------------|------------------------------------------------------------|
+| `getEditorConfig()`      | Returns the current editor configuration.                  |
+| `translate(key, params)` | Translates a text key using the current language settings. |
+
+#### SettingsPanelTab Class and Methods
+
+The `SettingsPanelTab` class is used to define tabs within settings panels. Here's an overview of its methods:
+
+| Method                            | Description                                                                         |
+|-----------------------------------|-------------------------------------------------------------------------------------|
+| `constructor(tabId, controlsIds)` | Creates a new tab with the given ID and array of control IDs.                       |
+| `getTabId()`                      | Returns the tab's unique identifier.                                                |
+| `getLabel()`                      | Returns the tab's display label.                                                    |
+| `getControlsIds()`                | Returns the array of control IDs contained in this tab.                             |
+| `withLabel(label)`                | Sets the display label for the tab and returns the tab instance for chaining.       |
+| `addControl(controlId, position)` | Adds a control at the specified position and returns the tab instance for chaining. |
+| `deleteControl(controlId)`        | Removes a control from the tab by its ID.                                           |
+
+#### Understanding the Settings Panel System
+
+Unlike the simplified example in the previous documentation, the actual settings panel system works by providing a mapping between block IDs and arrays of tabs with controls. The key points to understand:
+
+1. You implement `registerBlockControls` to define which controls appear for which blocks
+2. The `blockControlsMap` parameter is a record where:
+    - Keys are block identifiers (like 'useful-links-block')
+    - Values are arrays of `SettingsPanelTab` instances
+3. Each tab contains an array of control IDs that should be displayed in that tab
+4. You can:
+    - Create entirely new panels for blocks
+    - Modify existing panels by adding or removing controls
+    - Reorganize controls between tabs
+
+
+### Context Action
+
+Context actions appear in context menus for blocks and provide access to common operations like copy, delete, move.
+
+#### Creating a Custom Context Action
+
+To create a custom context action, extend the `ContextAction` abstract class:
+
+```javascript
+import { ContextAction } from '@stripo/ui-editor-extensions';
+
+export class CustomContextAction extends ContextAction {
+    // Required: Provide a unique ID for your context action
+    getId() {
+        return 'ai-magic-context-action';
+    }
+    
+    getIconClass() {
+        return 'plus';
+    }
+    
+    getLabel() {
+        return this.api.translate('Magic button');
+    }
+    
+    onClick(node) {
+        console.log(`Magic button clicked for block: ${node.getOuterHTML()}`);
+    }
+}
+```
+
+#### ContextAction Class and Methods
+
+The `ContextAction` abstract class provides the foundation for creating custom context menu actions. Here's an overview of its methods:
+
+| Method           | Description                                                                                                                   | Required |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------|----------|
+| `getId()`        | Returns a unique identifier for the action. This must be unique within the editor.                                            | Yes      |
+| `getIconClass()` | Returns the CSS class name for the action's icon.                                                                             | Yes      |
+| `getLabel()`     | Returns the display label for the action.                                                                                     | Yes      |
+| `onClick(node)`  | Handles the click event when the action is clicked. The `node` parameter is the DOM element the action is being performed on. | Yes      |
+
+The `ContextAction` class provides access to the editor API through the `api` property, which offers these useful methods:
+
+| API Method               | Description                                                 |
+|--------------------------|-------------------------------------------------------------|
+| `getDocumentModifier()`  | Returns a modifier that can be used to modify the document. |
+| `getEditorConfig()`      | Returns the current editor configuration.                   |
+| `translate(key, params)` | Translates a text key using the current language settings.  |
+
+#### Best Practices for Creating Context Actions
+
+When implementing context actions, follow these guidelines:
+
+1. **Clear Purpose**: Each action should have a clear, specific purpose
+2. **Meaningful Icon**: Use a meaningful icon that clearly communicates the action's purpose
+3. **Proper Naming**: Use descriptive IDs that indicate both the target block and the action
+4. **Internationalization**: Use the translation API for all user-facing text
+5. **Proper Error Handling**: Handle errors gracefully within your action handler
+6. **Consistent Behavior**: Maintain consistency with the editor's existing context actions
+7. **Performance**: Keep action execution fast and responsive
+
+### Tag Registry
+
+#### Overview
+
+Tag Registry is a component that allows you to re-map UI elements to custom HTML tags in the editor, enabling you to override or extend build-in UI elements.
+
+#### Creating a Custom Tag Registry
+
+To create a custom tag registry, extend the `UiElementTagRegistry` abstract class:
+
+```javascript
+import { UiElementTagRegistry } from '@stripo/ui-editor-extensions';
+
+export class CustomTagRegistry extends UiElementTagRegistry {
+    registerUiElements(uiElementsTagsMap) {
+        // Override the default color picker with a custom one
+        uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap['ue-color'];
+        uiElementsTagsMap['ue-color'] = 'custom-color-picker-ui-element';
+    }
+}
+```
+
+#### UiElementTagRegistry Class and Methods
+
+The `UiElementTagRegistry` abstract class provides the foundation for mapping custom HTML tags to UI elements. Here's an overview of its methods:
+
+| Method                                  | Description                                                                                                                                    |
+|-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `registerUiElements(uiElementsTagsMap)` | Configures the mapping between HTML tags and UI elements. The `uiElementsTagsMap` parameter is a mapping between tag names and UI element IDs. |
+
+
+#### Understanding the Tag Registry System
+
+Key points to understand:
+
+1. The `uiElementsTagsMap` parameter in `registerUiElements` is a record where:
+    - Keys are HTML tag names
+    - Values are UI element IDs
+2. When the editor encounters a tag from this mapping, it will render the corresponding UI element. Use it in `getTemplate` method of `UiControl`
+3. You can override existing mappings to replace built-in UI elements with custom ones
+
+#### Best Practices for Creating Tag Registries
+
+When implementing tag registries, follow these guidelines:
+
+1. **Consistent Naming**: Use descriptive, consistent naming conventions for tags and UI elements
+2. **Clear Documentation**: Document the purpose and usage of each custom tag
+3. **Avoid Conflicts**: Ensure your custom tags don't conflict with HTML standard tags or other extensions
+4. **Compatibility**: Ensure compatibility with the editor's existing tags and UI elements
+
+## Template Modification System
+
+### ImmutableNode Classes
+
+In the Stripo Editor Extensions system, you cannot directly modify the HTML or CSS of templates. This restriction exists because of the editor's collaborative editing feature, which requires all changes to be properly tracked and merged between users.
+
+All HTML and CSS elements inside extensions are available as immutable nodes that have only getter methods. This design prevents direct modifications and ensures that all changes are properly synchronized across multiple users.
+
+```javascript
+// Example of working with immutable nodes
+const headingElement = this.api.getDocumentRoot().querySelector('h1');
+
+// You can get properties but not set them directly
+const tagName = headingElement.getTagName();
+const classes = headingElement.getClassList();
+const style = headingElement.getStyle('color');
+```
+
+The main immutable node classes include:
+
+| Class | Description | Common Methods |
+|---|---|---|
+| `ImmutableHtmlNode` | Base interface for all HTML nodes | `getType()`, `querySelector()`, `querySelectorAll()` |
+| `ImmutableHtmlElementNode` | Interface for HTML element nodes | `getTagName()`, `getAttribute()`, `getStyle()`, `getClassList()`, `getOuterHTML()` |
+| `ImmutableHtmlTextNode` | Interface for HTML text nodes | `getTextContent()` |
+| `ImmutableCssNode` | Base interface for all CSS nodes | `getType()` |
+| `ImmutableCssRuleNode` | Interface for CSS rule nodes | `getSelector()` |
+| `ImmutableCssAttributeNode` | Interface for CSS attribute nodes | `getAttributeName()`, `getAttributeValue()` |
+
+### TemplateModifier Class
+
+To make changes to the template, you must use the `TemplateModifier` class, which provides a controlled way to modify HTML and CSS. The TemplateModifier follows a builder pattern, allowing you to chain multiple modifications before applying them as a single transaction.
+
+```javascript
+// Example of using TemplateModifier to change a heading's color
+this.api.getDocumentModifier()
+    .modifyHtml(headingElement)
+    .setStyle('color', '#ff0000')
+    .apply(new ModificationDescription('Changed heading color to red'));
+```
+
+The TemplateModifier provides two primary interfaces:
+
+1. **HtmlNodeModifier**: For modifying HTML elements
+2. **CssNodeModifier**: For modifying CSS rules
+
+#### HtmlNodeModifier Methods
+
+The `HtmlNodeModifier` interface provides methods for modifying HTML elements:
+
+| Method | Description |
+|---|---|
+| `setAttribute(name, value)` | Sets an attribute on the node |
+| `removeAttribute(name)` | Removes an attribute from the node |
+| `setClass(name)` | Adds a CSS class to the node |
+| `removeClass(name)` | Removes a CSS class from the node |
+| `setValue(value)` | Sets the value of an input, select, or textarea element |
+| `setInnerHtml(value)` | Sets the inner HTML of the node |
+| `append(value)` | Appends HTML to the end of the node's content |
+| `prepend(value)` | Prepends HTML to the beginning of the node's content |
+| `replaceWith(value)` | Replaces the node with the specified HTML |
+| `setStyle(property, value)` | Sets a CSS style property on the node |
+| `removeStyle(property)` | Removes a CSS style property from the node |
+| `delete()` | Deletes the node |
+
+#### CssNodeModifier Methods
+
+The `CssNodeModifier` interface provides methods for modifying CSS rules:
+
+| Method | Description |
+|---|---|
+| `setProperty(name, value)` | Sets a CSS property in a rule |
+| `removeProperty(name)` | Removes a CSS property from a rule |
+| `insertRuleBefore(css, beforeNode)` | Inserts a new CSS rule before the specified node |
+| `insertRuleAfter(css, afterNode)` | Inserts a new CSS rule after the specified node |
+| `appendRule(css)` | Appends a new CSS rule at the end of the current ruleset |
+| `prependRule(css)` | Prepends a new CSS rule at the beginning of the current ruleset |
+| `removeRule()` | Removes the current CSS rule entirely |
+
+#### Applying Modifications
+
+After specifying all the modifications you want to make, you must call the `apply()` method with a `ModificationDescription` object. This description is used for the version history and helps other users understand the changes made:
+
+```javascript
+.apply(new ModificationDescription('Changed text color to {color}')
+    .withParams({color: '#ff0000'}));
+```
+
+When you call `apply()`, several important things happen:
+1. The changes are applied to the document
+2. The changes are recorded in the version history
+3. The changes are propagated to other users in collaborative sessions
+4. The changes are stored in the database
+
+This controlled modification system ensures that all changes are properly tracked, can be undone/redone, and can be safely merged in collaborative editing scenarios.
+
+### Chaining Modifications
+
+One powerful feature of the TemplateModifier is the ability to chain multiple modifications together:
+
+```javascript
+this.api.getDocumentModifier()
+    // Modify the button element
+    .modifyHtml(buttonElement)
+        .setStyle('background-color', '#0078d4')
+        .setStyle('color', 'white')
+        .setAttribute('role', 'button')
+    // Then modify the parent container
+    .modifyHtml(containerElement)
+        .setStyle('padding', '20px')
+        .addClass('highlight-container')
+    // Then modify a CSS rule
+    .modifyCss(buttonRuleElement)
+        .setProperty('border-radius', '4px')
+        .setProperty('box-shadow', '0 2px 4px rgba(0,0,0,0.2)')
+    // Apply all changes as a single operation
+    .apply(new ModificationDescription('Updated button styling'));
+```
+
+By chaining modifications, you can ensure all related changes are applied as a single, atomic operation, making the editing experience smoother and ensuring all changes are properly tracked and synchronized.
+
+## Advanced Topics
+
+### Internationalization
+
+Extensions support multiple languages through the localization feature:
+
+```javascript
+const extension = new ExtensionBuilder()
+    .withLocalization({
+        'en': {
+            'greeting': 'Hello',
+            'farewell': 'Goodbye'
+        },
+        'fr': {
+            'greeting': 'Bonjour',
+            'farewell': 'Au revoir'
+        }
+    })
+    .build();
+```
+
+Access translations in your components using the API:
+
+```javascript
+const greeting = this.api.translate('greeting'); // Returns "Hello" or "Bonjour" based on current language
+```
+
+### Custom Styling
+
+Add custom styles to your extension:
+
+```javascript
+const extension = new ExtensionBuilder()
+    .withStyles(`
+        .my-custom-block {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .my-custom-ui-element {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 3px;
+        }
+    `)
+    .build();
+```
+
+### Custom Renderers
+
+Custom renderers allow you to display content differently from how it's structured in the actual HTML. This provides a powerful way to create a visual representation that differs from the underlying code structure without modifying the original HTML.
+
+#### Purpose and Benefits
+
+The primary purpose of custom renderers is to create a visual editing experience that may differ from the final output HTML. Some key benefits include:
+
+1. **Merge Tag Visualization**: Display merge tags with their actual values in the editor while maintaining the merge tag syntax in the HTML. For example, showing "John Doe" in the editor interface while the HTML contains `#{CUSTOMER_NAME}`.
+
+2. **Preview Mode**: Create interactive previews of dynamic content without altering the source code.
+
+3. **Complex Interactions**: Add interactive elements to the editing experience that don't exist in the final HTML output.
+
+4. **Visual Enhancements**: Add visual indicators, decorations, or styling that only appears in the editor.
+
+5. **Simplified Editing**: Present a simplified view of complex HTML structures to make editing more intuitive.
+
+#### Creating a Custom Renderer
+
+To create a custom renderer, extend the `BlockRenderer` abstract class:
+
+```javascript
+import { BlockRenderer } from '@stripo/ui-editor-extensions';
+
+export class MergeTagRenderer extends BlockRenderer {
+   getPreviewHtml(node) {
+      return node.getOuterHTML().replace(`#{CUSTOMER_NAME}`, 'John Doe');
+   }
+}
+```
+
+#### Connecting Renderer to Block
+
+To connect a custom renderer to a block, implement the `getCustomRenderer()` method in your block class:
+
+```javascript
+import { Block } from '@stripo/ui-editor-extensions';
+import { MergeTagRenderer } from './merge-tag-renderer';
+
+export class MyCustomBlock extends Block {
+   getId() {
+      return 'my-custom-block';
+   }
+   
+   getTemplate() {
+      return `
+            <td align="left">
+                <h2>${this.api.translate('My Custom Block')}</h2>
+                <p>Hello #{CUSTOMER_NAME},</p>
+            </td>
+        `;
+   }
+   
+   getCustomRenderer() {
+     return MergeTagRenderer;
+   }
+}
+```
+
+With this implementation, the editor will display the block with the merge tags replaced by their values, while preserving the original merge tags in the HTML structure. This makes the editing experience more intuitive while maintaining the dynamic nature of the template.
+
+#### BlockRenderer Class and Methods
+
+The `BlockRenderer` abstract class provides the foundation for creating custom rendering behavior for blocks. Here's an overview of its methods:
+
+| Method                 | Description                                                                                                                                                                               |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `getPreviewHtml(node)` | Returns a customized HTML representation of the block for display in the editor. The `node` parameter is an ImmutableHtmlNode that provides access to the current block's HTML structure. |
+
+The `BlockRenderer` class provides access to the editor API through the `api` property, which offers these useful methods:
+
+| API Method               | Description                                                |
+|--------------------------|------------------------------------------------------------|
+| `getEditorConfig()`      | Returns the current editor configuration.                  |
+| `translate(key, params)` | Translates a text key using the current language settings. |
+
+
+#### Best Practices for Custom Renderers
+
+1. **Keep the Original Structure**: Ensure your renderer preserves the original HTML structure while only changing the visual representation.
+
+2. **Performance Considerations**: Minimize DOM manipulations in your renderer to maintain good performance, especially for complex blocks.
+
+## Examples and Tutorials
+
+[These examples](../) demonstrate how to create complete, functional extensions for the Stripo Editor. You can use them as starting points for your own extension development.
