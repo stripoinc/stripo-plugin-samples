@@ -226,6 +226,79 @@ UI Element is a fundamental building block of a user interface. It represents a 
 Extract repeating HTML code into standalone UI elements whenever possible. For example, custom-designed input fields or buttons can be converted into reusable components.
 Think of UI elements as bricks that will later come together to form a complete interface.
 
+#### Available Built-in UI Elements
+
+The Stripo Editor supports the following Built-in UI elements, as defined in the `UETag` enum:
+
+| Element | Tag Name | Description |
+|---------|----------|-------------|
+| Button | `UE-BUTTON` | Allows users to perform a single action |
+| Checkbox | `UE-CHECKBOX` | Allows users to switch between boolean states |
+| Check Buttons | `UE-CHECK-BUTTONS` | Allows users to select multiple options from a list |
+| Color Picker | `UE-COLOR` | Allows users to select colors from default and custom palettes |
+| Counter | `UE-COUNTER` | Allows users to input numeric values with increment/decrement controls |
+| Date Picker | `UE-DATEPICKER` | Allows users to select dates from a calendar |
+| Label | `UE-LABEL` | Displays text labels for form elements |
+| Message | `UE-MESSAGE` | Displays informational messages with different styles |
+| Radio Buttons | `UE-RADIO-BUTTONS` | Allows users to select one option from a list |
+| Select | `UE-SELECT` | Dropdown that allows users to select one or multiple options |
+| Switcher | `UE-SWITCHER` | Toggle switch for boolean states |
+| Text | `UE-TEXT` | Single-line text input |
+| Textarea | `UE-TEXTAREA` | Multi-line text input |
+
+Additionally, there are supporting elements:
+- `UE-CHECK-ITEM`: Individual item within Check Buttons
+- `UE-RADIO-ITEM`: Individual item within Radio Buttons
+- `UE-SELECT-ITEM`: Individual item within Select dropdown
+
+#### UI Element Attributes
+
+Each UI element supports specific attributes that control its behavior and appearance. These attributes are defined in the `UEAttr` object:
+
+##### Common Attributes
+All UI elements support these attributes:
+- `name`: Unique identifier for the element
+- `disabled`: Controls whether the element is interactive
+
+##### Element-Specific Attributes
+
+###### Button
+- `caption`: Text displayed on the button
+
+###### Checkbox
+- `caption`: Label text for the checkbox
+
+###### Counter
+- `min-value`: Minimum allowed value
+- `max-value`: Maximum allowed value
+- `step`: Increment/decrement step size
+
+###### Date Picker
+- `placeholder`: Placeholder text when no date is selected
+- `min-date`: Earliest selectable date
+
+###### Label
+- `text`: The text content of the label
+- `hint`: Additional information displayed as a tooltip
+
+###### Message
+- `type`: Message style (error, success, warn, info)
+
+###### Radio Buttons
+- `buttons`: Collection of radio options
+
+###### Select
+- `searchable`: Whether the dropdown is searchable
+- `multi-select`: Whether multiple items can be selected
+- `placeholder`: Placeholder text when no option is selected
+- `items`: Collection of select options
+
+###### Text and Textarea
+- `placeholder`: Placeholder text when empty
+
+###### Textarea
+- `resizable`: Whether the textarea can be resized
+
 #### Creating a Custom UI Element
 
 To create a custom UI element, extend the `UiElement` abstract class:
@@ -234,7 +307,7 @@ To create a custom UI element, extend the `UiElement` abstract class:
 import { UiElement } from '@stripo/ui-editor-extensions';
 
 export class CustomDesignedSwitcherUiElement extends UiElement {
-    // Required: Provide a unique ID for your UI element. This also will be the tag name of UI element by default.
+    // Required: Provide a unique ID for your UI element
     getId() {
         return 'custom-designed-switcher-ui-element';
     }
@@ -270,10 +343,114 @@ export class CustomDesignedSwitcherUiElement extends UiElement {
     
     // Set the value of the UI element
     setValue(value) {
-        this.inputElement.value = value.brand;
+        this.inputElement.value = value;
     }
 }
 ```
+
+#### Working with UI Elements in Controls
+
+When implementing custom controls, you can use the built-in UI elements by including them in your template:
+
+```javascript
+import { UiControl, UETag, UEAttr } from '@stripo/ui-editor-extensions';
+
+export class MyCustomControl extends UiControl {
+    getId() {
+        return 'my-custom-control';
+    }
+    
+    getTemplate() {
+        const labelTag = UETag.LABEL;
+        const labelAttr = UEAttr.LABEL;
+        const switcherTag = UETag.SWITCHER;
+        const switcherAttr = UEAttr.SWITCHER;
+        
+        return `
+            <div>
+                <${labelTag} ${labelAttr.text}="Enable Feature:" ${labelAttr.name}="featureLabel"></${labelTag}>
+                <${switcherTag} ${switcherAttr.name}="featureSwitcher"></${switcherTag}>
+            </div>
+        `;
+    }
+    
+    onRender() {
+        // Set initial values
+        this.api.updateValues({
+            'featureSwitcher': false
+        });
+        
+        // Listen for changes
+        this.api.onValueChanged('featureSwitcher', (newValue) => {
+            // Handle value change
+            console.log('Feature switched to:', newValue);
+        });
+    }
+}
+```
+
+#### The UI Element DOM Interface
+
+UI elements in the DOM implement the `IUEInputDomElement` interface, which extends `HTMLElement` and adds:
+
+```typescript
+interface IUEInputDomElement extends HTMLElement {
+    value: unknown;
+    setUEAttribute(name: string, value: unknown): void;
+}
+```
+
+This allows you to:
+1. Access the element's current value via the `value` property
+2. Set element attributes using the `setUEAttribute` method
+
+```javascript
+import {UEAttr, UETag, UiElement} from '@stripo/ui-editor-extensions';
+
+export class CustomCounterUiElement extends UiElement {
+    getId() {
+        return 'custom-counter-ui-element';
+    }
+
+    getTemplate() {
+        return `
+            <div>
+                <${UETag.COUNTER} 
+                    ${UEAttr.COUNTER.name}="customCounter"
+                    ${UEAttr.COUNTER.minValue}="5">
+                </${UETag.COUNTER}>
+            </div>`;
+    }
+
+    onRender(container) {
+        this.counter = container.querySelector(`${UETag.COUNTER}`);
+
+        // Alternative way to set UIElement's attributes
+        // This approach allows you to programmatically set attributes after the element is rendered
+        // You can use this method to dynamically update attributes based on user interactions or other conditions
+        this.counter.setUEAttribute(UEAttr.COUNTER.step, 2);
+        this.counter.setUEAttribute(UEAttr.COUNTER.maxValue, 10);
+        this.counter.value = 7;
+    }
+
+    getValue() {
+        return this.counter.value;
+    }
+
+    setValue(value) {
+        this.counter.value = value;
+    }
+}
+```
+
+#### Best Practices for UI Elements
+
+1. **Use Constants**: Use the `UETag` and `UEAttr` constants when referencing elements and attributes
+2. **Handle Cleanup**: Properly remove event listeners in the `onDestroy` method
+3. **Localize Text**: Use the translation API for all user-facing text
+4. **Follow Patterns**: Study the examples implementation for patterns and conventions
+5. **State Management**: Use `updateValues()` and `onValueChanged()` for managing element state
+6. **Dynamic Visibility**: Use `setVisibility()` to show/hide elements based on conditions
 
 #### UiElement Class and Methods
 
@@ -295,12 +472,6 @@ The `UiElement` class also provides access to the editor API through the `api` p
 | `onValueChanged(value)`  | Notifies the editor that the UI element's value has changed. |
 | `getEditorConfig()`      | Returns the current editor configuration.                    |
 | `translate(key, params)` | Translates a text key using the current language settings.   |
-
-When implementing a custom UI element, focus on creating a clean, reusable component that follows these best practices:
-- Keep UI elements simple and focused on a single responsibility
-- Handle proper cleanup in the `onDestroy` method
-- Use the translation API for all user-facing text
-- Follow the editor's visual style guidelines for consistency
 
 ### Control
 
