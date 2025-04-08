@@ -396,7 +396,7 @@ UI elements in the DOM implement the `IUEInputDomElement` interface, which exten
 ```typescript
 interface IUEInputDomElement extends HTMLElement {
     value: unknown;
-    setUEAttribute(name: string, value: unknown): void;
+    setUIEAttribute(name: string, value: unknown): void;
 }
 ```
 
@@ -428,8 +428,8 @@ export class CustomCounterUiElement extends UiElement {
         // Alternative way to set UIElement's attributes
         // This approach allows you to programmatically set attributes after the element is rendered
         // You can use this method to dynamically update attributes based on user interactions or other conditions
-        this.counter.setUEAttribute(UEAttr.COUNTER.step, 2);
-        this.counter.setUEAttribute(UEAttr.COUNTER.maxValue, 10);
+        this.counter.setUIEAttribute(UEAttr.COUNTER.step, 2);
+        this.counter.setUIEAttribute(UEAttr.COUNTER.maxValue, 10);
         this.counter.value = 7;
     }
 
@@ -461,6 +461,7 @@ The `UiElement` abstract class provides the foundation for creating custom UI co
 | `getId()`             | Returns a unique identifier for the UI element. This must be unique within the editor. This also will be the tag name of UI element by default.                                          | Yes      |
 | `getTemplate()`       | Returns an HTML string template that defines the structure of your UI element.                                                                                                           | Yes      |
 | `onRender(container)` | Called after the element is rendered. Use this to set up event listeners and initialize your UI element. The `container` parameter is the DOM element containing your rendered template. | No       |
+| `onAttributeUpdated(name, value)` | Called when one of the element's supported (`UEAttr`) attributes gets updated. The `name` parameter is the attribute name, and `value` is the new attribute value.                | No       |
 | `onDestroy()`         | Called when the element is being destroyed. Use this to clean up event listeners and resources.                                                                                          | No       |
 | `getValue()`          | Returns the current value of the UI element. Implement this if your UI element maintains state.                                                                                          | No       |
 | `setValue(value)`     | Sets the value of the UI element. The `value` parameter is the data to set.                                                                                                              | No       |
@@ -546,16 +547,18 @@ The `UiControl` abstract class provides the foundation for creating custom setti
 
 The `UiControl` class provides access to the editor API through the `api` property, which offers these useful methods:
 
-| API Method                                | Description                                                                         |
-|-------------------------------------------|-------------------------------------------------------------------------------------|
-| `getDocumentModifier()`                   | Returns a modifier that can be used to modify the document.                         |
-| `getEditorConfig()`                       | Returns the current editor configuration.                                           |
-| `translate(key, params)`                  | Translates a text key using the current language settings.                          |
-| `getDocumentRootHtmlNode()`               | Returns the root HTML node of the document.                                         |
-| `getDocumentRootCssNode()`                | Returns the root CSS node of the document.                                          |
-| `setVisibility(uiElementName, isVisible)` | Sets the visibility of the UiElement by its name.                                   |
-| `updateValues(valuesMap)`                 | Updates the values of UiElements with the provided values (uiElementName -> value). |
-| `onValueChanged(uiElementName, callback)` | Registers a callback for value changes of the UiELement.                            |
+| API Method                                | Description                                                                                                 |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| `getDocumentModifier()`                   | Returns a modifier that can be used to modify the document.                                                 |
+| `getEditorConfig()`                       | Returns the current editor configuration.                                                                   |
+| `translate(key, params)`                  | Translates a text key using the current language settings.                                                  |
+| `getDocumentRootHtmlNode()`               | Returns the root `ImmutableHtmlNode` of the document.                                                       |
+| `getDocumentRootCssNode()`                | Returns the root `ImmutableCssNode` of the document.                                                        |
+| `setVisibility(uiElementName, isVisible)` | Sets the visibility of a nested `UiElement` within the control by its name.                                 |
+| `setUIEAttribute(uiElementName, attribute, value)` | Sets a specific UIElement's attribute (like those defined in `UEAttr`) on a nested `UiElement`.             |
+| `getValues()`                             | Returns the current values of all nested `UiElements` within the control as a map (uiElementName -> value). |
+| `updateValues(valuesMap)`                 | Updates the values of nested `UiElements` within the control using a map (uiElementName -> value).          |
+| `onValueChanged(uiElementName, callback)` | Registers a callback function to be executed when the value of a specific nested `UiElement` changes.       |
 
 
 ### Settings Panel
