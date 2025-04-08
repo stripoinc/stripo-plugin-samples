@@ -570,27 +570,33 @@ Settings panel is an element that organizes controls into tabs and manages the f
 To create a settings panel, implement the `SettingsPanelRegistry` abstract class:
 
 ```javascript
-import { SettingsPanelRegistry, SettingsPanelTab } from '@stripo/ui-editor-extensions';
+import {
+    GeneralControls,
+    SettingsPanelRegistry,
+    SettingsPanelTab,
+    SettingsTab,
+    TextControls, UEBlock
+} from '@stripo/ui-editor-extensions';
 
 export class CustomSettingsPanelRegistry extends SettingsPanelRegistry {
     registerBlockControls(blockControlsMap) {
-        blockControlsMap['BLOCK_TEXT'] = [
+        blockControlsMap[UEBlock.BLOCK_TEXT] = [
             new SettingsPanelTab(
-                'settings',
+                SettingsTab.SETTINGS,
                 [
-                    'paragraphStyleForm'
+                    TextControls.PARAGRAPH_STYLE
                 ]),
             new SettingsPanelTab(
                 'customStyles',
                 [
-                    'backgroundColor'
+                    GeneralControls.BACKGROUND_COLOR
                 ])
                 .withLabel('Custom styles'),
         ]
 
         // Add a control to an existing tab for a built-in block
-        blockControlsMap['BLOCK_BUTTON'].find(tabs => tabs.getTabId() == 'settings').addControl('my-custom-control', 2);
-        
+        blockControlsMap[UEBlock.BLOCK_BUTTON].find(tabs => tabs.getTabId() == SettingsTab.SETTINGS).addControl('my-custom-control', 2);
+
     }
 }
 ```
