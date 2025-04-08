@@ -191,7 +191,7 @@ The `Block` abstract class provides the foundation for creating custom content b
 | `getName()`                 | Returns the display name of the block shown in the blocks panel.                  | Yes      |                                        |
 | `getDescription()`          | Returns the descriptive text for the block shown in the blocks panel.             | Yes      |                                        |
 | `getTemplate()`             | Returns an HTML string template that defines the structure of your block.         | Yes      |                                        |
-| `getContextActionsIds()`    | Returns an array of context action IDs that apply to this block.                  | No       | `['esd-move','esd-copy','esd-delete']` |
+| `getContextActionsIds()`    | Returns an array of context action IDs that apply to this block.                  | No       | `['move','copy','remove']` |
 | `getCustomRenderer()`       | Returns a custom renderer class for the block, if needed.                         | No       | `undefined`                            |
 | `getUniqueBlockClassname()` | Returns a unique CSS class name for the block.                                    | No       | `esd-${this.getId()}`                  |
 | `isEnabled()`               | Returns whether the block is enabled in the current editor context.               | No       | `true`                                 |
@@ -718,13 +718,13 @@ Tag Registry is a component that allows you to re-map UI elements to custom HTML
 To create a custom tag registry, extend the `UiElementTagRegistry` abstract class:
 
 ```javascript
-import { UiElementTagRegistry } from '@stripo/ui-editor-extensions';
+import {UETag, UiElementTagRegistry} from '@stripo/ui-editor-extensions';
 
 export class CustomTagRegistry extends UiElementTagRegistry {
     registerUiElements(uiElementsTagsMap) {
         // Override the default color picker with a custom one
-        uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap['ue-color'];
-        uiElementsTagsMap['ue-color'] = 'custom-color-picker-ui-element';
+        uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap[UETag.COLOR];
+        uiElementsTagsMap[UETag.COLOR] = 'custom-color-picker-ui-element';
     }
 }
 ```
