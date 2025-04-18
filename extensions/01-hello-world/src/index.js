@@ -1,13 +1,14 @@
-import {ExtensionBuilder} from '@stripo/ui-editor-extensions';
-import {initPlugin} from './stripo-loader';
-import {HelloWorldBlock} from './blocks/hello-world-block';
+import {ExtensionBuilder} from '@stripoinc/ui-editor-extensions';
+import {initPlugin} from './StripoLoader';
+import {HelloWorldBlock} from './blocks/HelloWorldBlock';
 import en from './i18n/en';
 import uk from './i18n/uk';
-import {HelloWorldBlockContextAction} from './blocks/hello-world-block-context-action';
-import {HelloWorldBlockSettingsPanelRegistry} from './blocks/hello-world-block-settings-panel-registry';
-import {HelloWorldBackgroundColorControl} from './controls/hello-world-background-color-control';
+import {HelloWorldBlockContextAction} from './blocks/HelloWorldBlockContextAction';
+import {HelloWorldBlockSettingsPanelRegistry} from './blocks/HelloWorldBlockSettingsPanelRegistry';
+import {HelloWorldBackgroundColorControl} from './controls/HelloWorldBackgroundColorControl';
 import styles from './styles/extension-styles.css?raw';
-import {BrandColorPickerUiElement} from './ui-elements/brand-color-picker-ui-element';
+import {BrandColorPickerUIElement} from './ui-elements/BrandColorPickerUIElement';
+import {BuildInUIElementsDemoControl} from './controls/BuildInUIElementsDemoControl';
 
 const extension = new ExtensionBuilder()
     .withLocalization({
@@ -18,7 +19,8 @@ const extension = new ExtensionBuilder()
     .addBlock(HelloWorldBlock)
     .addContextAction(HelloWorldBlockContextAction)
     .addControl(HelloWorldBackgroundColorControl)
-    .addUiElement(BrandColorPickerUiElement)
+    .addControl(BuildInUIElementsDemoControl)
+    .addUiElement(BrandColorPickerUIElement)
     .withSettingsPanelRegistry(HelloWorldBlockSettingsPanelRegistry)
     .build();
 

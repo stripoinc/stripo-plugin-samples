@@ -95,7 +95,7 @@ Add to your package.json the dependency:
 
 ```javascript
 // Import the ExtensionBuilder from the package
-import { ExtensionBuilder } from '@stripo/ui-editor-extensions';
+import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
 
 // Create a new extension using the builder pattern
 const extension = new ExtensionBuilder()
@@ -147,7 +147,7 @@ The `ExtensionBuilder` class provides a fluent interface for creating editor ext
 | `withBlock(blockClass)` | Registers a custom block with the extension. | `blockClass`: Custom Block class implementation. | `ExtensionBuilder` |
 | `withUiElement(uiElementClass)` | Registers a custom UI element with the extension. | `uiElementClass`: Custom UiElement class implementation. | `ExtensionBuilder` |
 | `withContextAction(contextActionClass)` | Registers a custom context action with the extension. | `contextActionClass`: Custom ContextAction class implementation. | `ExtensionBuilder` |
-| `withControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom UiControl class implementation. | `ExtensionBuilder` |
+| `withControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom UIControl class implementation. | `ExtensionBuilder` |
 | `withSettingsPanel(settingsPanelClass)` | Registers a custom settings panel registry with the extension. | `settingsPanelClass`: Custom SettingsPanelRegistry class implementation. | `ExtensionBuilder` |
 | `withTagRegistry(tagRegistryClass)` | Registers a custom tag registry with the extension. | `tagRegistryClass`: Custom UiElementTagRegistry class implementation. | `ExtensionBuilder` |
 | `build()` | Finalizes and returns the extension instance. | None | `Extension` |
@@ -163,7 +163,7 @@ Block is the custom content block that can be dragged&dropped to the editor.
 To create a custom block, extend the `Block` abstract class:
 
 ```javascript
-import { Block } from '@stripo/ui-editor-extensions';
+import { Block } from '@stripoinc/ui-editor-extensions';
 
 export class MyCustomBlock extends Block {
     getId() {
@@ -184,18 +184,18 @@ export class MyCustomBlock extends Block {
 
 The `Block` abstract class provides the foundation for creating custom content blocks. Here's an overview of its methods:
 
-| Method                      | Description                                                                       | Required | Default Value                          |
-|-----------------------------|-----------------------------------------------------------------------------------|----------|----------------------------------------|
-| `getId()`                   | Returns a unique identifier for the block. This must be unique within the editor. | Yes      |                                        |
-| `getIcon()`                 | Returns the icon representation for the block in the blocks panel.                | Yes      |                                        |
-| `getName()`                 | Returns the display name of the block shown in the blocks panel.                  | Yes      |                                        |
-| `getDescription()`          | Returns the descriptive text for the block shown in the blocks panel.             | Yes      |                                        |
-| `getTemplate()`             | Returns an HTML string template that defines the structure of your block.         | Yes      |                                        |
-| `getContextActionsIds()`    | Returns an array of context action IDs that apply to this block.                  | No       | `['move','copy','remove']` |
-| `getCustomRenderer()`       | Returns a custom renderer class for the block, if needed.                         | No       | `undefined`                            |
-| `getUniqueBlockClassname()` | Returns a unique CSS class name for the block.                                    | No       | `esd-${this.getId()}`                  |
-| `isEnabled()`               | Returns whether the block is enabled in the current editor context.               | No       | `true`                                 |
-| `canBeSavedAsModule()`      | Returns whether the block can be saved as a reusable module.                      | No       | `false`                                |
+| Method                      | Description                                                                       | Required | Default Value        |
+|-----------------------------|-----------------------------------------------------------------------------------|----------|----------------------|
+| `getId()`                   | Returns a unique identifier for the block. This must be unique within the editor. | Yes      |                      |
+| `getIcon()`                 | Returns the icon representation for the block in the blocks panel.                | Yes      |                      |
+| `getName()`                 | Returns the display name of the block shown in the blocks panel.                  | Yes      |                      |
+| `getDescription()`          | Returns the descriptive text for the block shown in the blocks panel.             | Yes      |                      |
+| `getTemplate()`             | Returns an HTML string template that defines the structure of your block.         | Yes      |                      |
+| `getContextActionsIds()`    | Returns an array of context action IDs that apply to this block.                  | No       |                      |
+| `getCustomRenderer()`       | Returns a custom renderer class for the block, if needed.                         | No       |                      |
+| `getUniqueBlockClassname()` | Returns a unique CSS class name for the block.                                    | No       | `esd-${this.getId()}` |
+| `isEnabled()`               | Returns whether the block is enabled in the current editor context.               | No       | `true`               |
+| `canBeSavedAsModule()`      | Returns whether the block can be saved as a reusable module.                      | No       | `false`              |
 
 The `Block` class also provides several lifecycle hooks:
 
@@ -206,6 +206,8 @@ The `Block` class also provides several lifecycle hooks:
 | `onDrop(node)`                  | Called when the block is dropped into the editor. Returns a HtmlNodeModifier if the block needs to modify its HTML structure.                                                                                      |
 | `onCopy(targetNode,sourceNode)` | Called when the block is copied. Returns a HtmlNodeModifier if the block needs to modify its HTML structure.                                                                                                       |
 | `onDelete(node)`                | Called when the block is deleted. Returns a HtmlNodeModifier if the block needs to modify its HTML structure.                                                                                                      |
+| `onCreated(node)`               | Called after a new instance of this block is created and added to the document.                                                                                                                                    |
+| `onDocumentChanged()`           | Called when any part of the document template has changed (can be frequent).                                                                                                                                       |
 
 The `Block` class provides access to the editor API through the `api` property, which offers these useful methods:
 
@@ -225,6 +227,8 @@ The `Block` class provides access to the editor API through the `api` property, 
 UI Element is a fundamental building block of a user interface. It represents a reusable component that enhances consistency and maintainability.
 Extract repeating HTML code into standalone UI elements whenever possible. For example, custom-designed input fields or buttons can be converted into reusable components.
 Think of UI elements as bricks that will later come together to form a complete interface.
+
+To create a custom UI Element, extend the `UIElement` abstract class and implement the required `getId()`, `getTemplate()`, and `onRender()` methods. You may also override optional methods like `onDestroy()`, `getValue()`, `setValue()`, and `onAttributeUpdated()` based on your component's needs.
 
 #### Available Built-in UI Elements
 
@@ -304,14 +308,14 @@ All UI elements support these attributes:
 To create a custom UI element, extend the `UiElement` abstract class:
 
 ```javascript
-import { UiElement } from '@stripo/ui-editor-extensions';
+import { UiElement } from '@stripoinc/ui-editor-extensions';
 
 export class CustomDesignedSwitcherUiElement extends UiElement {
     // Required: Provide a unique ID for your UI element
     getId() {
         return 'custom-designed-switcher-ui-element';
     }
-    
+
     // Required: Define the HTML template for your UI element
     getTemplate() {
         return `
@@ -319,28 +323,28 @@ export class CustomDesignedSwitcherUiElement extends UiElement {
                 <input type="checkbox" title="${this.api.translate('Custom Switcher')}" class="custom-switcher">
             </div>`;
     }
-    
+
     // Called after the element is rendered
     onRender(container) {
         this.inputElement = container.querySelector('input');
         this.inputElement.addEventListener('change', this._onChange.bind(this));
     }
-    
+
     // Clean up event listeners when the element is destroyed
     onDestroy() {
         this.inputElement.removeEventListener('change', this._onChange.bind(this));
     }
-    
+
     // Internal event handler for input changes
     _onChange(event) {
         this.api.onValueChanged(event.target.value);
     }
-    
+
     // Get the current value of the UI element
     getValue() {
         return this.inputElement.value;
     }
-    
+
     // Set the value of the UI element
     setValue(value) {
         this.inputElement.value = value;
@@ -353,19 +357,19 @@ export class CustomDesignedSwitcherUiElement extends UiElement {
 When implementing custom controls, you can use the built-in UI elements by including them in your template:
 
 ```javascript
-import { UiControl, UETag, UEAttr } from '@stripo/ui-editor-extensions';
+import { UIControl, UETag, UEAttr } from '@stripoinc/ui-editor-extensions';
 
-export class MyCustomControl extends UiControl {
+export class MyCustomControl extends UIControl {
     getId() {
         return 'my-custom-control';
     }
-    
+
     getTemplate() {
         const labelTag = UETag.LABEL;
         const labelAttr = UEAttr.LABEL;
         const switcherTag = UETag.SWITCHER;
         const switcherAttr = UEAttr.SWITCHER;
-        
+
         return `
             <div>
                 <${labelTag} ${labelAttr.text}="Enable Feature:" ${labelAttr.name}="featureLabel"></${labelTag}>
@@ -373,13 +377,13 @@ export class MyCustomControl extends UiControl {
             </div>
         `;
     }
-    
+
     onRender() {
         // Set initial values
         this.api.updateValues({
             'featureSwitcher': false
         });
-        
+
         // Listen for changes
         this.api.onValueChanged('featureSwitcher', (newValue) => {
             // Handle value change
@@ -391,10 +395,10 @@ export class MyCustomControl extends UiControl {
 
 #### The UI Element DOM Interface
 
-UI elements in the DOM implement the `IUEInputDomElement` interface, which extends `HTMLElement` and adds:
+UI elements in the DOM implement the `UIEDomElement` interface, which extends `HTMLElement` and adds:
 
 ```typescript
-interface IUEInputDomElement extends HTMLElement {
+interface UIEDomElement extends HTMLElement {
     value: unknown;
     setUIEAttribute(name: string, value: unknown): void;
 }
@@ -405,7 +409,7 @@ This allows you to:
 2. Set element attributes using the `setUEAttribute` method
 
 ```javascript
-import {UEAttr, UETag, UiElement} from '@stripo/ui-editor-extensions';
+import {UEAttr, UETag, UiElement} from '@stripoinc/ui-editor-extensions';
 
 export class CustomCounterUiElement extends UiElement {
     getId() {
@@ -476,16 +480,20 @@ The `UiElement` class also provides access to the editor API through the `api` p
 
 ### Control
 
-Control is an interactive form element specifically designed for settings panel that allows users to modify properties of selected block within the editor.
+#### Overview
+
+Controls are components used within Settings Panels to configure block or element properties.
+
+To create a custom Control, extend the `UIControl` abstract class and implement the required `getId()`, `getTemplate()`, and `onTemplateNodeUpdated()` methods. Optional methods like `onRender()` and `onDestroy()` can be used for setup and cleanup.
 
 #### Creating a Custom Control
 
-To create a custom control, extend the `UiControl` abstract class:
+To create a custom control, extend the `UIControl` abstract class:
 
 ```javascript
-import { ModificationDescription, UiControl } from '@stripo/ui-editor-extensions';
+import { ModificationDescription, UIControl } from '@stripoinc/ui-editor-extensions';
 
-export class EventIdControl extends UiControl {
+export class EventIdControl extends UIControl {
     // Required: Provide a unique ID for your control
     getId() {
         return 'event-id-control';
@@ -532,9 +540,9 @@ export class EventIdControl extends UiControl {
 }
 ```
 
-#### UiControl Class and Methods
+#### UIControl Class and Methods
 
-The `UiControl` abstract class provides the foundation for creating custom settings controls. Here's an overview of its methods:
+The `UIControl` abstract class provides the foundation for creating custom settings controls. Here's an overview of its methods:
 
 | Method                        | Description                                                                                                           | Required |
 |-------------------------------|-----------------------------------------------------------------------------------------------------------------------|----------|
@@ -545,7 +553,7 @@ The `UiControl` abstract class provides the foundation for creating custom setti
 | `onTemplateNodeUpdated(node)` | Called when the template node is updated. Use this to extract settings values from the node (block, structure, etc.). | No       |
 
 
-The `UiControl` class provides access to the editor API through the `api` property, which offers these useful methods:
+The `UIControl` class provides access to the editor API through the `api` property, which offers these useful methods:
 
 | API Method                                | Description                                                                                                 |
 |-------------------------------------------|-------------------------------------------------------------------------------------------------------------|
@@ -563,7 +571,11 @@ The `UiControl` class provides access to the editor API through the `api` proper
 
 ### Settings Panel
 
-Settings panel is an element that organizes controls into tabs and manages the flow of settings data between the UI and the document.
+#### Overview
+
+Settings Panels group Controls to provide a configuration interface for specific blocks or editor features.
+
+To define how controls are organized into settings panels for different blocks, create a class that extends `SettingsPanelRegistry` and implement the `registerBlockControls()` method. This method receives a map where you can associate block IDs with arrays of `SettingsPanelTab` configurations.
 
 #### Creating a Settings Panel
 
@@ -576,7 +588,7 @@ import {
     SettingsPanelTab,
     SettingsTab,
     TextControls, UEBlock
-} from '@stripo/ui-editor-extensions';
+} from '@stripoinc/ui-editor-extensions';
 
 export class CustomSettingsPanelRegistry extends SettingsPanelRegistry {
     registerBlockControls(blockControlsMap) {
@@ -654,22 +666,22 @@ Context actions appear in context menus for blocks and provide access to common 
 To create a custom context action, extend the `ContextAction` abstract class:
 
 ```javascript
-import { ContextAction } from '@stripo/ui-editor-extensions';
+import { ContextAction } from '@stripoinc/ui-editor-extensions';
 
 export class CustomContextAction extends ContextAction {
     // Required: Provide a unique ID for your context action
     getId() {
         return 'ai-magic-context-action';
     }
-    
+
     getIconClass() {
         return 'plus';
     }
-    
+
     getLabel() {
         return this.api.translate('Magic button');
     }
-    
+
     onClick(node) {
         console.log(`Magic button clicked for block: ${node.getOuterHTML()}`);
     }
@@ -718,7 +730,7 @@ Tag Registry is a component that allows you to re-map UI elements to custom HTML
 To create a custom tag registry, extend the `UiElementTagRegistry` abstract class:
 
 ```javascript
-import {UETag, UiElementTagRegistry} from '@stripo/ui-editor-extensions';
+import {UETag, UiElementTagRegistry} from '@stripoinc/ui-editor-extensions';
 
 export class CustomTagRegistry extends UiElementTagRegistry {
     registerUiElements(uiElementsTagsMap) {
@@ -745,7 +757,7 @@ Key points to understand:
 1. The `uiElementsTagsMap` parameter in `registerUiElements` is a record where:
     - Keys are HTML tag names
     - Values are UI element IDs
-2. When the editor encounters a tag from this mapping, it will render the corresponding UI element. Use it in `getTemplate` method of `UiControl`
+2. When the editor encounters a tag from this mapping, it will render the corresponding UI element. Use it in `getTemplate` method of `UIControl`
 3. You can override existing mappings to replace built-in UI elements with custom ones
 
 #### Best Practices for Creating Tag Registries
@@ -952,12 +964,12 @@ The primary purpose of custom renderers is to create a visual editing experience
 To create a custom renderer, extend the `BlockRenderer` abstract class:
 
 ```javascript
-import { BlockRenderer } from '@stripo/ui-editor-extensions';
+import { BlockRenderer } from '@stripoinc/ui-editor-extensions';
 
 export class MergeTagRenderer extends BlockRenderer {
-   getPreviewHtml(node) {
-      return node.getOuterHTML().replace(`#{CUSTOMER_NAME}`, 'John Doe');
-   }
+    getPreviewHtml(node) {
+        return node.getOuterHTML().replace(`#{CUSTOMER_NAME}`, 'John Doe');
+    }
 }
 ```
 
@@ -966,26 +978,26 @@ export class MergeTagRenderer extends BlockRenderer {
 To connect a custom renderer to a block, implement the `getCustomRenderer()` method in your block class:
 
 ```javascript
-import { Block } from '@stripo/ui-editor-extensions';
+import { Block } from '@stripoinc/ui-editor-extensions';
 import { MergeTagRenderer } from './merge-tag-renderer';
 
 export class MyCustomBlock extends Block {
-   getId() {
-      return 'my-custom-block';
-   }
-   
-   getTemplate() {
-      return `
+    getId() {
+        return 'my-custom-block';
+    }
+
+    getTemplate() {
+        return `
             <td align="left">
                 <h2>${this.api.translate('My Custom Block')}</h2>
                 <p>Hello #{CUSTOMER_NAME},</p>
             </td>
         `;
-   }
-   
-   getCustomRenderer() {
-     return MergeTagRenderer;
-   }
+    }
+
+    getCustomRenderer() {
+        return MergeTagRenderer;
+    }
 }
 ```
 
