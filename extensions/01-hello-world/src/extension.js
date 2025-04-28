@@ -9,7 +9,7 @@ import styles from './styles/extension-styles.css?raw';
 import {BrandColorPickerUIElement} from './ui-elements/BrandColorPickerUIElement';
 import {BuildInUIElementsDemoControl} from './controls/BuildInUIElementsDemoControl';
 
-const extension = new ExtensionBuilder()
+export default new ExtensionBuilder()
     .withLocalization({
         'en': en,
         'uk': uk,
@@ -22,5 +22,3 @@ const extension = new ExtensionBuilder()
     .addUiElement(BrandColorPickerUIElement)
     .withSettingsPanelRegistry(HelloWorldBlockSettingsPanelRegistry)
     .build();
-
-export default extension;
