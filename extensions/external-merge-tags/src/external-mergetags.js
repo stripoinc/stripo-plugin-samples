@@ -5,7 +5,6 @@ const ID = 'external-merge-tags-ui-element';
 
 export class MergeTagsTagRegistry extends UIElementTagRegistry {
     registerUiElements(uiElementsTagsMap) {
-        console.log('uiElementsTagsMap', uiElementsTagsMap);
         uiElementsTagsMap[UETag.MERGETAGS] = ID;
     }
 }
