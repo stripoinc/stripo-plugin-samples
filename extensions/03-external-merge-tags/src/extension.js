@@ -1,9 +1,8 @@
 import {ExtensionBuilder} from '@stripoinc/ui-editor-extensions';
-import {initPlugin} from './StripoLoader';
 import {MergeTagsTagRegistry, MergeTagsUiElementExtension} from './external-mergetags';
 
 
-const extension = new ExtensionBuilder()
+export default new ExtensionBuilder()
   .addUiElement(MergeTagsUiElementExtension)
   .withLocalization({
     'en': {
@@ -15,6 +14,3 @@ const extension = new ExtensionBuilder()
   })
   .withUiElementTagRegistry(MergeTagsTagRegistry)
   .build();
-
-
-initPlugin(extension);

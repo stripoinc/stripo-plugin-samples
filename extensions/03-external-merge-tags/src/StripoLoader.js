@@ -30,7 +30,7 @@ function runPlugin(template, extension) {
                 },
                 locale: 'en',
                 onTokenRefreshRequest: function (callback) {
-                    request('POST', 'https://dev-plugins.stripo.email/api/v1/auth',
+                    request('POST', 'https://plugins.stripo.email/api/v1/auth',
                         JSON.stringify({
                             pluginId: PLUGIN_ID,
                             secretKey: SECRET_KEY,
