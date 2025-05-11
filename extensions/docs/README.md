@@ -147,7 +147,7 @@ The `ExtensionBuilder` class provides a fluent interface for creating editor ext
 | `withBlock(blockClass)` | Registers a custom block with the extension. | `blockClass`: Custom Block class implementation. | `ExtensionBuilder` |
 | `withUiElement(uiElementClass)` | Registers a custom UI element with the extension. | `uiElementClass`: Custom UiElement class implementation. | `ExtensionBuilder` |
 | `withContextAction(contextActionClass)` | Registers a custom context action with the extension. | `contextActionClass`: Custom ContextAction class implementation. | `ExtensionBuilder` |
-| `withControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom UIControl class implementation. | `ExtensionBuilder` |
+| `withControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom Control class implementation. | `ExtensionBuilder` |
 | `withSettingsPanel(settingsPanelClass)` | Registers a custom settings panel registry with the extension. | `settingsPanelClass`: Custom SettingsPanelRegistry class implementation. | `ExtensionBuilder` |
 | `withTagRegistry(tagRegistryClass)` | Registers a custom tag registry with the extension. | `tagRegistryClass`: Custom UiElementTagRegistry class implementation. | `ExtensionBuilder` |
 | `build()` | Finalizes and returns the extension instance. | None | `Extension` |
@@ -232,7 +232,7 @@ To create a custom UI Element, extend the `UIElement` abstract class and impleme
 
 #### Available Built-in UI Elements
 
-The Stripo Editor supports the following Built-in UI elements, as defined in the `UETag` enum:
+The Stripo Editor supports the following Built-in UI elements, as defined in the `UIElementType` enum:
 
 | Element | Tag Name | Description |
 |---------|----------|-------------|
@@ -357,17 +357,17 @@ export class CustomDesignedSwitcherUiElement extends UiElement {
 When implementing custom controls, you can use the built-in UI elements by including them in your template:
 
 ```javascript
-import { UIControl, UETag, UEAttr } from '@stripoinc/ui-editor-extensions';
+import { Control, UIElementType, UEAttr } from '@stripoinc/ui-editor-extensions';
 
-export class MyCustomControl extends UIControl {
+export class MyCustomControl extends Control {
     getId() {
         return 'my-custom-control';
     }
 
     getTemplate() {
-        const labelTag = UETag.LABEL;
+        const labelTag = UIElementType.LABEL;
         const labelAttr = UEAttr.LABEL;
-        const switcherTag = UETag.SWITCHER;
+        const switcherTag = UIElementType.SWITCHER;
         const switcherAttr = UEAttr.SWITCHER;
 
         return `
@@ -409,7 +409,7 @@ This allows you to:
 2. Set element attributes using the `setUEAttribute` method
 
 ```javascript
-import {UEAttr, UETag, UiElement} from '@stripoinc/ui-editor-extensions';
+import {UEAttr, UIElementType, UiElement} from '@stripoinc/ui-editor-extensions';
 
 export class CustomCounterUiElement extends UiElement {
     getId() {
@@ -419,15 +419,15 @@ export class CustomCounterUiElement extends UiElement {
     getTemplate() {
         return `
             <div>
-                <${UETag.COUNTER} 
+                <${UIElementType.COUNTER} 
                     ${UEAttr.COUNTER.name}="customCounter"
                     ${UEAttr.COUNTER.minValue}="5">
-                </${UETag.COUNTER}>
+                </${UIElementType.COUNTER}>
             </div>`;
     }
 
     onRender(container) {
-        this.counter = container.querySelector(`${UETag.COUNTER}`);
+        this.counter = container.querySelector(`${UIElementType.COUNTER}`);
 
         // Alternative way to set UIElement's attributes
         // This approach allows you to programmatically set attributes after the element is rendered
@@ -449,7 +449,7 @@ export class CustomCounterUiElement extends UiElement {
 
 #### Best Practices for UI Elements
 
-1. **Use Constants**: Use the `UETag` and `UEAttr` constants when referencing elements and attributes
+1. **Use Constants**: Use the `UIElementType` and `UEAttr` constants when referencing elements and attributes
 2. **Handle Cleanup**: Properly remove event listeners in the `onDestroy` method
 3. **Localize Text**: Use the translation API for all user-facing text
 4. **Follow Patterns**: Study the examples implementation for patterns and conventions
@@ -484,16 +484,16 @@ The `UiElement` class also provides access to the editor API through the `api` p
 
 Controls are components used within Settings Panels to configure block or element properties.
 
-To create a custom Control, extend the `UIControl` abstract class and implement the required `getId()`, `getTemplate()`, and `onTemplateNodeUpdated()` methods. Optional methods like `onRender()` and `onDestroy()` can be used for setup and cleanup.
+To create a custom Control, extend the `Control` abstract class and implement the required `getId()`, `getTemplate()`, and `onTemplateNodeUpdated()` methods. Optional methods like `onRender()` and `onDestroy()` can be used for setup and cleanup.
 
 #### Creating a Custom Control
 
-To create a custom control, extend the `UIControl` abstract class:
+To create a custom control, extend the `Control` abstract class:
 
 ```javascript
-import { ModificationDescription, UIControl } from '@stripoinc/ui-editor-extensions';
+import { ModificationDescription, Control } from '@stripoinc/ui-editor-extensions';
 
-export class EventIdControl extends UIControl {
+export class EventIdControl extends Control {
     // Required: Provide a unique ID for your control
     getId() {
         return 'event-id-control';
@@ -540,9 +540,9 @@ export class EventIdControl extends UIControl {
 }
 ```
 
-#### UIControl Class and Methods
+#### Control Class and Methods
 
-The `UIControl` abstract class provides the foundation for creating custom settings controls. Here's an overview of its methods:
+The `Control` abstract class provides the foundation for creating custom settings controls. Here's an overview of its methods:
 
 | Method                        | Description                                                                                                           | Required |
 |-------------------------------|-----------------------------------------------------------------------------------------------------------------------|----------|
@@ -553,7 +553,7 @@ The `UIControl` abstract class provides the foundation for creating custom setti
 | `onTemplateNodeUpdated(node)` | Called when the template node is updated. Use this to extract settings values from the node (block, structure, etc.). | No       |
 
 
-The `UIControl` class provides access to the editor API through the `api` property, which offers these useful methods:
+The `Control` class provides access to the editor API through the `api` property, which offers these useful methods:
 
 | API Method                                | Description                                                                                                 |
 |-------------------------------------------|-------------------------------------------------------------------------------------------------------------|
@@ -587,12 +587,12 @@ import {
     SettingsPanelRegistry,
     SettingsPanelTab,
     SettingsTab,
-    TextControls, UEBlock
+    TextControls, BlockType
 } from '@stripoinc/ui-editor-extensions';
 
 export class CustomSettingsPanelRegistry extends SettingsPanelRegistry {
     registerBlockControls(blockControlsMap) {
-        blockControlsMap[UEBlock.BLOCK_TEXT] = [
+        blockControlsMap[BlockType.BLOCK_TEXT] = [
             new SettingsPanelTab(
                 SettingsTab.SETTINGS,
                 [
@@ -607,7 +607,7 @@ export class CustomSettingsPanelRegistry extends SettingsPanelRegistry {
         ]
 
         // Add a control to an existing tab for a built-in block
-        blockControlsMap[UEBlock.BLOCK_BUTTON].find(tabs => tabs.getTabId() == SettingsTab.SETTINGS).addControl('my-custom-control', 2);
+        blockControlsMap[BlockType.BLOCK_BUTTON].find(tabs => tabs.getTabId() == SettingsTab.SETTINGS).addControl('my-custom-control', 2);
 
     }
 }
@@ -730,13 +730,13 @@ Tag Registry is a component that allows you to re-map UI elements to custom HTML
 To create a custom tag registry, extend the `UiElementTagRegistry` abstract class:
 
 ```javascript
-import {UETag, UiElementTagRegistry} from '@stripoinc/ui-editor-extensions';
+import {UIElementType, UiElementTagRegistry} from '@stripoinc/ui-editor-extensions';
 
 export class CustomTagRegistry extends UiElementTagRegistry {
     registerUiElements(uiElementsTagsMap) {
         // Override the default color picker with a custom one
-        uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap[UETag.COLOR];
-        uiElementsTagsMap[UETag.COLOR] = 'custom-color-picker-ui-element';
+        uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap[UIElementType.COLOR];
+        uiElementsTagsMap[UIElementType.COLOR] = 'custom-color-picker-ui-element';
     }
 }
 ```
@@ -757,7 +757,7 @@ Key points to understand:
 1. The `uiElementsTagsMap` parameter in `registerUiElements` is a record where:
     - Keys are HTML tag names
     - Values are UI element IDs
-2. When the editor encounters a tag from this mapping, it will render the corresponding UI element. Use it in `getTemplate` method of `UIControl`
+2. When the editor encounters a tag from this mapping, it will render the corresponding UI element. Use it in `getTemplate` method of `Control`
 3. You can override existing mappings to replace built-in UI elements with custom ones
 
 #### Best Practices for Creating Tag Registries

@@ -1,4 +1,4 @@
-import {UEAttr, UETag, UIControl} from '@stripoinc/ui-editor-extensions';
+import {UEAttr, UIElementType, Control} from '@stripoinc/ui-editor-extensions';
 
 
 const MessageStyle = {
@@ -28,7 +28,7 @@ const TEXT_AREA_ELEMENT = 'textArea';
  * This control showcases elements like messages, radio buttons, selects, checkboxes, buttons, color pickers, etc.,
  * and handles their interactions.
  */
-export class BuildInUIElementsDemoControl extends UIControl {
+export class BuildInUIElementsDemoControl extends Control {
   /**
    * Returns the unique identifier for this control.
    * @returns {string} The control's unique ID.
@@ -45,7 +45,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
    * @returns {string} The HTML string for the label element.
    */
   _getLabel(text, name = `${Math.random()}`) {
-    return `<${UETag.LABEL} ${UEAttr.LABEL.text}="${text}" ${UEAttr.LABEL.name}="${name}"></${UETag.LABEL}>`;
+    return `<${UIElementType.LABEL} ${UEAttr.LABEL.text}="${text}" ${UEAttr.LABEL.name}="${name}"></${UIElementType.LABEL}>`;
   }
 
   /**
@@ -57,7 +57,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
         <b>Message element allows you to provide user with required information.</b>
         ${this._getLabel('User action:')}
-        <${UETag.MESSAGE} ${UEAttr.MESSAGE.name}="${MESSAGE_ELEMENT}" ${UEAttr.MESSAGE.type}="${MessageStyle.INFO}"></${UETag.MESSAGE}>
+        <${UIElementType.MESSAGE} ${UEAttr.MESSAGE.name}="${MESSAGE_ELEMENT}" ${UEAttr.MESSAGE.type}="${MessageStyle.INFO}"></${UIElementType.MESSAGE}>
     `;
   }
 
@@ -69,7 +69,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
    * @returns {string} The HTML string for the radio item element.
    */
   _getRadioButton(text, value) {
-    return `<${UETag.RADIO_ITEM} ${UEAttr.RADIO_ITEM.hint}="${text}" ${UEAttr.RADIO_ITEM.text}="${text}" ${UEAttr.RADIO_ITEM.value}="${value}"></${UETag.RADIO_ITEM}>`;
+    return `<${UIElementType.RADIO_ITEM} ${UEAttr.RADIO_ITEM.hint}="${text}" ${UEAttr.RADIO_ITEM.text}="${text}" ${UEAttr.RADIO_ITEM.value}="${value}"></${UIElementType.RADIO_ITEM}>`;
   }
 
   /**
@@ -81,9 +81,9 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Radio buttons allow you to choose one item from the list of options.</b>
       ${this._getLabel('Select message style:')}
-      <${UETag.RADIO_BUTTONS} ${UEAttr.RADIO_BUTTONS.name}="${RADIO_BUTTONS_ELEMENT}">
+      <${UIElementType.RADIO_BUTTONS} ${UEAttr.RADIO_BUTTONS.name}="${RADIO_BUTTONS_ELEMENT}">
           ${Object.keys(MessageStyle).map(key => this._getRadioButton(key, MessageStyle[key])).join('')}
-      </${UETag.RADIO_BUTTONS}>
+      </${UIElementType.RADIO_BUTTONS}>
     `;
   }
 
@@ -95,7 +95,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
    * @returns {string} The HTML string for the select item element.
    */
   _getSelectItem(text, value) {
-    return `<${UETag.SELECT_ITEM} ${UEAttr.SELECT_ITEM.text}="${text}" ${UEAttr.SELECT_ITEM.value}="${value}"></${UETag.SELECT_ITEM}>`;
+    return `<${UIElementType.SELECT_ITEM} ${UEAttr.SELECT_ITEM.text}="${text}" ${UEAttr.SELECT_ITEM.value}="${value}"></${UIElementType.SELECT_ITEM}>`;
   }
 
   /**
@@ -108,9 +108,9 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Select element allows you to choose one or several items from the list of options.</b>
         ${this._getLabel('Select message style:')}
-        <${UETag.SELECTPICKER} ${UEAttr.SELECTPICKER.name}="${SELECT_ELEMENT}" ${UEAttr.SELECTPICKER.multiSelect}="true">
+        <${UIElementType.SELECTPICKER} ${UEAttr.SELECTPICKER.name}="${SELECT_ELEMENT}" ${UEAttr.SELECTPICKER.multiSelect}="true">
             ${Object.keys(MessageStyle).map(key => this._getSelectItem(key, MessageStyle[key])).join('')}
-        </${UETag.SELECTPICKER}>
+        </${UIElementType.SELECTPICKER}>
     `;
   }
 
@@ -121,7 +121,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
    * @returns {string} The HTML string for the check item element.
    */
   getCheckItem(name, value) {
-    return `<${UETag.CHECK_ITEM} ${UEAttr.CHECK_ITEM.hint}="${name}" ${UEAttr.CHECK_ITEM.text}="${name}" ${UEAttr.CHECK_ITEM.value}="${value}"></${UETag.CHECK_ITEM}>`;
+    return `<${UIElementType.CHECK_ITEM} ${UEAttr.CHECK_ITEM.hint}="${name}" ${UEAttr.CHECK_ITEM.text}="${name}" ${UEAttr.CHECK_ITEM.value}="${value}"></${UIElementType.CHECK_ITEM}>`;
   }
 
   /**
@@ -133,9 +133,9 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>CheckButtons are similar to RadioButtons but also allow to select several items.</b>
         ${this._getLabel('Select some items:')}
-        <${UETag.CHECK_BUTTONS} ${UEAttr.CHECK_BUTTONS.name}="${CHECK_BUTTONS_ELEMENT}">
+        <${UIElementType.CHECK_BUTTONS} ${UEAttr.CHECK_BUTTONS.name}="${CHECK_BUTTONS_ELEMENT}">
             ${['one', 'two', 'three'].map(key => this.getCheckItem(key, key)).join('')}
-        </${UETag.CHECK_BUTTONS}>
+        </${UIElementType.CHECK_BUTTONS}>
     `;
   }
 
@@ -147,7 +147,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
   _getCheckbox() {
     return `
       <b>Checkbox allows you to switch boolean state.</b>
-      <${UETag.CHECKBOX} ${UEAttr.CHECKBOX.caption}="Disable inputs above:" ${UEAttr.CHECKBOX.name}="${CHECKBOX_ELEMENT}"></${UETag.CHECKBOX}>
+      <${UIElementType.CHECKBOX} ${UEAttr.CHECKBOX.caption}="Disable inputs above:" ${UEAttr.CHECKBOX.name}="${CHECKBOX_ELEMENT}"></${UIElementType.CHECKBOX}>
     `;
   }
 
@@ -160,7 +160,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Switcher allows you to switch boolean state too.</b>
       ${this._getLabel('Display inputs above:')}
-      <${UETag.SWITCHER} ${UEAttr.SWITCHER.name}="${SWITCHER_ELEMENT}"></${UETag.SWITCHER}>
+      <${UIElementType.SWITCHER} ${UEAttr.SWITCHER.name}="${SWITCHER_ELEMENT}"></${UIElementType.SWITCHER}>
     `;
   }
 
@@ -173,7 +173,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Button allows you to perform single action.</b>
       ${this._getLabel('Clear message area:')}
-      <${UETag.BUTTON} ${UEAttr.BUTTON.name}="${BUTTON_ELEMENT}" ${UEAttr.BUTTON.caption}="DO IT"></${UETag.BUTTON}>
+      <${UIElementType.BUTTON} ${UEAttr.BUTTON.name}="${BUTTON_ELEMENT}" ${UEAttr.BUTTON.caption}="DO IT"></${UIElementType.BUTTON}>
     `;
   }
 
@@ -186,7 +186,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Colorpicker allows you to select color from the default and custom palettes.</b>
       ${this._getLabel('Select color:')}
-      <${UETag.COLOR} ${UEAttr.COLOR.name}="${COLOR_ELEMENT}"></${UETag.COLOR}>
+      <${UIElementType.COLOR} ${UEAttr.COLOR.name}="${COLOR_ELEMENT}"></${UIElementType.COLOR}>
     `;
   }
 
@@ -199,7 +199,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Datepicker allows to select date.</b>
       ${this._getLabel('Select date:')}
-      <${UETag.DATEPICKER} ${UEAttr.DATEPICKER.name}="${DATEPICKER_ELEMENT}"></${UETag.DATEPICKER}>
+      <${UIElementType.DATEPICKER} ${UEAttr.DATEPICKER.name}="${DATEPICKER_ELEMENT}"></${UIElementType.DATEPICKER}>
     `;
   }
 
@@ -212,7 +212,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Counter allows to input numeric value.</b>
       ${this._getLabel('Pick a number between 1 and 10:')}
-      <${UETag.COUNTER} ${UEAttr.COUNTER.name}="${COUNTER_ELEMENT}" ${UEAttr.COUNTER.minValue}="1" ${UEAttr.COUNTER.maxValue}="10" ${UEAttr.COUNTER.step}="1"></${UETag.COUNTER}>
+      <${UIElementType.COUNTER} ${UEAttr.COUNTER.name}="${COUNTER_ELEMENT}" ${UEAttr.COUNTER.minValue}="1" ${UEAttr.COUNTER.maxValue}="10" ${UEAttr.COUNTER.step}="1"></${UIElementType.COUNTER}>
     `;
   }
 
@@ -225,7 +225,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Text allows you to input string value.</b>
       ${this._getLabel('What is your name?')}
-      <${UETag.TEXT} ${UEAttr.TEXT.name}="${TEXT_ELEMENT}" ${UEAttr.TEXT.placeholder}="Enter your name here."></${UETag.TEXT}>
+      <${UIElementType.TEXT} ${UEAttr.TEXT.name}="${TEXT_ELEMENT}" ${UEAttr.TEXT.placeholder}="Enter your name here."></${UIElementType.TEXT}>
     `;
   }
 
@@ -238,7 +238,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
     return `
       <b>Text area allows you to input multi-line text.</b>
       ${this._getLabel('List top 1 of your favourite dinosaurs.', 'dinoLabel')}
-      <${UETag.TEXTAREA} ${UEAttr.TEXTAREA.name}="${TEXT_AREA_ELEMENT}" ${UEAttr.TEXTAREA.placeholder}="Dinosaurs go here."></${UETag.TEXTAREA}>
+      <${UIElementType.TEXTAREA} ${UEAttr.TEXTAREA.name}="${TEXT_AREA_ELEMENT}" ${UEAttr.TEXTAREA.placeholder}="Dinosaurs go here."></${UIElementType.TEXTAREA}>
     `;
   }
 
@@ -487,7 +487,7 @@ export class BuildInUIElementsDemoControl extends UIControl {
 
   /**
    * Called when the associated template node is updated.
-   * This method is part of the UIControl lifecycle but is not used in this demo control
+   * This method is part of the Control lifecycle but is not used in this demo control
    * as it doesn't directly manipulate a specific template node based on its state.
    * @param {ImmutableHtmlNode} node The immutable HTML node representing the element being controlled.
    */

@@ -1,10 +1,10 @@
-import {ModificationDescription, UIControl, UETag, UEAttr} from '@stripoinc/ui-editor-extensions';
+import {ModificationDescription, Control, UIElementType, UEAttr} from '@stripoinc/ui-editor-extensions';
 
 const COLOR_ELEMENT_NAME = 'helloWorldBackgroundColor';
 
 export const CONTROL_HELLO_WORLD_BACKGROUND_COLOR_ID = 'hello-world-background-color-control';
 
-export class HelloWorldBackgroundColorControl extends UIControl {
+export class HelloWorldBackgroundColorControl extends Control {
     /**
      * Returns a unique identifier for the control.
      * This ID must be unique within the editor.
@@ -22,7 +22,7 @@ export class HelloWorldBackgroundColorControl extends UIControl {
     getTemplate() {
         return `
             <div>
-                <${UETag.LABEL} ${UEAttr.LABEL.text}="${this.api.translate('Background color')}:"></${UETag.LABEL}>
+                <${UIElementType.LABEL} ${UEAttr.LABEL.text}="${this.api.translate('Background color')}:"></${UIElementType.LABEL}>
                 <brand-color-picker name="${COLOR_ELEMENT_NAME}"></brand-color-picker>
             </div>`;
     }

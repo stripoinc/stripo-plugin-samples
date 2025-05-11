@@ -1,4 +1,4 @@
-import {SettingsPanelRegistry, SettingsPanelTab, SettingsTab, UEBlock} from '@stripoinc/ui-editor-extensions';
+import {SettingsPanelRegistry, SettingsPanelTab, SettingsTab, BlockType} from '@stripoinc/ui-editor-extensions';
 import {CONTROL_BUILD_IN_UI_ELEMENTS_DEMO_ID} from '../controls/BuildInUIElementsDemoControl';
 import {BLOCK_HELLO_WORLD_ID} from './HelloWorldBlock';
 import {CONTROL_HELLO_WORLD_BACKGROUND_COLOR_ID} from '../controls/HelloWorldBackgroundColorControl';
@@ -16,7 +16,7 @@ export class HelloWorldBlockSettingsPanelRegistry extends SettingsPanelRegistry 
      * This method modifies the provided map to define which controls appear
      * in which tabs for different blocks.
      *
-     * @param {Object.<string, Array<SettingsPanelTab>>} controls - A map where keys are block IDs (e.g., BLOCK_HELLO_WORLD_ID, UEBlock.BLOCK_BUTTON)
+     * @param {Object.<string, Array<SettingsPanelTab>>} controls - A map where keys are block IDs (e.g., BLOCK_HELLO_WORLD_ID, BlockType.BLOCK_BUTTON)
      *                                                             and values are arrays of SettingsPanelTab instances defining the tabs and controls for that block.
      *                                                             This map is modified in place.
      */
@@ -30,7 +30,7 @@ export class HelloWorldBlockSettingsPanelRegistry extends SettingsPanelRegistry 
                 .withLabel(this.api.translate('Hello world settings advanced'))
         ];
 
-        controls[UEBlock.BLOCK_BUTTON] = [
+        controls[BlockType.BLOCK_BUTTON] = [
             new SettingsPanelTab(
                 SettingsTab.SETTINGS,
                 [

@@ -1,11 +1,11 @@
-import {UETag, UIElement, UIElementTagRegistry} from '@stripoinc/ui-editor-extensions';
+import {UIElementType, UIElement, UIElementTagRegistry} from '@stripoinc/ui-editor-extensions';
 import {ExternalMergeTagsLibrary} from './mergetags-library';
 
 const ID = 'external-merge-tags-ui-element';
 
 export class MergeTagsTagRegistry extends UIElementTagRegistry {
     registerUiElements(uiElementsTagsMap) {
-        uiElementsTagsMap[UETag.MERGETAGS] = ID;
+        uiElementsTagsMap[UIElementType.MERGETAGS] = ID;
     }
 }
 
