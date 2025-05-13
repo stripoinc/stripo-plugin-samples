@@ -1,4 +1,4 @@
-import {EDITOR_URL, PLUGIN_ID, SECRET_KEY} from './const';
+import {EDITOR_URL, PLUGIN_ID, SECRET_KEY} from '../../creds';
 
 export function initPlugin(extension) {
     loadDemoTemplate(template => {

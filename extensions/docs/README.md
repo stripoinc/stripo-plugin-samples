@@ -1025,6 +1025,14 @@ The `BlockRenderer` class provides access to the editor API through the `api` pr
 
 2. **Performance Considerations**: Minimize DOM manipulations in your renderer to maintain good performance, especially for complex blocks.
 
+### Editor configuration
+
+Extensions can retrieve the editor's configuration settings by calling the `getEditorConfig()` method. This method is provided on the `api` property, which is accessible from various extension components such as `Block`, `UiElement`, `Control`, `SettingsPanelRegistry`, `ContextAction`, and `BlockRenderer`.
+
+The `getEditorConfig()` method returns a JavaScript object. This object contains the key-value pairs of all configuration options that were supplied to the editor during its initialization (e.g., within the `options` argument of `window.UIEditor.initEditor(container, options)`).
+
+Accessing these configuration settings enables extensions to dynamically adapt their behavior based on the specific setup and parameters of the editor instance.
+
 ## Examples and Tutorials
 
 [These examples](../) demonstrate how to create complete, functional extensions for the Stripo Editor. You can use them as starting points for your own extension development.
