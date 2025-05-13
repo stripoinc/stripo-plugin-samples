@@ -144,12 +144,15 @@ The `ExtensionBuilder` class provides a fluent interface for creating editor ext
 | `constructor()` | Creates a new ExtensionBuilder instance. | None | `ExtensionBuilder` |
 | `withLocalization(localizationMap)` | Adds localization data to the extension. | `localizationMap`: Object mapping language codes to objects containing key-value pairs for translations. | `ExtensionBuilder` |
 | `withStyles(stylesString)` | Adds custom CSS styles to the extension. | `stylesString`: String containing CSS rules. | `ExtensionBuilder` |
-| `withBlock(blockClass)` | Registers a custom block with the extension. | `blockClass`: Custom Block class implementation. | `ExtensionBuilder` |
-| `withUiElement(uiElementClass)` | Registers a custom UI element with the extension. | `uiElementClass`: Custom UiElement class implementation. | `ExtensionBuilder` |
-| `withContextAction(contextActionClass)` | Registers a custom context action with the extension. | `contextActionClass`: Custom ContextAction class implementation. | `ExtensionBuilder` |
-| `withControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom Control class implementation. | `ExtensionBuilder` |
-| `withSettingsPanel(settingsPanelClass)` | Registers a custom settings panel registry with the extension. | `settingsPanelClass`: Custom SettingsPanelRegistry class implementation. | `ExtensionBuilder` |
-| `withTagRegistry(tagRegistryClass)` | Registers a custom tag registry with the extension. | `tagRegistryClass`: Custom UiElementTagRegistry class implementation. | `ExtensionBuilder` |
+| `withPreviewStyles(stylesString)` | Adds custom CSS styles for the editor document preview. | `stylesString`: String containing CSS rules. | `ExtensionBuilder` |
+| `addBlock(blockClass)` | Registers a custom block with the extension. | `blockClass`: Custom Block class implementation. | `ExtensionBuilder` |
+| `addUiElement(uiElementClass)` | Registers a custom UI element with the extension. | `uiElementClass`: Custom UiElement class implementation. | `ExtensionBuilder` |
+| `addContextAction(contextActionClass)` | Registers a custom context action with the extension. | `contextActionClass`: Custom ContextAction class implementation. | `ExtensionBuilder` |
+| `addControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom Control class implementation. | `ExtensionBuilder` |
+| `withSettingsPanelRegistry(settingsPanelRegistryClass)` | Registers a custom settings panel registry with the extension. | `settingsPanelRegistryClass`: Custom SettingsPanelRegistry class implementation. | `ExtensionBuilder` |
+| `withUiElementTagRegistry(uiElementTagRegistryClass)` | Registers a custom tag registry with the extension. | `uiElementTagRegistryClass`: Custom UIElementTagRegistry class implementation. | `ExtensionBuilder` |
+| `withExternalSmartElementsLibrary(externalSmartElementsLibraryClass)` | Registers an external smart elements library. | `externalSmartElementsLibraryClass`: Custom ExternalSmartElementsLibrary class implementation. | `ExtensionBuilder` |
+| `withExternalImageLibrary(externalImageLibraryClass)` | Registers an external image library. | `externalImageLibraryClass`: Custom ExternalImageLibrary class implementation. | `ExtensionBuilder` |
 | `build()` | Finalizes and returns the extension instance. | None | `Extension` |
 
 ### Block
@@ -196,6 +199,10 @@ The `Block` abstract class provides the foundation for creating custom content b
 | `getUniqueBlockClassname()` | Returns a unique CSS class name for the block.                                    | No       | `esd-${this.getId()}` |
 | `isEnabled()`               | Returns whether the block is enabled in the current editor context.               | No       | `true`               |
 | `canBeSavedAsModule()`      | Returns whether the block can be saved as a reusable module.                      | No       | `false`              |
+| `getBlockCompositionType()` | Determines if block is atomic (Block) or composite (Structure).                   | No       | `BlockCompositionType.BLOCK` |
+| `shouldDisplayQuickAddIcon()`| Determines if block should be included in empty container quick insert actions list. | No       | `false`              |
+| `allowInnerBlocksSelection()`| Determines if nested blocks selection is allowed in a Structure block.             | No       | `true`               |
+| `allowInnerBlocksDND()`     | Determines if nested blocks drag and drop is allowed in a Structure block.          | No       | `true`               |
 
 The `Block` class also provides several lifecycle hooks:
 
@@ -464,7 +471,7 @@ The `UiElement` abstract class provides the foundation for creating custom UI co
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | `getId()`             | Returns a unique identifier for the UI element. This must be unique within the editor. This also will be the tag name of UI element by default.                                          | Yes      |
 | `getTemplate()`       | Returns an HTML string template that defines the structure of your UI element.                                                                                                           | Yes      |
-| `onRender(container)` | Called after the element is rendered. Use this to set up event listeners and initialize your UI element. The `container` parameter is the DOM element containing your rendered template. | No       |
+| `onRender(container)` | Called after the element is rendered. Use this to set up event listeners and initialize your UI element. The `container` parameter is the DOM element containing your rendered template. | Yes      |
 | `onAttributeUpdated(name, value)` | Called when one of the element's supported (`UEAttr`) attributes gets updated. The `name` parameter is the attribute name, and `value` is the new attribute value.                | No       |
 | `onDestroy()`         | Called when the element is being destroyed. Use this to clean up event listeners and resources.                                                                                          | No       |
 | `getValue()`          | Returns the current value of the UI element. Implement this if your UI element maintains state.                                                                                          | No       |
@@ -550,7 +557,7 @@ The `Control` abstract class provides the foundation for creating custom setting
 | `getTemplate()`               | Returns an HTML string template that defines the structure of your control.                                           | Yes      |
 | `onRender()`                  | Called after the control is rendered. Use this to set up event listeners.                                             | No       |
 | `onDestroy()`                 | Called when the control is being destroyed. Use this to clean up event listeners and resources.                       | No       |
-| `onTemplateNodeUpdated(node)` | Called when the template node is updated. Use this to extract settings values from the node (block, structure, etc.). | No       |
+| `onTemplateNodeUpdated(node)` | Called when the template node is updated. Use this to extract settings values from the node (block, structure, etc.). | Yes      |
 
 
 The `Control` class provides access to the editor API through the `api` property, which offers these useful methods:
@@ -727,12 +734,12 @@ Tag Registry is a component that allows you to re-map UI elements to custom HTML
 
 #### Creating a Custom Tag Registry
 
-To create a custom tag registry, extend the `UiElementTagRegistry` abstract class:
+To create a custom tag registry, extend the `UIElementTagRegistry` abstract class:
 
 ```javascript
-import {UIElementType, UiElementTagRegistry} from '@stripoinc/ui-editor-extensions';
+import {UIElementType, UIElementTagRegistry} from '@stripoinc/ui-editor-extensions';
 
-export class CustomTagRegistry extends UiElementTagRegistry {
+export class CustomTagRegistry extends UIElementTagRegistry {
     registerUiElements(uiElementsTagsMap) {
         // Override the default color picker with a custom one
         uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap[UIElementType.COLOR];
@@ -741,9 +748,9 @@ export class CustomTagRegistry extends UiElementTagRegistry {
 }
 ```
 
-#### UiElementTagRegistry Class and Methods
+#### UIElementTagRegistry Class and Methods
 
-The `UiElementTagRegistry` abstract class provides the foundation for mapping custom HTML tags to UI elements. Here's an overview of its methods:
+The `UIElementTagRegistry` abstract class provides the foundation for mapping custom HTML tags to UI elements. Here's an overview of its methods:
 
 | Method                                  | Description                                                                                                                                    |
 |-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
