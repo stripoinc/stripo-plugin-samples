@@ -1,7 +1,5 @@
 # Stripo Editor Extensions Documentation
 
-## Introduction
-
 # Table of Contents
 
 - [Introduction](#introduction)
@@ -31,7 +29,13 @@
     - [Internationalization](#internationalization)
     - [Custom Styling](#custom-styling)
     - [Custom Renderers](#custom-renderers)
+    - [Editor configuration](#editor-configuration)
+    - [Simplified Structure Templates with BlockType Aliases](#simplified-structure-templates-with-blocktype-aliases)
+    - [External Images Library](#external-images-library)
+    - [External Smart Elements Library](#external-smart-elements-library)
 - [Examples and Tutorials](#examples-and-tutorials)
+
+## Introduction
 
 ### About Stripo Editor Extensions
 
@@ -1222,9 +1226,9 @@ For example, a smart element representing a product might look like this:
 
 ```json
 {
-    "p_name": "Awesome T-Shirt",
-    "p_image": "https://example.com/images/t-shirt.jpg",
-    "p_price": "19.99"
+  "p_name": "Awesome T-Shirt",
+  "p_image": "https://example.com/images/t-shirt.jpg",
+  "p_price": "19.99"
 }
 ```
 
