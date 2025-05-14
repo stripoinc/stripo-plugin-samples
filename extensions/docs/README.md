@@ -1140,6 +1140,109 @@ export class MyCustomImageLibrary extends ExternalImageLibrary {
 ```
 This implementation provides a way for users to seamlessly integrate their preferred image management systems with the Stripo editor, enhancing workflow and asset management.
 
+### External Smart Elements Library
+
+The Stripo Editor Extensions system allows you to integrate an external smart elements library, enabling users to insert pre-designed or dynamic content elements from your own source directly into the editor. This integration is achieved by implementing the `ExternalSmartElementsLibrary` interface and registering it with the `ExtensionBuilder`.
+
+#### Enabling External Smart Elements Library
+
+To enable this feature, you use the `withExternalSmartElementsLibrary` method on the `ExtensionBuilder` instance. This method accepts a constructor for a class that implements the `ExternalSmartElementsLibrary` interface.
+
+```javascript
+import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
+import { MyCustomSmartElementsLibrary } from './my-custom-smart-elements-library'; // Your implementation
+
+const extension = new ExtensionBuilder()
+    .withExternalSmartElementsLibrary(MyCustomSmartElementsLibrary)
+    .build();
+
+// Initialize the Stripo editor with your extension
+window.UIEditor.initEditor(
+    document.querySelector('#stripoEditorContainer'),
+    {
+        // Your editor configuration options
+        ...,
+        extensions: [
+            extension
+        ]
+    }
+);
+```
+
+#### `ExternalSmartElementsLibrary` Interface
+
+Your custom smart elements library class must implement the `ExternalSmartElementsLibrary` interface, which defines a single method:
+
+| Method | Parameters | Description                                                                                                                                                                 |
+|---|---|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `openSmartElementsLibrary(onDataSelectCallback, onCancelCallback)` | `onDataSelectCallback: ExternalSmartElementSelectCallback`: A callback function to be invoked when the user selects a smart element from your library. <br> `onCancelCallback: ExternalSmartElementCancelCallback`: A callback function to be invoked if the user cancels the selection process. | This method is called when the user attempts to insert a smart element data from an external source. Your implementation should open your custom smart elements library UI. |
+
+##### Callback Types
+
+-   **`ExternalSmartElementSelectCallback`**: `(smartElement: ExternalSmartElement) => void;`
+    When a smart element is selected in your custom library, this callback must be called with an `ExternalSmartElement` object.
+
+-   **`ExternalSmartElementCancelCallback`**: `() => void;`
+    If the user closes or cancels the selection in your custom library without choosing a smart element, this callback must be invoked.
+
+#### `ExternalSmartElement` Type
+
+The `ExternalSmartElement` object passed to the `onDataSelectCallback` is a `Record<string, string>`. This means it's an object where both keys and values are strings. The specific structure of this object will depend on how your smart elements are defined and how they need to be processed by the editor or other parts of your system upon insertion.
+
+For example, a smart element representing a product might look like this:
+
+```javascript
+{
+    "p_name": "Awesome T-Shirt",
+    "p_image": "https://example.com/images/t-shirt.jpg",
+    "p_price": "19.99"
+}
+```
+
+Your extension or other editor logic would then be responsible for interpreting this `ExternalSmartElement` data and rendering the appropriate HTML or behavior in the editor.
+
+#### Example Implementation (Conceptual)
+
+```javascript
+// ./my-custom-smart-elements-library.js
+import { ExternalSmartElementsLibrary } from '@stripoinc/ui-editor-extensions';
+
+export class MyCustomSmartElementsLibrary extends ExternalSmartElementsLibrary {
+    openSmartElementsLibrary(onDataSelectCallback, onCancelCallback) {
+        // 1. Create and display your custom smart elements library UI (e.g., a modal).
+        const smartElementsModal = document.createElement('div');
+        // ... logic to populate modal with smart elements ...
+        // For example, fetch from an API, list available elements, etc.
+
+        // Example: User clicks a smart element in your library
+        const aSmartElementButton = smartElementsModal.querySelector('.some-smart-element');
+        aSmartElementButton.addEventListener('click', () => {
+            const selectedSmartElement = { // This structure depends on your needs
+                p_name: 'Awesome T-Shirt',
+                p_image: 'https://example.com/images/t-shirt.jpg',
+                p_price: '19.99'
+                // ... other relevant data for your smart element
+            };
+            onDataSelectCallback(selectedSmartElement);
+            // Close your modal
+            smartElementsModal.remove();
+        });
+
+        // Example: User clicks a cancel button in your library
+        const cancelButton = smartElementsModal.querySelector('.cancel-button');
+        cancelButton.addEventListener('click', () => {
+            onCancelCallback();
+            // Close your modal
+            smartElementsModal.remove();
+        });
+
+        document.body.appendChild(smartElementsModal);
+        // Show the modal
+    }
+}
+```
+This integration allows for powerful customization by bringing your own curated or dynamically generated content elements directly into the Stripo editing experience.
+
 ## Examples and Tutorials
 
 [These examples](../) demonstrate how to create complete, functional extensions for the Stripo Editor. You can use them as starting points for your own extension development.
