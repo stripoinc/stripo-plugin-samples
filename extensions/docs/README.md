@@ -1040,6 +1040,106 @@ The `getEditorConfig()` method returns a JavaScript object. This object contains
 
 Accessing these configuration settings enables extensions to dynamically adapt their behavior based on the specific setup and parameters of the editor instance.
 
+### External Images Library
+
+The Stripo Editor Extensions system allows you to integrate an external image library, providing users with access to your own image hosting or management system directly within the editor. This is achieved by implementing the `ExternalImageLibrary` interface and registering it with the `ExtensionBuilder`.
+
+#### Enabling External Image Library
+
+To enable this feature, you use the `withExternalImageLibrary` method on the `ExtensionBuilder` instance. This method accepts a constructor for a class that implements the `ExternalImageLibrary` interface.
+
+```javascript
+import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
+import { MyCustomImageLibrary } from './my-custom-image-library'; // Your implementation
+
+const extension = new ExtensionBuilder()
+    .withExternalImageLibrary(MyCustomImageLibrary)
+    .build();
+
+// Initialize the Stripo editor with your extension
+window.UIEditor.initEditor(
+    document.querySelector('#stripoEditorContainer'),
+    {
+        // Your editor configuration options
+        ...,
+        extensions: [
+            extension
+        ]
+    }
+);
+```
+
+#### `ExternalImageLibrary` Interface
+
+Your custom image library class must implement the `ExternalImageLibrary` interface, which defines a single method:
+
+| Method | Parameters | Description                                                                                                                                                                                                               |
+|---|---|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `openImageLibrary(currentImageUrl, onImageSelectCallback, onCancelCallback)` | `currentImageUrl: string`: The URL of the currently selected image, if any. <br> `onImageSelectCallback: ExternalGalleryImageSelectCallback`: A callback function to be invoked when the user selects an image from your library. <br> `onCancelCallback: ExternalGalleryImageCancelCallback`: A callback function to be invoked if the user cancels the image selection process.  | This method is called when the user attempts to select an image from an external source (e.g., by clicking a "Replace Image" button in the image settings). Your implementation should open your custom image library UI. |
+
+##### Callback Types
+
+-   **`ExternalGalleryImageSelectCallback`**: `(imageUrl: ExternalGalleryImage) => void;`
+    When an image is selected in your custom library, this callback must be called with an `ExternalGalleryImage` object.
+
+-   **`ExternalGalleryImageCancelCallback`**: `() => void;`
+    If the user closes or cancels the selection in your custom library without choosing an image, this callback must be invoked.
+
+#### `ExternalGalleryImage` Interface
+
+The `ExternalGalleryImage` object passed to the `onImageSelectCallback` should conform to the following interface:
+
+| Property       | Type     | Description                                       | Example                                           |
+|----------------|----------|---------------------------------------------------|---------------------------------------------------|
+| `originalName` | `string` | The original file name of the image.              | `'beautiful-landscape.jpg'`                       |
+| `width`        | `number` | The width of the image in pixels.                 | `1920`                                            |
+| `height`       | `number` | The height of the image in pixels.                | `1080`                                            |
+| `sizeBytes`    | `number` | The size of the image in bytes.                   | `524288` (for 0.5MB)                             |
+| `url`          | `string` | The publicly accessible URL of the image.         | `'https://your-cdn.com/images/beautiful-landscape.jpg'` |
+
+#### Example Implementation (Conceptual)
+
+```javascript
+// ./my-custom-image-library.js
+import { ExternalImageLibrary } from '@stripoinc/ui-editor-extensions';
+
+export class MyCustomImageLibrary extends ExternalImageLibrary {
+    openImageLibrary(currentImageUrl, onImageSelectCallback, onCancelCallback) {
+        // 1. Create and display your custom image library UI (e.g., a modal).
+        //    You might use currentImageUrl to pre-select an image if it's from your library.
+
+        const imageLibraryModal = document.createElement('div');
+        // ... logic to populate modal with images ...
+
+        // Example: User clicks an image in your library
+        const anImageElement = imageLibraryModal.querySelector('.some-image');
+        anImageElement.addEventListener('click', () => {
+            const selectedImage = {
+                originalName: 'selected-image.png',
+                width: 800,
+                height: 600,
+                sizeBytes: 123456,
+                url: 'https://your-service.com/path/to/selected-image.png'
+            };
+            onImageSelectCallback(selectedImage);
+            // Close your modal
+            imageLibraryModal.remove();
+        });
+
+        // Example: User clicks a cancel button in your library
+        const cancelButton = imageLibraryModal.querySelector('.cancel-button');
+        cancelButton.addEventListener('click', () => {
+            onCancelCallback();
+            // Close your modal
+            imageLibraryModal.remove();
+        });
+
+        document.body.appendChild(imageLibraryModal);
+    }
+}
+```
+This implementation provides a way for users to seamlessly integrate their preferred image management systems with the Stripo editor, enhancing workflow and asset management.
+
 ## Examples and Tutorials
 
 [These examples](../) demonstrate how to create complete, functional extensions for the Stripo Editor. You can use them as starting points for your own extension development.
