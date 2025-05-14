@@ -1040,6 +1040,35 @@ The `getEditorConfig()` method returns a JavaScript object. This object contains
 
 Accessing these configuration settings enables extensions to dynamically adapt their behavior based on the specific setup and parameters of the editor instance.
 
+### Simplified Structure Templates with BlockType Aliases
+
+To simplify the HTML code generation within the `getTemplate()` method for blocks that are `Structure`s (i.e., when `getBlockCompositionType()` returns `BlockCompositionType.STRUCTURE`), the system provides convenient aliases for various `BlockType` elements. Using these aliases instead of verbose HTML reduces boilerplate, improves template readability, and ensures consistency by leveraging predefined constants from the `BlockType` and `BlockAttr` enums.
+
+These aliases are essentially custom tags that resolve to the appropriate HTML structure for standard editor components.
+
+Here are some common examples:
+
+1.  **Empty Container**: To add an empty container within your structure:
+    ```html
+    <${BlockType.EMPTY_CONTAINER}></${BlockType.EMPTY_CONTAINER}>
+    ```
+
+2.  **Container with Content**: To add a container with a specified width (e.g., 30%) that can hold other blocks or content:
+    ```html
+    <${BlockType.CONTAINER} ${BlockAttr.CONTAINER.widthPercent}="30">
+        <!-- Content or other block aliases go here -->
+    </${BlockType.CONTAINER}>
+    ```
+
+3.  **Text Block Alias**: To embed a standard text block:
+    ```html
+    <${BlockType.BLOCK_TEXT}>
+        <p>Your text content here...</p>
+    </${BlockType.BLOCK_TEXT}>
+    ```
+
+A comprehensive list of all supported aliases (tags) can be found in the `BlockType` enum. When designing your structure's template, refer to this enum to utilize the available aliases for different block types and containers.
+
 ### External Images Library
 
 The Stripo Editor Extensions system allows you to integrate an external image library, providing users with access to your own image hosting or management system directly within the editor. This is achieved by implementing the `ExternalImageLibrary` interface and registering it with the `ExtensionBuilder`.
@@ -1191,7 +1220,7 @@ The `ExternalSmartElement` object passed to the `onDataSelectCallback` is a `Rec
 
 For example, a smart element representing a product might look like this:
 
-```javascript
+```json
 {
     "p_name": "Awesome T-Shirt",
     "p_image": "https://example.com/images/t-shirt.jpg",
