@@ -1,17 +1,17 @@
 import {ModificationDescription, Control, UIElementType, UEAttr} from '@stripoinc/ui-editor-extensions';
 
-const COLOR_ELEMENT_NAME = 'helloWorldBackgroundColor';
+const COLOR_ELEMENT_NAME = 'simpleBlockBackgroundColor';
 
-export const CONTROL_HELLO_WORLD_BACKGROUND_COLOR_ID = 'hello-world-background-color-control';
+export const CONTROL_SIMPLE_BLOCK_BACKGROUND_COLOR_ID = 'simple-block-background-color-control';
 
-export class HelloWorldBackgroundColorControl extends Control {
+export class SimpleBlockBackgroundColorControl extends Control {
     /**
      * Returns a unique identifier for the control.
      * This ID must be unique within the editor.
      * @returns {string} The unique ID for this control.
      */
     getId() {
-        return CONTROL_HELLO_WORLD_BACKGROUND_COLOR_ID;
+        return CONTROL_SIMPLE_BLOCK_BACKGROUND_COLOR_ID;
     }
 
     /**

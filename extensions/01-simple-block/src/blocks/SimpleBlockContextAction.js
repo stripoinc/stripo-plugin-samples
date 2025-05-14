@@ -1,12 +1,12 @@
 import {ContextAction} from '@stripoinc/ui-editor-extensions';
 
-export const CONTEXT_ACTION_MAGIC_BUTTON_ID = 'hello-world-magic-button';
+export const CONTEXT_ACTION_MAGIC_BUTTON_ID = 'simple-block-magic-button';
 
 /**
  * Represents a custom context action that appears in the context menu of blocks.
  * This action provides a "Magic button" functionality.
  */
-export class HelloWorldBlockContextAction extends ContextAction {
+export class SimpleBlockContextAction extends ContextAction {
     /**
      * Returns the unique identifier for this context action.
      * @returns {string} The unique ID.

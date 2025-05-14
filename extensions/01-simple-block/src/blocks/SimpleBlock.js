@@ -1,20 +1,20 @@
-import {HelloWorldBlockRenderer} from './HelloWorldBlockRenderer';
+import {SimpleBlockRenderer} from './SimpleBlockRenderer';
 import {Block, ContextActionType, ModificationDescription} from '@stripoinc/ui-editor-extensions';
-import {CONTEXT_ACTION_MAGIC_BUTTON_ID} from './HelloWorldBlockContextAction';
+import {CONTEXT_ACTION_MAGIC_BUTTON_ID} from './SimpleBlockContextAction';
 
-export const BLOCK_HELLO_WORLD_ID = 'hello-world-block';
+export const BLOCK_SIMPLE_ID = 'simple-block';
 
 /**
- * HelloWorldBlock demonstrates a custom block implementation.
+ * SimpleBlock demonstrates a custom block implementation.
  * It includes examples of various lifecycle hooks and customizations.
  */
-export class HelloWorldBlock extends Block {
+export class SimpleBlock extends Block {
     /**
      * Returns the unique identifier for the block.
      * @returns {string} The unique identifier for this block.
      */
     getId() {
-        return BLOCK_HELLO_WORLD_ID;
+        return BLOCK_SIMPLE_ID;
     }
 
     /**
@@ -38,7 +38,7 @@ export class HelloWorldBlock extends Block {
      * @returns {string} The translated display name.
      */
     getName() {
-        return this.api.translate('Hello world block');
+        return this.api.translate('Simple block');
     }
 
     /**
@@ -46,7 +46,7 @@ export class HelloWorldBlock extends Block {
      * @returns {string} The translated description.
      */
     getDescription() {
-        return this.api.translate('Hello world block description');
+        return this.api.translate('Simple block description');
     }
 
     /**
@@ -64,10 +64,10 @@ export class HelloWorldBlock extends Block {
 
     /**
      * Returns a custom renderer class for the block, if needed.
-     * @returns {Class<HelloWorldBlockRenderer>} The custom renderer class.
+     * @returns {Class<SimpleBlockRenderer>} The custom renderer class.
      */
     getCustomRenderer() {
-        return HelloWorldBlockRenderer;
+        return SimpleBlockRenderer;
     }
 
     /**
@@ -99,7 +99,7 @@ export class HelloWorldBlock extends Block {
             for (let i = 1; i < blocks.length; i++) {
                 modifier = modifier.modifyHtml(blocks[i]).delete();
             }
-            modifier.apply(new ModificationDescription('Removed extra hello world blocks on init'));
+            modifier.apply(new ModificationDescription('Removed extra simple blocks on init'));
         }
         return modifier;
     }

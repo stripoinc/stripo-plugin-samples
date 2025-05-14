@@ -1,10 +1,10 @@
 import {BlockRenderer} from '@stripoinc/ui-editor-extensions';
 
 /**
- * Custom renderer for the HelloWorldBlock.
+ * Custom renderer for the SimpleBlock.
  * This renderer modifies the block's HTML for preview purposes within the editor.
  */
-export class HelloWorldBlockRenderer extends BlockRenderer {
+export class SimpleBlockRenderer extends BlockRenderer {
 
     /**
      * Generates a preview HTML string for the block.

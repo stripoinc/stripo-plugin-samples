@@ -1,4 +1,4 @@
-# Hello World Stripo Extension - Setup Guide
+# Stripo Extension - Setup Guide
 
 ## Prerequisites
 - Node.js (latest LTS version recommended)
