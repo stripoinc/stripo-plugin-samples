@@ -7,7 +7,7 @@
     "build-extension-only": "vite build --config vite.config.js --mode extension-only"
   },
   "dependencies": {
-    "@stripoinc/ui-editor-extensions": "file:../libs/stripoinc-ui-editor-extensions-0.0.1.tgz"
+    "@stripoinc/ui-editor-extensions": "^1.0.0"
   },
   "devDependencies": {
     "vite": "^6.2.2",
