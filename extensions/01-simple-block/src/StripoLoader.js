@@ -48,10 +48,12 @@ function runPlugin(template, extension) {
                 versionHistoryButtonSelector: '#versionHistoryButton',
                 mobileViewButtonSelector: '#mobileViewButton',
                 desktopViewButtonSelector: '#desktopViewButton',
-                ignoreClickOutsideSelectors: ['#externalMergeTags'],
                 extensions: [
                     extension
-                ]
+                ],
+                extensionBlockParams: {
+                    defVal: 'User'
+                }
             }
         );
     };

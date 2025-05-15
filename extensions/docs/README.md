@@ -1,7 +1,5 @@
 # Stripo Editor Extensions Documentation
 
-## Introduction
-
 # Table of Contents
 
 - [Introduction](#introduction)
@@ -31,7 +29,13 @@
     - [Internationalization](#internationalization)
     - [Custom Styling](#custom-styling)
     - [Custom Renderers](#custom-renderers)
+    - [Editor configuration](#editor-configuration)
+    - [Simplified Structure Templates with BlockType Aliases](#simplified-structure-templates-with-blocktype-aliases)
+    - [External Images Library](#external-images-library)
+    - [External Smart Elements Library](#external-smart-elements-library)
 - [Examples and Tutorials](#examples-and-tutorials)
+
+## Introduction
 
 ### About Stripo Editor Extensions
 
@@ -144,12 +148,15 @@ The `ExtensionBuilder` class provides a fluent interface for creating editor ext
 | `constructor()` | Creates a new ExtensionBuilder instance. | None | `ExtensionBuilder` |
 | `withLocalization(localizationMap)` | Adds localization data to the extension. | `localizationMap`: Object mapping language codes to objects containing key-value pairs for translations. | `ExtensionBuilder` |
 | `withStyles(stylesString)` | Adds custom CSS styles to the extension. | `stylesString`: String containing CSS rules. | `ExtensionBuilder` |
-| `withBlock(blockClass)` | Registers a custom block with the extension. | `blockClass`: Custom Block class implementation. | `ExtensionBuilder` |
-| `withUiElement(uiElementClass)` | Registers a custom UI element with the extension. | `uiElementClass`: Custom UiElement class implementation. | `ExtensionBuilder` |
-| `withContextAction(contextActionClass)` | Registers a custom context action with the extension. | `contextActionClass`: Custom ContextAction class implementation. | `ExtensionBuilder` |
-| `withControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom Control class implementation. | `ExtensionBuilder` |
-| `withSettingsPanel(settingsPanelClass)` | Registers a custom settings panel registry with the extension. | `settingsPanelClass`: Custom SettingsPanelRegistry class implementation. | `ExtensionBuilder` |
-| `withTagRegistry(tagRegistryClass)` | Registers a custom tag registry with the extension. | `tagRegistryClass`: Custom UiElementTagRegistry class implementation. | `ExtensionBuilder` |
+| `withPreviewStyles(stylesString)` | Adds custom CSS styles for the editor document preview. | `stylesString`: String containing CSS rules. | `ExtensionBuilder` |
+| `addBlock(blockClass)` | Registers a custom block with the extension. | `blockClass`: Custom Block class implementation. | `ExtensionBuilder` |
+| `addUiElement(uiElementClass)` | Registers a custom UI element with the extension. | `uiElementClass`: Custom UiElement class implementation. | `ExtensionBuilder` |
+| `addContextAction(contextActionClass)` | Registers a custom context action with the extension. | `contextActionClass`: Custom ContextAction class implementation. | `ExtensionBuilder` |
+| `addControl(controlClass)` | Registers a custom control with the extension. | `controlClass`: Custom Control class implementation. | `ExtensionBuilder` |
+| `withSettingsPanelRegistry(settingsPanelRegistryClass)` | Registers a custom settings panel registry with the extension. | `settingsPanelRegistryClass`: Custom SettingsPanelRegistry class implementation. | `ExtensionBuilder` |
+| `withUiElementTagRegistry(uiElementTagRegistryClass)` | Registers a custom tag registry with the extension. | `uiElementTagRegistryClass`: Custom UIElementTagRegistry class implementation. | `ExtensionBuilder` |
+| `withExternalSmartElementsLibrary(externalSmartElementsLibraryClass)` | Registers an external smart elements library. | `externalSmartElementsLibraryClass`: Custom ExternalSmartElementsLibrary class implementation. | `ExtensionBuilder` |
+| `withExternalImageLibrary(externalImageLibraryClass)` | Registers an external image library. | `externalImageLibraryClass`: Custom ExternalImageLibrary class implementation. | `ExtensionBuilder` |
 | `build()` | Finalizes and returns the extension instance. | None | `Extension` |
 
 ### Block
@@ -196,6 +203,10 @@ The `Block` abstract class provides the foundation for creating custom content b
 | `getUniqueBlockClassname()` | Returns a unique CSS class name for the block.                                    | No       | `esd-${this.getId()}` |
 | `isEnabled()`               | Returns whether the block is enabled in the current editor context.               | No       | `true`               |
 | `canBeSavedAsModule()`      | Returns whether the block can be saved as a reusable module.                      | No       | `false`              |
+| `getBlockCompositionType()` | Determines if block is atomic (Block) or composite (Structure).                   | No       | `BlockCompositionType.BLOCK` |
+| `shouldDisplayQuickAddIcon()`| Determines if block should be included in empty container quick insert actions list. | No       | `false`              |
+| `allowInnerBlocksSelection()`| Determines if nested blocks selection is allowed in a Structure block.             | No       | `true`               |
+| `allowInnerBlocksDND()`     | Determines if nested blocks drag and drop is allowed in a Structure block.          | No       | `true`               |
 
 The `Block` class also provides several lifecycle hooks:
 
@@ -464,7 +475,7 @@ The `UiElement` abstract class provides the foundation for creating custom UI co
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | `getId()`             | Returns a unique identifier for the UI element. This must be unique within the editor. This also will be the tag name of UI element by default.                                          | Yes      |
 | `getTemplate()`       | Returns an HTML string template that defines the structure of your UI element.                                                                                                           | Yes      |
-| `onRender(container)` | Called after the element is rendered. Use this to set up event listeners and initialize your UI element. The `container` parameter is the DOM element containing your rendered template. | No       |
+| `onRender(container)` | Called after the element is rendered. Use this to set up event listeners and initialize your UI element. The `container` parameter is the DOM element containing your rendered template. | Yes      |
 | `onAttributeUpdated(name, value)` | Called when one of the element's supported (`UEAttr`) attributes gets updated. The `name` parameter is the attribute name, and `value` is the new attribute value.                | No       |
 | `onDestroy()`         | Called when the element is being destroyed. Use this to clean up event listeners and resources.                                                                                          | No       |
 | `getValue()`          | Returns the current value of the UI element. Implement this if your UI element maintains state.                                                                                          | No       |
@@ -550,7 +561,7 @@ The `Control` abstract class provides the foundation for creating custom setting
 | `getTemplate()`               | Returns an HTML string template that defines the structure of your control.                                           | Yes      |
 | `onRender()`                  | Called after the control is rendered. Use this to set up event listeners.                                             | No       |
 | `onDestroy()`                 | Called when the control is being destroyed. Use this to clean up event listeners and resources.                       | No       |
-| `onTemplateNodeUpdated(node)` | Called when the template node is updated. Use this to extract settings values from the node (block, structure, etc.). | No       |
+| `onTemplateNodeUpdated(node)` | Called when the template node is updated. Use this to extract settings values from the node (block, structure, etc.). | Yes      |
 
 
 The `Control` class provides access to the editor API through the `api` property, which offers these useful methods:
@@ -727,12 +738,12 @@ Tag Registry is a component that allows you to re-map UI elements to custom HTML
 
 #### Creating a Custom Tag Registry
 
-To create a custom tag registry, extend the `UiElementTagRegistry` abstract class:
+To create a custom tag registry, extend the `UIElementTagRegistry` abstract class:
 
 ```javascript
-import {UIElementType, UiElementTagRegistry} from '@stripoinc/ui-editor-extensions';
+import {UIElementType, UIElementTagRegistry} from '@stripoinc/ui-editor-extensions';
 
-export class CustomTagRegistry extends UiElementTagRegistry {
+export class CustomTagRegistry extends UIElementTagRegistry {
     registerUiElements(uiElementsTagsMap) {
         // Override the default color picker with a custom one
         uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap[UIElementType.COLOR];
@@ -741,9 +752,9 @@ export class CustomTagRegistry extends UiElementTagRegistry {
 }
 ```
 
-#### UiElementTagRegistry Class and Methods
+#### UIElementTagRegistry Class and Methods
 
-The `UiElementTagRegistry` abstract class provides the foundation for mapping custom HTML tags to UI elements. Here's an overview of its methods:
+The `UIElementTagRegistry` abstract class provides the foundation for mapping custom HTML tags to UI elements. Here's an overview of its methods:
 
 | Method                                  | Description                                                                                                                                    |
 |-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1024,6 +1035,246 @@ The `BlockRenderer` class provides access to the editor API through the `api` pr
 1. **Keep the Original Structure**: Ensure your renderer preserves the original HTML structure while only changing the visual representation.
 
 2. **Performance Considerations**: Minimize DOM manipulations in your renderer to maintain good performance, especially for complex blocks.
+
+### Editor configuration
+
+Extensions can retrieve the editor's configuration settings by calling the `getEditorConfig()` method. This method is provided on the `api` property, which is accessible from various extension components such as `Block`, `UiElement`, `Control`, `SettingsPanelRegistry`, `ContextAction`, and `BlockRenderer`.
+
+The `getEditorConfig()` method returns a JavaScript object. This object contains the key-value pairs of all configuration options that were supplied to the editor during its initialization (e.g., within the `options` argument of `window.UIEditor.initEditor(container, options)`).
+
+Accessing these configuration settings enables extensions to dynamically adapt their behavior based on the specific setup and parameters of the editor instance.
+
+### Simplified Structure Templates with BlockType Aliases
+
+To simplify the HTML code generation within the `getTemplate()` method for blocks that are `Structure`s (i.e., when `getBlockCompositionType()` returns `BlockCompositionType.STRUCTURE`), the system provides convenient aliases for various `BlockType` elements. Using these aliases instead of verbose HTML reduces boilerplate, improves template readability, and ensures consistency by leveraging predefined constants from the `BlockType` and `BlockAttr` enums.
+
+These aliases are essentially custom tags that resolve to the appropriate HTML structure for standard editor components.
+
+Here are some common examples:
+
+1.  **Empty Container**: To add an empty container within your structure:
+    ```html
+    <${BlockType.EMPTY_CONTAINER}></${BlockType.EMPTY_CONTAINER}>
+    ```
+
+2.  **Container with Content**: To add a container with a specified width (e.g., 30%) that can hold other blocks or content:
+    ```html
+    <${BlockType.CONTAINER} ${BlockAttr.CONTAINER.widthPercent}="30">
+        <!-- Content or other block aliases go here -->
+    </${BlockType.CONTAINER}>
+    ```
+
+3.  **Text Block Alias**: To embed a standard text block:
+    ```html
+    <${BlockType.BLOCK_TEXT}>
+        <p>Your text content here...</p>
+    </${BlockType.BLOCK_TEXT}>
+    ```
+
+A comprehensive list of all supported aliases (tags) can be found in the `BlockType` enum. When designing your structure's template, refer to this enum to utilize the available aliases for different block types and containers.
+
+### External Images Library
+
+The Stripo Editor Extensions system allows you to integrate an external image library, providing users with access to your own image hosting or management system directly within the editor. This is achieved by implementing the `ExternalImageLibrary` interface and registering it with the `ExtensionBuilder`.
+
+#### Enabling External Image Library
+
+To enable this feature, you use the `withExternalImageLibrary` method on the `ExtensionBuilder` instance. This method accepts a constructor for a class that implements the `ExternalImageLibrary` interface.
+
+```javascript
+import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
+import { MyCustomImageLibrary } from './my-custom-image-library'; // Your implementation
+
+const extension = new ExtensionBuilder()
+    .withExternalImageLibrary(MyCustomImageLibrary)
+    .build();
+
+// Initialize the Stripo editor with your extension
+window.UIEditor.initEditor(
+    document.querySelector('#stripoEditorContainer'),
+    {
+        // Your editor configuration options
+        ...,
+        extensions: [
+            extension
+        ]
+    }
+);
+```
+
+#### `ExternalImageLibrary` Interface
+
+Your custom image library class must implement the `ExternalImageLibrary` interface, which defines a single method:
+
+| Method | Parameters | Description                                                                                                                                                                                                               |
+|---|---|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `openImageLibrary(currentImageUrl, onImageSelectCallback, onCancelCallback)` | `currentImageUrl: string`: The URL of the currently selected image, if any. <br> `onImageSelectCallback: ExternalGalleryImageSelectCallback`: A callback function to be invoked when the user selects an image from your library. <br> `onCancelCallback: ExternalGalleryImageCancelCallback`: A callback function to be invoked if the user cancels the image selection process.  | This method is called when the user attempts to select an image from an external source (e.g., by clicking a "Replace Image" button in the image settings). Your implementation should open your custom image library UI. |
+
+##### Callback Types
+
+-   **`ExternalGalleryImageSelectCallback`**: `(imageUrl: ExternalGalleryImage) => void;`
+    When an image is selected in your custom library, this callback must be called with an `ExternalGalleryImage` object.
+
+-   **`ExternalGalleryImageCancelCallback`**: `() => void;`
+    If the user closes or cancels the selection in your custom library without choosing an image, this callback must be invoked.
+
+#### `ExternalGalleryImage` Interface
+
+The `ExternalGalleryImage` object passed to the `onImageSelectCallback` should conform to the following interface:
+
+| Property       | Type     | Description                                       | Example                                           |
+|----------------|----------|---------------------------------------------------|---------------------------------------------------|
+| `originalName` | `string` | The original file name of the image.              | `'beautiful-landscape.jpg'`                       |
+| `width`        | `number` | The width of the image in pixels.                 | `1920`                                            |
+| `height`       | `number` | The height of the image in pixels.                | `1080`                                            |
+| `sizeBytes`    | `number` | The size of the image in bytes.                   | `524288` (for 0.5MB)                             |
+| `url`          | `string` | The publicly accessible URL of the image.         | `'https://your-cdn.com/images/beautiful-landscape.jpg'` |
+
+#### Example Implementation (Conceptual)
+
+```javascript
+// ./my-custom-image-library.js
+import { ExternalImageLibrary } from '@stripoinc/ui-editor-extensions';
+
+export class MyCustomImageLibrary extends ExternalImageLibrary {
+    openImageLibrary(currentImageUrl, onImageSelectCallback, onCancelCallback) {
+        // 1. Create and display your custom image library UI (e.g., a modal).
+        //    You might use currentImageUrl to pre-select an image if it's from your library.
+
+        const imageLibraryModal = document.createElement('div');
+        // ... logic to populate modal with images ...
+
+        // Example: User clicks an image in your library
+        const anImageElement = imageLibraryModal.querySelector('.some-image');
+        anImageElement.addEventListener('click', () => {
+            const selectedImage = {
+                originalName: 'selected-image.png',
+                width: 800,
+                height: 600,
+                sizeBytes: 123456,
+                url: 'https://your-service.com/path/to/selected-image.png'
+            };
+            onImageSelectCallback(selectedImage);
+            // Close your modal
+            imageLibraryModal.remove();
+        });
+
+        // Example: User clicks a cancel button in your library
+        const cancelButton = imageLibraryModal.querySelector('.cancel-button');
+        cancelButton.addEventListener('click', () => {
+            onCancelCallback();
+            // Close your modal
+            imageLibraryModal.remove();
+        });
+
+        document.body.appendChild(imageLibraryModal);
+    }
+}
+```
+This implementation provides a way for users to seamlessly integrate their preferred image management systems with the Stripo editor, enhancing workflow and asset management.
+
+### External Smart Elements Library
+
+The Stripo Editor Extensions system allows you to integrate an external smart elements library, enabling users to insert pre-designed or dynamic content elements from your own source directly into the editor. This integration is achieved by implementing the `ExternalSmartElementsLibrary` interface and registering it with the `ExtensionBuilder`.
+
+#### Enabling External Smart Elements Library
+
+To enable this feature, you use the `withExternalSmartElementsLibrary` method on the `ExtensionBuilder` instance. This method accepts a constructor for a class that implements the `ExternalSmartElementsLibrary` interface.
+
+```javascript
+import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
+import { MyCustomSmartElementsLibrary } from './my-custom-smart-elements-library'; // Your implementation
+
+const extension = new ExtensionBuilder()
+    .withExternalSmartElementsLibrary(MyCustomSmartElementsLibrary)
+    .build();
+
+// Initialize the Stripo editor with your extension
+window.UIEditor.initEditor(
+    document.querySelector('#stripoEditorContainer'),
+    {
+        // Your editor configuration options
+        ...,
+        extensions: [
+            extension
+        ]
+    }
+);
+```
+
+#### `ExternalSmartElementsLibrary` Interface
+
+Your custom smart elements library class must implement the `ExternalSmartElementsLibrary` interface, which defines a single method:
+
+| Method | Parameters | Description                                                                                                                                                                 |
+|---|---|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `openSmartElementsLibrary(onDataSelectCallback, onCancelCallback)` | `onDataSelectCallback: ExternalSmartElementSelectCallback`: A callback function to be invoked when the user selects a smart element from your library. <br> `onCancelCallback: ExternalSmartElementCancelCallback`: A callback function to be invoked if the user cancels the selection process. | This method is called when the user attempts to insert a smart element data from an external source. Your implementation should open your custom smart elements library UI. |
+
+##### Callback Types
+
+-   **`ExternalSmartElementSelectCallback`**: `(smartElement: ExternalSmartElement) => void;`
+    When a smart element is selected in your custom library, this callback must be called with an `ExternalSmartElement` object.
+
+-   **`ExternalSmartElementCancelCallback`**: `() => void;`
+    If the user closes or cancels the selection in your custom library without choosing a smart element, this callback must be invoked.
+
+#### `ExternalSmartElement` Type
+
+The `ExternalSmartElement` object passed to the `onDataSelectCallback` is a `Record<string, string>`. This means it's an object where both keys and values are strings. The specific structure of this object will depend on how your smart elements are defined and how they need to be processed by the editor or other parts of your system upon insertion.
+
+For example, a smart element representing a product might look like this:
+
+```json
+{
+  "p_name": "Awesome T-Shirt",
+  "p_image": "https://example.com/images/t-shirt.jpg",
+  "p_price": "19.99"
+}
+```
+
+Your extension or other editor logic would then be responsible for interpreting this `ExternalSmartElement` data and rendering the appropriate HTML or behavior in the editor.
+
+#### Example Implementation (Conceptual)
+
+```javascript
+// ./my-custom-smart-elements-library.js
+import { ExternalSmartElementsLibrary } from '@stripoinc/ui-editor-extensions';
+
+export class MyCustomSmartElementsLibrary extends ExternalSmartElementsLibrary {
+    openSmartElementsLibrary(onDataSelectCallback, onCancelCallback) {
+        // 1. Create and display your custom smart elements library UI (e.g., a modal).
+        const smartElementsModal = document.createElement('div');
+        // ... logic to populate modal with smart elements ...
+        // For example, fetch from an API, list available elements, etc.
+
+        // Example: User clicks a smart element in your library
+        const aSmartElementButton = smartElementsModal.querySelector('.some-smart-element');
+        aSmartElementButton.addEventListener('click', () => {
+            const selectedSmartElement = { // This structure depends on your needs
+                p_name: 'Awesome T-Shirt',
+                p_image: 'https://example.com/images/t-shirt.jpg',
+                p_price: '19.99'
+                // ... other relevant data for your smart element
+            };
+            onDataSelectCallback(selectedSmartElement);
+            // Close your modal
+            smartElementsModal.remove();
+        });
+
+        // Example: User clicks a cancel button in your library
+        const cancelButton = smartElementsModal.querySelector('.cancel-button');
+        cancelButton.addEventListener('click', () => {
+            onCancelCallback();
+            // Close your modal
+            smartElementsModal.remove();
+        });
+
+        document.body.appendChild(smartElementsModal);
+        // Show the modal
+    }
+}
+```
+This integration allows for powerful customization by bringing your own curated or dynamically generated content elements directly into the Stripo editing experience.
 
 ## Examples and Tutorials
 

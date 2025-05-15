@@ -1,5 +1,5 @@
 {
-  "name": "external-smart-elements-library",
+  "name": "hello-world-stripo-extension",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
