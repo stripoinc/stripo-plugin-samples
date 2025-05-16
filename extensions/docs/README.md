@@ -88,11 +88,9 @@ The Stripo Editor Extensions system enforces strict rules regarding HTML and CSS
 
 ### Setting Up Your Extension Project
 
-Add to your package.json the dependency:
+Add the dependency:
 ```
-"dependencies": {
-    "@stripo/ui-editor-extensions": "{LATEST_VERSION}"
-},
+npm i @stripoinc/ui-editor-extensions
 ```
 
 ### Creating Your First Extension

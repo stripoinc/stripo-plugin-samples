@@ -11,7 +11,7 @@
 ```
 npm install
 ```
-3. Set `PLUGIN_ID` and `SECRET_KEY` in const.js
+3. Set `PLUGIN_ID` and `SECRET_KEY` in creds.js
 
 ## Development
 
