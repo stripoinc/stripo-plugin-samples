@@ -1,0 +1,11 @@
+ue-ui-simple-panel {
+    background-color: darkgray;
+}
+
+.brand-color-button {
+    width: 200px;
+    height: 35px;
+    background-color: greenyellow;
+    border-radius: 10px;
+    cursor: pointer;
+}
