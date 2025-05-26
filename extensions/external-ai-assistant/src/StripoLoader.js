@@ -48,6 +48,7 @@ function runPlugin(template, extension) {
                 versionHistoryButtonSelector: '#versionHistoryButton',
                 mobileViewButtonSelector: '#mobileViewButton',
                 desktopViewButtonSelector: '#desktopViewButton',
+                ignoreClickOutsideSelectors: ['#externalAiAssistant'],
                 extensions: [
                     extension
                 ]
