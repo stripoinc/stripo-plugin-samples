@@ -1,0 +1,16 @@
+{
+  "name": "external-ai-assistant",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build-extension-only": "vite build --config vite.config.js --mode extension-only"
+  },
+  "dependencies": {
+    "@stripoinc/ui-editor-extensions": "^1.0.4"
+  },
+  "devDependencies": {
+    "vite": "^6.2.2",
+    "terser": "^5.39.0"
+  }
+}

@@ -18,6 +18,7 @@
     - [Block](#block)
     - [UI Element](#ui-element)
     - [Control](#control)
+    - [Built-in Control](#built-in-control)
     - [Settings Panel](#settings-panel)
     - [Context Action](#context-action)
     - [Tag Registry](#tag-registry)
@@ -33,6 +34,10 @@
     - [Simplified Structure Templates with BlockType Aliases](#simplified-structure-templates-with-blocktype-aliases)
     - [External Images Library](#external-images-library)
     - [External Smart Elements Library](#external-smart-elements-library)
+    - [External AI Assistant](#external-ai-assistant)
+    - [Custom Font Management](#custom-font-management)
+    - [Editor State Management](#editor-state-management)
+    - [Click Outside Behavior](#click-outside-behavior)
 - [Examples and Tutorials](#examples-and-tutorials)
 
 ## Introduction
@@ -154,6 +159,8 @@ The `ExtensionBuilder` class provides a fluent interface for creating editor ext
 | `withSettingsPanelRegistry(settingsPanelRegistryClass)` | Registers a custom settings panel registry with the extension. | `settingsPanelRegistryClass`: Custom SettingsPanelRegistry class implementation. | `ExtensionBuilder` |
 | `withUiElementTagRegistry(uiElementTagRegistryClass)` | Registers a custom tag registry with the extension. | `uiElementTagRegistryClass`: Custom UIElementTagRegistry class implementation. | `ExtensionBuilder` |
 | `withExternalSmartElementsLibrary(externalSmartElementsLibraryClass)` | Registers an external smart elements library. | `externalSmartElementsLibraryClass`: Custom ExternalSmartElementsLibrary class implementation. | `ExtensionBuilder` |
+| `withExternalImageLibrary(externalImageLibraryClass)` | Registers an external image library. | `externalImageLibraryClass`: Custom ExternalImageLibrary class implementation. | `ExtensionBuilder` |
+| `withExternalAiAssistant(externalAiAssistantClass)` | Registers an external AI assistant. | `externalAiAssistantClass`: Custom ExternalAiAssistant class implementation. | `ExtensionBuilder` |
 | `withExternalImageLibrary(externalImageLibraryClass)` | Registers an external image library. | `externalImageLibraryClass`: Custom ExternalImageLibrary class implementation. | `ExtensionBuilder` |
 | `build()` | Finalizes and returns the extension instance. | None | `Extension` |
 
@@ -482,7 +489,7 @@ The `UiElement` abstract class provides the foundation for creating custom UI co
 The `UiElement` class also provides access to the editor API through the `api` property, which offers these useful methods:
 
 | API Method               | Description                                                  |
-|--------------------------|--------------------------------------------------------------|
+|--------------------------|------------------------------------------------------------|
 | `onValueChanged(value)`  | Notifies the editor that the UI element's value has changed. |
 | `getEditorConfig()`      | Returns the current editor configuration.                    |
 | `translate(key, params)` | Translates a text key using the current language settings.   |
@@ -577,6 +584,151 @@ The `Control` class provides access to the editor API through the `api` property
 | `updateValues(valuesMap)`                 | Updates the values of nested `UiElements` within the control using a map (uiElementName -> value).          |
 | `onValueChanged(uiElementName, callback)` | Registers a callback function to be executed when the value of a specific nested `UiElement` changes.       |
 
+### Built-in Control
+
+The Stripo Editor Extensions system provides a powerful mechanism to extend and customize built-in editor controls. This system allows you to modify the behavior, appearance, and functionality of existing controls without completely replacing them.
+
+#### Overview
+
+The built-in controls extension system works by:
+1. Extending the `BuiltInControl` abstract class
+2. Specifying which built-in control to extend via `getParentControlId()`
+3. Providing custom implementations for specific aspects like target nodes, labels, and additional modifications
+
+#### Base `BuiltInControl` Class
+
+All built-in control extensions must extend the `BuiltInControl` abstract class:
+
+```javascript
+import { BuiltInControl, BuiltInControlTypes, ControlTargetNodes, ControlLabels, ModificationDescription } from '@stripoinc/ui-editor-extensions';
+
+export class MyBackgroundColorExtension extends BuiltInControl {
+    getId() {
+        return 'my-custom-background-control';
+    }
+
+    getParentControlId() {
+        return BuiltInControlTypes.GENERAL.BACKGROUND_COLOR;
+    }
+
+    getTargetNodes(root) {
+        // Define which nodes this control should operate on
+        const targetElements = root.querySelectorAll('.custom-background-target');
+        return {
+            targetNodes: Array.from(targetElements)
+        };
+    }
+
+    getLabels() {
+        return {
+            title: this.api.translate('Custom Background Color')
+        };
+    }
+
+    getModificationDescription() {
+        return new ModificationDescription('Applied custom background styling');
+    }
+
+    getAdditionalModifications(root) {
+        // Add custom modifications that should be applied alongside the parent control
+        return this.api.getDocumentModifier()
+            .modifyHtml(root.querySelector('.additional-target'))
+            .setAttribute('data-custom-bg', 'true');
+    }
+}
+```
+
+#### Specialized Built-in Control Classes
+
+The system provides specialized base classes for common control types:
+
+##### `BackgroundColorBuiltInControl`
+
+For extending background color functionality:
+
+```javascript
+import { BackgroundColorBuiltInControl } from '@stripoinc/ui-editor-extensions';
+
+export class CustomBackgroundControl extends BackgroundColorBuiltInControl {
+    getId() {
+        return 'enhanced-background-control';
+    }
+
+    getTargetNodes(root) {
+        // Target specific elements for background color changes
+        const containers = root.querySelectorAll('.custom-container');
+        return {
+            targetNodes: Array.from(containers)
+        };
+    }
+
+    getAdditionalModifications(root) {
+        // Add gradient support alongside solid colors
+        return this.api.getDocumentModifier()
+            .modifyHtml(root.querySelector('.gradient-container'))
+            .setAttribute('data-supports-gradient', 'true');
+    }
+}
+```
+
+##### `FontFamilyBuiltInControl`
+
+For extending font family functionality:
+
+```javascript
+import { FontFamilyBuiltInControl } from '@stripoinc/ui-editor-extensions';
+
+export class CustomFontFamilyControl extends FontFamilyBuiltInControl {
+    getId() {
+        return 'enhanced-font-family-control';
+    }
+
+    getTargetNodes(root) {
+        // Target text elements for font family changes
+        const textElements = root.querySelectorAll('h1, h2, h3, p, span');
+        return {
+            targetNodes: Array.from(textElements)
+        };
+    }
+
+    getLabels() {
+        return {
+            title: this.api.translate('Enhanced Font Selection')
+        };
+    }
+}
+```
+
+#### `ControlTargetNodes` Interface
+
+Defines which DOM nodes the control should operate on:
+
+```typescript
+interface ControlTargetNodes {
+    targetNodes: ImmutableHtmlNode[];
+}
+```
+
+#### `ControlLabels` Interface
+
+Allows customization of control UI labels:
+
+```typescript
+interface ControlLabels {
+    title: string;
+}
+```
+
+#### Registering Built-in Control Extensions
+
+Register your built-in control extensions using the `addControl` method:
+
+```javascript
+const extension = new ExtensionBuilder()
+    .addControl(MyBackgroundColorExtension)
+    .addControl(CustomFontFamilyControl)
+    .build();
+```
 
 ### Settings Panel
 
@@ -928,7 +1080,11 @@ const greeting = this.api.translate('greeting'); // Returns "Hello" or "Bonjour"
 
 ### Custom Styling
 
-Add custom styles to your extension:
+The extension system provides advanced configuration options for fine-tuning editor behavior and appearance.
+
+#### Settings Styles
+
+Use `withStyles()` to add custom CSS that applies specifically to the editor UI:
 
 ```javascript
 const extension = new ExtensionBuilder()
@@ -945,6 +1101,38 @@ const extension = new ExtensionBuilder()
             background-color: #007bff;
             color: white;
             border-radius: 3px;
+        }
+    `)
+    .build();
+```
+
+#### Preview Styles
+
+Use `withPreviewStyles()` to add custom CSS that applies specifically to the document preview:
+
+```javascript
+const extension = new ExtensionBuilder()
+    .withPreviewStyles(`
+        /* Styles that only apply in the document preview */
+        .my-custom-block {
+            border: 2px dashed #ccc;
+            position: relative;
+        }
+        
+        .my-custom-block::before {
+            content: "Preview Mode";
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Mobile-specific preview styles */
+        @media (max-width: 768px) {
+            .my-custom-block {
+                border-color: #ff6b6b;
+            }
         }
     `)
     .build();
@@ -1273,6 +1461,287 @@ export class MyCustomSmartElementsLibrary extends ExternalSmartElementsLibrary {
 }
 ```
 This integration allows for powerful customization by bringing your own curated or dynamically generated content elements directly into the Stripo editing experience.
+
+### External AI Assistant
+
+The Stripo Editor Extensions system allows you to integrate an external AI assistant, enabling users to leverage AI-powered content generation and editing capabilities directly within the editor. This integration is achieved by implementing the `ExternalAiAssistant` interface and registering it with the `ExtensionBuilder`.
+
+#### Enabling External AI Assistant
+
+To enable this feature, you use the `withExternalAiAssistant` method on the `ExtensionBuilder` instance. This method accepts a constructor for a class that implements the `ExternalAiAssistant` interface.
+
+```javascript
+import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
+import { MyCustomAiAssistant } from './my-custom-ai-assistant'; // Your implementation
+
+const extension = new ExtensionBuilder()
+    .withExternalAiAssistant(MyCustomAiAssistant)
+    .build();
+
+// Initialize the Stripo editor with your extension
+window.UIEditor.initEditor(
+    document.querySelector('#stripoEditorContainer'),
+    {
+        // Your editor configuration options
+        ...,
+        extensions: [
+            extension
+        ]
+    }
+);
+```
+
+#### `ExternalAiAssistant` Interface
+
+Your custom AI assistant class must implement the `ExternalAiAssistant` interface, which defines a single method:
+
+| Method | Parameters | Description |
+|---|---|---|
+| `openAiAssistant({value, onDataSelectCallback, onCancelCallback, type})` | `value: string`: The current content to be processed by AI. <br> `onDataSelectCallback: ExternalAiAssistantCallback`: A callback function to be invoked when the AI assistant generates content. <br> `onCancelCallback: ExternalAiAssistantCancelCallback`: A callback function to be invoked if the user cancels the AI assistant operation. <br> `type: AiAssistantValueType`: The type of content being processed. | This method is called when the user requests AI assistance for content generation or editing. Your implementation should open your custom AI assistant UI. |
+
+##### Callback Types
+
+-   **`ExternalAiAssistantCallback`**: `(html: string) => void;`
+    When the AI assistant generates content, this callback must be called with the generated HTML string.
+
+-   **`ExternalAiAssistantCancelCallback`**: `() => void;`
+    If the user closes or cancels the AI assistant without generating content, this callback must be invoked.
+
+#### `AiAssistantValueType` Enum
+
+The `AiAssistantValueType` enum defines the types of content that can be processed by the AI assistant:
+
+| Value | Description |
+|-------|-------------|
+| `SUBJECT` | Email subject line content |
+| `HIDDEN_PREHEADER` | Hidden preheader text content |
+| `TEXT_BLOCK` | Text block content within the email |
+
+#### Example Implementation
+
+```javascript
+// ./my-custom-ai-assistant.js
+import { ExternalAiAssistant, AiAssistantValueType } from '@stripoinc/ui-editor-extensions';
+
+export class MyCustomAiAssistant extends ExternalAiAssistant {
+    openAiAssistant({value, onDataSelectCallback, onCancelCallback, type}) {
+        // Create and display your custom AI assistant UI
+        const aiModal = document.createElement('div');
+        aiModal.className = 'ai-assistant-modal';
+
+        // Different prompts based on content type
+        let prompt = '';
+        switch(type) {
+            case AiAssistantValueType.SUBJECT:
+                prompt = 'Generate a compelling email subject line';
+                break;
+            case AiAssistantValueType.HIDDEN_PREHEADER:
+                prompt = 'Generate preheader text to complement the subject line';
+                break;
+            case AiAssistantValueType.TEXT_BLOCK:
+                prompt = 'Improve this email content';
+                break;
+        }
+
+        aiModal.innerHTML = `
+            <div class="ai-modal-content">
+                <h3>AI Assistant - ${prompt}</h3>
+                <textarea class="current-content">${value}</textarea>
+                <button class="generate-btn">Generate with AI</button>
+                <button class="cancel-btn">Cancel</button>
+                <div class="generated-content" style="display: none;">
+                    <h4>Generated Content:</h4>
+                    <div class="generated-text"></div>
+                    <button class="use-generated">Use This Content</button>
+                </div>
+            </div>
+        `;
+
+        // Handle AI generation
+        const generateBtn = aiModal.querySelector('.generate-btn');
+        generateBtn.addEventListener('click', async () => {
+            try {
+                // Call your AI service
+                const generatedContent = await this.callAiService(value, type);
+
+                const contentDiv = aiModal.querySelector('.generated-content');
+                const textDiv = aiModal.querySelector('.generated-text');
+                textDiv.innerHTML = generatedContent;
+                contentDiv.style.display = 'block';
+
+                // Handle use generated content
+                const useBtn = aiModal.querySelector('.use-generated');
+                useBtn.addEventListener('click', () => {
+                    onDataSelectCallback(generatedContent);
+                    aiModal.remove();
+                });
+            } catch (error) {
+                console.error('AI generation failed:', error);
+            }
+        });
+
+        // Handle cancel
+        const cancelButton = aiModal.querySelector('.cancel-btn');
+        cancelButton.addEventListener('click', () => {
+            onCancelCallback();
+            // Close your modal
+            aiModal.remove();
+        });
+
+        document.body.appendChild(aiModal);
+    }
+
+    async callAiService(content, type) {
+        // Implement your AI service integration here
+        const response = await fetch('/api/ai/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content, type })
+        });
+
+        const result = await response.json();
+        return result.generatedContent;
+    }
+}
+```
+This implementation provides a way for users to seamlessly integrate their preferred AI-powered content generation systems with the Stripo editor, enhancing workflow and productivity.
+
+### Custom Font Management
+
+The Stripo Editor provides comprehensive support for custom font management, allowing you to add, configure, and use custom fonts within your extensions.
+
+#### Adding Custom Fonts
+
+Use the `addCustomFont()` API method to dynamically add fonts to the editor:
+
+```javascript
+import { CustomFontFamily } from '@stripoinc/ui-editor-extensions';
+
+// In your extension component (Block, Control, etc.)
+const customFont = {
+    name: 'Roboto Slab',
+    fontFamily: 'Roboto Slab, serif',
+    url: 'https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap'
+};
+
+this.api.addCustomFont(customFont);
+```
+
+#### `CustomFontFamily` Interface
+
+The `CustomFontFamily` interface defines the structure for custom font configuration:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | `string` | Display name shown in font family selectors |
+| `fontFamily` | `string` | CSS font-family declaration |
+| `url` | `string` | URL to the font file or CSS import |
+
+
+### Editor State Management
+
+The Stripo Editor provides a comprehensive state management system that allows extensions to monitor and react to editor state changes.
+
+#### Getting Editor State
+
+Access the current editor state using the `getEditorState()` API method:
+
+```javascript
+// In any extension component
+const editorState = this.api.getEditorState();
+console.log('Current editor state:', editorState);
+
+// Check specific state properties
+const currentDevice = editorState[EditorStatePropertyType.previewDeviceMode];
+console.log('Current preview device:', currentDevice); // 'DESKTOP' or 'MOBILE'
+```
+
+#### Subscribing to State Changes
+
+Monitor specific state properties using the `onEditorStatePropUpdated()` method:
+
+```javascript
+import { EditorStatePropertyType, PreviewDeviceMode } from '@stripoinc/ui-editor-extensions';
+
+// In your extension component
+this.api.onEditorStatePropUpdated(
+    EditorStatePropertyType.previewDeviceMode,
+    (newValue, oldValue) => {
+        console.log(`Device mode changed from ${oldValue} to ${newValue}`);
+
+        if (newValue === PreviewDeviceMode.MOBILE) {
+            // Adapt your extension for mobile preview
+            this.adaptForMobile();
+        } else if (newValue === PreviewDeviceMode.DESKTOP) {
+            // Adapt your extension for desktop preview
+            this.adaptForDesktop();
+        }
+    }
+);
+```
+
+#### `EditorStatePropertyType` Enum
+
+Currently supported editor state properties:
+
+| Property | Description | Possible Values |
+|----------|-------------|-----------------|
+| `previewDeviceMode` | Current preview device mode | `PreviewDeviceMode.DESKTOP`, `PreviewDeviceMode.MOBILE` |
+
+#### `PreviewDeviceMode` Enum
+
+Available preview device modes:
+
+| Mode | Description |
+|------|-------------|
+| `DESKTOP` | Desktop/web preview mode |
+| `MOBILE` | Mobile preview mode |
+
+
+### Click Outside Behavior
+
+Control how the editor handles clicks outside of blocks using `ignoreClickOutside()`:
+
+```javascript
+// In your extension component
+export class InteractiveBlock extends Block {
+    onSelect(node) {
+        // Disable block deselection when clicking outside
+        // Useful for blocks with external UI elements
+        this.api.ignoreClickOutside(true);
+
+        // Show custom toolbar or modal
+        this.showCustomToolbar();
+    }
+
+    onToolbarClosed() {
+        // Re-enable normal click outside behavior
+        this.api.ignoreClickOutside(false);
+    }
+
+    showCustomToolbar() {
+        const toolbar = document.createElement('div');
+        toolbar.className = 'custom-block-toolbar';
+        toolbar.innerHTML = `
+            <div class="toolbar-content">
+                <button onclick="this.editBlock()">Edit</button>
+                <button onclick="this.deleteBlock()">Delete</button>
+                <button onclick="this.closeToolbar()">Close</button>
+            </div>
+        `;
+
+        // Position toolbar near the block
+        document.body.appendChild(toolbar);
+
+        // Handle close
+        toolbar.querySelector('button:last-child').addEventListener('click', () => {
+            toolbar.remove();
+            this.onToolbarClosed();
+        });
+    }
+}
+```
+
 
 ## Examples and Tutorials
 
