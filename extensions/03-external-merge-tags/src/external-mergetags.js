@@ -26,6 +26,10 @@ export class MergeTagsUiElementExtension extends UIElement {
     }
 
     _onClick(event) {
+        this.openMergeTagLibrary();
+    }
+
+    openMergeTagLibrary() {
         if (!this.mergeTagsLibrary) {
             this.mergeTagsLibrary = new ExternalMergeTagsLibrary();
         }
@@ -37,6 +41,8 @@ export class MergeTagsUiElementExtension extends UIElement {
     onAttributeUpdated(name, value) {
         if (name === 'mergeTag') {
             this.selectedMergeTag = value;
+            // If a merge tag is selected, open the library immediately
+            this.selectedMergeTag && this.openMergeTagLibrary();
         }
     }
 
