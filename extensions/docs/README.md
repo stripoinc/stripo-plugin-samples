@@ -699,6 +699,34 @@ export class CustomFontFamilyControl extends FontFamilyBuiltInControl {
 }
 ```
 
+##### `TextColorBuiltInControl`
+
+For extending text color functionality:
+
+```javascript
+import { TextColorBuiltInControl } from '@stripoinc/ui-editor-extensions';
+
+export class CustomTextColorControl extends TextColorBuiltInControl {
+    getId() {
+        return 'enhanced-text-color-control';
+    }
+
+    getTargetNodes(root) {
+        // Target text elements for color changes
+        const textElements = root.querySelectorAll('h1, h2, h3, p, span, a');
+        return {
+            targetNodes: Array.from(textElements)
+        };
+    }
+
+    getLabels() {
+        return {
+            title: this.api.translate('Enhanced Text Color')
+        };
+    }
+}
+```
+
 #### `ControlTargetNodes` Interface
 
 Defines which DOM nodes the control should operate on:
