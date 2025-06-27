@@ -3,41 +3,44 @@
 # Table of Contents
 
 - [Introduction](#introduction)
-    - [About Stripo Editor Extensions](#about-stripo-editor-extensions)
-    - [Key Benefits](#key-benefits)
+  - [About Stripo Editor Extensions](#about-stripo-editor-extensions)
+  - [Key Benefits](#key-benefits)
 - [Core Concepts](#core-concepts)
-    - [Extension Architecture](#extension-architecture)
-    - [Implementation Details](#implementation-details)
-    - [Template Modification Constraints](#template-modification-constraints)
+  - [Extension Architecture](#extension-architecture)
+  - [Implementation Details](#implementation-details)
+  - [Template Modification Constraints](#template-modification-constraints)
 - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Setting Up Your Extension Project](#setting-up-your-extension-project)
-    - [Creating Your First Extension](#creating-your-first-extension)
+  - [Prerequisites](#prerequisites)
+  - [Setting Up Your Extension Project](#setting-up-your-extension-project)
+  - [Creating Your First Extension](#creating-your-first-extension)
 - [Extension Components](#extension-components)
-    - [ExtensionBuilder](#extensionbuilder)
-    - [Block](#block)
-    - [UI Element](#ui-element)
-    - [Control](#control)
-    - [Built-in Control](#built-in-control)
-    - [Settings Panel](#settings-panel)
-    - [Context Action](#context-action)
-    - [Tag Registry](#tag-registry)
+  - [ExtensionBuilder](#extensionbuilder)
+  - [Block](#block)
+  - [UI Element](#ui-element)
+  - [Control](#control)
+  - [Built-in Control](#built-in-control)
+  - [Settings Panel](#settings-panel)
+  - [Context Action](#context-action)
+  - [Tag Registry](#tag-registry)
 - [Template Modification System](#template-modification-system)
-    - [ImmutableNode Classes](#immutablenode-classes)
-    - [TemplateModifier Class](#templatemodifier-class)
-    - [Chaining Modifications](#chaining-modifications)
+  - [ImmutableNode Classes](#immutablenode-classes)
+  - [TemplateModifier Class](#templatemodifier-class)
+  - [Chaining Modifications](#chaining-modifications)
 - [Advanced Topics](#advanced-topics)
-    - [Internationalization](#internationalization)
-    - [Custom Styling](#custom-styling)
-    - [Custom Renderers](#custom-renderers)
-    - [Editor configuration](#editor-configuration)
-    - [Simplified Structure Templates with BlockType Aliases](#simplified-structure-templates-with-blocktype-aliases)
-    - [External Images Library](#external-images-library)
-    - [External Smart Elements Library](#external-smart-elements-library)
-    - [External AI Assistant](#external-ai-assistant)
-    - [Custom Font Management](#custom-font-management)
-    - [Editor State Management](#editor-state-management)
-    - [Click Outside Behavior](#click-outside-behavior)
+  - [Internationalization](#internationalization)
+  - [Custom Styling](#custom-styling)
+  - [Custom Renderers](#custom-renderers)
+  - [Editor configuration](#editor-configuration)
+  - [Simplified Structure Templates with BlockType Aliases](#simplified-structure-templates-with-blocktype-aliases)
+  - [External Images Library](#external-images-library)
+  - [External Video Library](#external-video-library)
+  - [External Smart Elements Library](#external-smart-elements-library)
+  - [External AI Assistant](#external-ai-assistant)
+  - [External Display Conditions](#external-display-conditions)
+  - [Custom Font Management](#custom-font-management)
+  - [Blocks Panel Customization](#blocks-panel-customization)
+  - [Editor State Management](#editor-state-management)
+  - [Click Outside Behavior](#click-outside-behavior)
 - [Examples and Tutorials](#examples-and-tutorials)
 
 ## Introduction
@@ -106,21 +109,21 @@ import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
 
 // Create a new extension using the builder pattern
 const extension = new ExtensionBuilder()
-    // Add custom CSS styles to change the color of blocks panel
-    .withStyles('ue-ui-simple-panel {background-color: darkgray;}')
-    .build();
+        // Add custom CSS styles to change the color of blocks panel
+        .withStyles('ue-ui-simple-panel {background-color: darkgray;}')
+        .build();
 
 // Initialize the Stripo editor with your extension
 window.UIEditor.initEditor(
-    document.querySelector('#stripoEditorContainer'), // Target container for the editor
-    {
-        // Your editor configuration options go here
-        ...,
-        // Register your extensions
-        extensions: [
+        document.querySelector('#stripoEditorContainer'), // Target container for the editor
+        {
+          // Your editor configuration options go here
+          ...,
+          // Register your extensions
+          extensions: [
             extension
-        ]
-    }
+          ]
+        }
 );
 ```
 
@@ -162,6 +165,9 @@ The `ExtensionBuilder` class provides a fluent interface for creating editor ext
 | `withExternalImageLibrary(externalImageLibraryClass)` | Registers an external image library. | `externalImageLibraryClass`: Custom ExternalImageLibrary class implementation. | `ExtensionBuilder` |
 | `withExternalAiAssistant(externalAiAssistantClass)` | Registers an external AI assistant. | `externalAiAssistantClass`: Custom ExternalAiAssistant class implementation. | `ExtensionBuilder` |
 | `withExternalImageLibrary(externalImageLibraryClass)` | Registers an external image library. | `externalImageLibraryClass`: Custom ExternalImageLibrary class implementation. | `ExtensionBuilder` |
+| `withExternalVideosLibrary(externalVideoLibraryClass)` | Registers an external video library. | `externalVideoLibraryClass`: Custom ExternalVideosLibrary class implementation. | `ExtensionBuilder` |
+| `withExternalDisplayCondition(externalDisplayConditionClass)` | Registers an external display conditions library. | `externalDisplayConditionClass`: Custom ExternalDisplayConditionsLibrary class implementation. | `ExtensionBuilder` |
+| `withBlocksPanel(blocksPanelClass)` | Registers a custom blocks panel implementation. | `blocksPanelClass`: Custom BlocksPanel class implementation. | `ExtensionBuilder` |
 | `build()` | Finalizes and returns the extension instance. | None | `Extension` |
 
 ### Block
@@ -178,17 +184,17 @@ To create a custom block, extend the `Block` abstract class:
 import { Block } from '@stripoinc/ui-editor-extensions';
 
 export class MyCustomBlock extends Block {
-    getId() {
-        return 'my-custom-block';
-    }
+  getId() {
+    return 'my-custom-block';
+  }
 
-    getTemplate() {
-        return `
+  getTemplate() {
+    return `
             <td align="left">
                 <h2>${this.api.translate('My Custom Block')}</h2>
             </td>
         `;
-    }
+  }
 }
 ```
 
@@ -227,13 +233,17 @@ The `Block` class also provides several lifecycle hooks:
 
 The `Block` class provides access to the editor API through the `api` property, which offers these useful methods:
 
-| API Method                | Description                                                 |
-|---------------------------|-------------------------------------------------------------|
-| `getDocumentModifier()`   | Returns a modifier that can be used to modify the document. |
-| `getEditorConfig()`       | Returns the current editor configuration.                   |
-| `translate(key, params)`  | Translates a text key using the current language settings.  |
-| `setViewOnly(isViewOnly)` | Sets whether the block should be view-only.                 |
-| `getDocumentRoot()`       | Returns the root element of the document.                   |
+| API Method                                | Description                                                                                                 |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| `getDocumentModifier()`                   | Returns a modifier that can be used to modify the document.                                                 |
+| `getEditorConfig()`                       | Returns the current editor configuration.                                                                   |
+| `translate(key, params)`                  | Translates a text key using the current language settings.                                                  |
+| `setViewOnly(isViewOnly)`                 | Sets whether the block should be view-only.                                                                 |
+| `getDocumentRoot()`                       | Returns the root element of the document.                                                                   |
+| `addCustomFont(font)`                     | Adds a custom font to the editor configuration. Accepts a `CustomFontFamily` object.                       |
+| `ignoreClickOutside(ignore)`              | Sets editor click outside behavior. When `true`, disables block deselect on click outside.                 |
+| `getEditorState()`                        | Returns information about the active state of the editor as a record object.                               |
+| `onEditorStatePropUpdated(prop, callback)` | Subscribes to property changes of the editor's active state. Accepts an `EditorStatePropertyType` and callback function. |
 
 
 ### UI Element
@@ -327,44 +337,44 @@ To create a custom UI element, extend the `UiElement` abstract class:
 import { UiElement } from '@stripoinc/ui-editor-extensions';
 
 export class CustomDesignedSwitcherUiElement extends UiElement {
-    // Required: Provide a unique ID for your UI element
-    getId() {
-        return 'custom-designed-switcher-ui-element';
-    }
+  // Required: Provide a unique ID for your UI element
+  getId() {
+    return 'custom-designed-switcher-ui-element';
+  }
 
-    // Required: Define the HTML template for your UI element
-    getTemplate() {
-        return `
+  // Required: Define the HTML template for your UI element
+  getTemplate() {
+    return `
             <div class="custom-switcher-container">
                 <input type="checkbox" title="${this.api.translate('Custom Switcher')}" class="custom-switcher">
             </div>`;
-    }
+  }
 
-    // Called after the element is rendered
-    onRender(container) {
-        this.inputElement = container.querySelector('input');
-        this.inputElement.addEventListener('change', this._onChange.bind(this));
-    }
+  // Called after the element is rendered
+  onRender(container) {
+    this.inputElement = container.querySelector('input');
+    this.inputElement.addEventListener('change', this._onChange.bind(this));
+  }
 
-    // Clean up event listeners when the element is destroyed
-    onDestroy() {
-        this.inputElement.removeEventListener('change', this._onChange.bind(this));
-    }
+  // Clean up event listeners when the element is destroyed
+  onDestroy() {
+    this.inputElement.removeEventListener('change', this._onChange.bind(this));
+  }
 
-    // Internal event handler for input changes
-    _onChange(event) {
-        this.api.onValueChanged(event.target.value);
-    }
+  // Internal event handler for input changes
+  _onChange(event) {
+    this.api.onValueChanged(event.target.value);
+  }
 
-    // Get the current value of the UI element
-    getValue() {
-        return this.inputElement.value;
-    }
+  // Get the current value of the UI element
+  getValue() {
+    return this.inputElement.value;
+  }
 
-    // Set the value of the UI element
-    setValue(value) {
-        this.inputElement.value = value;
-    }
+  // Set the value of the UI element
+  setValue(value) {
+    this.inputElement.value = value;
+  }
 }
 ```
 
@@ -376,36 +386,36 @@ When implementing custom controls, you can use the built-in UI elements by inclu
 import { Control, UIElementType, UEAttr } from '@stripoinc/ui-editor-extensions';
 
 export class MyCustomControl extends Control {
-    getId() {
-        return 'my-custom-control';
-    }
+  getId() {
+    return 'my-custom-control';
+  }
 
-    getTemplate() {
-        const labelTag = UIElementType.LABEL;
-        const labelAttr = UEAttr.LABEL;
-        const switcherTag = UIElementType.SWITCHER;
-        const switcherAttr = UEAttr.SWITCHER;
+  getTemplate() {
+    const labelTag = UIElementType.LABEL;
+    const labelAttr = UEAttr.LABEL;
+    const switcherTag = UIElementType.SWITCHER;
+    const switcherAttr = UEAttr.SWITCHER;
 
-        return `
+    return `
             <div>
                 <${labelTag} ${labelAttr.text}="Enable Feature:" ${labelAttr.name}="featureLabel"></${labelTag}>
                 <${switcherTag} ${switcherAttr.name}="featureSwitcher"></${switcherTag}>
             </div>
         `;
-    }
+  }
 
-    onRender() {
-        // Set initial values
-        this.api.updateValues({
-            'featureSwitcher': false
-        });
+  onRender() {
+    // Set initial values
+    this.api.updateValues({
+      'featureSwitcher': false
+    });
 
-        // Listen for changes
-        this.api.onValueChanged('featureSwitcher', (newValue) => {
-            // Handle value change
-            console.log('Feature switched to:', newValue);
-        });
-    }
+    // Listen for changes
+    this.api.onValueChanged('featureSwitcher', (newValue) => {
+      // Handle value change
+      console.log('Feature switched to:', newValue);
+    });
+  }
 }
 ```
 
@@ -415,8 +425,8 @@ UI elements in the DOM implement the `UIEDomElement` interface, which extends `H
 
 ```typescript
 interface UIEDomElement extends HTMLElement {
-    value: unknown;
-    setUIEAttribute(name: string, value: unknown): void;
+  value: unknown;
+  setUIEAttribute(name: string, value: unknown): void;
 }
 ```
 
@@ -428,38 +438,38 @@ This allows you to:
 import {UEAttr, UIElementType, UiElement} from '@stripoinc/ui-editor-extensions';
 
 export class CustomCounterUiElement extends UiElement {
-    getId() {
-        return 'custom-counter-ui-element';
-    }
+  getId() {
+    return 'custom-counter-ui-element';
+  }
 
-    getTemplate() {
-        return `
+  getTemplate() {
+    return `
             <div>
                 <${UIElementType.COUNTER} 
                     ${UEAttr.COUNTER.name}="customCounter"
                     ${UEAttr.COUNTER.minValue}="5">
                 </${UIElementType.COUNTER}>
             </div>`;
-    }
+  }
 
-    onRender(container) {
-        this.counter = container.querySelector(`${UIElementType.COUNTER}`);
+  onRender(container) {
+    this.counter = container.querySelector(`${UIElementType.COUNTER}`);
 
-        // Alternative way to set UIElement's attributes
-        // This approach allows you to programmatically set attributes after the element is rendered
-        // You can use this method to dynamically update attributes based on user interactions or other conditions
-        this.counter.setUIEAttribute(UEAttr.COUNTER.step, 2);
-        this.counter.setUIEAttribute(UEAttr.COUNTER.maxValue, 10);
-        this.counter.value = 7;
-    }
+    // Alternative way to set UIElement's attributes
+    // This approach allows you to programmatically set attributes after the element is rendered
+    // You can use this method to dynamically update attributes based on user interactions or other conditions
+    this.counter.setUIEAttribute(UEAttr.COUNTER.step, 2);
+    this.counter.setUIEAttribute(UEAttr.COUNTER.maxValue, 10);
+    this.counter.value = 7;
+  }
 
-    getValue() {
-        return this.counter.value;
-    }
+  getValue() {
+    return this.counter.value;
+  }
 
-    setValue(value) {
-        this.counter.value = value;
-    }
+  setValue(value) {
+    this.counter.value = value;
+  }
 }
 ```
 
@@ -488,11 +498,15 @@ The `UiElement` abstract class provides the foundation for creating custom UI co
 
 The `UiElement` class also provides access to the editor API through the `api` property, which offers these useful methods:
 
-| API Method               | Description                                                  |
-|--------------------------|------------------------------------------------------------|
-| `onValueChanged(value)`  | Notifies the editor that the UI element's value has changed. |
-| `getEditorConfig()`      | Returns the current editor configuration.                    |
-| `translate(key, params)` | Translates a text key using the current language settings.   |
+| API Method                                | Description                                                                                                 |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| `onValueChanged(value)`                   | Notifies the editor that the UI element's value has changed.                                                |
+| `getEditorConfig()`                       | Returns the current editor configuration.                                                                   |
+| `translate(key, params)`                  | Translates a text key using the current language settings.                                                  |
+| `addCustomFont(font)`                     | Adds a custom font to the editor configuration. Accepts a `CustomFontFamily` object.                       |
+| `ignoreClickOutside(ignore)`              | Sets editor click outside behavior. When `true`, disables block deselect on click outside.                 |
+| `getEditorState()`                        | Returns information about the active state of the editor as a record object.                               |
+| `onEditorStatePropUpdated(prop, callback)` | Subscribes to property changes of the editor's active state. Accepts an `EditorStatePropertyType` and callback function. |
 
 ### Control
 
@@ -510,49 +524,49 @@ To create a custom control, extend the `Control` abstract class:
 import { ModificationDescription, Control } from '@stripoinc/ui-editor-extensions';
 
 export class EventIdControl extends Control {
-    // Required: Provide a unique ID for your control
-    getId() {
-        return 'event-id-control';
-    }
+  // Required: Provide a unique ID for your control
+  getId() {
+    return 'event-id-control';
+  }
 
-    // Required: Define the HTML template for your control
-    getTemplate() {
-        return `
+  // Required: Define the HTML template for your control
+  getTemplate() {
+    return `
             <div>
                 <ue-label value="${this.api.translate('Enable Event Id')}:"></ue-label>
                 <event-id-switcher name="eventIdSwitcher"></event-id-switcher>
             </div>`;
-    }
+  }
 
-    // Called after the control is rendered
-    onRender() {
-        this.api.onValueChanged('eventIdSwitcher', (newValue, oldValue) => {
-            if (newValue) {
-                const eventId = '1';
-                this.api.getDocumentModifier()
-                    .modifyHtml(this.firstNodeLink)
-                    .setAttribute('event-id', eventId)
-                    .apply(new ModificationDescription('Added event id {eventId}')
+  // Called after the control is rendered
+  onRender() {
+    this.api.onValueChanged('eventIdSwitcher', (newValue, oldValue) => {
+      if (newValue) {
+        const eventId = '1';
+        this.api.getDocumentModifier()
+                .modifyHtml(this.firstNodeLink)
+                .setAttribute('event-id', eventId)
+                .apply(new ModificationDescription('Added event id {eventId}')
                         .withParams({eventId: eventId}));
-            } else {
-                this.api.getDocumentModifier()
-                    .modifyHtml(this.firstNodeLink)
-                    .removeAttribute('event-id')
-                    .apply(new ModificationDescription('Removed event id')
+      } else {
+        this.api.getDocumentModifier()
+                .modifyHtml(this.firstNodeLink)
+                .removeAttribute('event-id')
+                .apply(new ModificationDescription('Removed event id')
                         .withParams({eventId: oldValue}));
-            }
-        });
-    }
+      }
+    });
+  }
 
-    // Called when the template node is updated
-    onTemplateNodeUpdated(node) {
-        this.firstNodeLink = node.querySelector('a');
-        let eventIdFromTemplate = this.firstNodeLink.getAttribute('event-id');
+  // Called when the template node is updated
+  onTemplateNodeUpdated(node) {
+    this.firstNodeLink = node.querySelector('a');
+    let eventIdFromTemplate = this.firstNodeLink.getAttribute('event-id');
 
-        this.api.updateValues({
-            'eventIdSwitcher': !!eventIdFromTemplate
-        });
-    }
+    this.api.updateValues({
+      'eventIdSwitcher': !!eventIdFromTemplate
+    });
+  }
 }
 ```
 
@@ -603,38 +617,38 @@ All built-in control extensions must extend the `BuiltInControl` abstract class:
 import { BuiltInControl, BuiltInControlTypes, ControlTargetNodes, ControlLabels, ModificationDescription } from '@stripoinc/ui-editor-extensions';
 
 export class MyBackgroundColorExtension extends BuiltInControl {
-    getId() {
-        return 'my-custom-background-control';
-    }
+  getId() {
+    return 'my-custom-background-control';
+  }
 
-    getParentControlId() {
-        return BuiltInControlTypes.GENERAL.BACKGROUND_COLOR;
-    }
+  getParentControlId() {
+    return BuiltInControlTypes.GENERAL.BACKGROUND_COLOR;
+  }
 
-    getTargetNodes(root) {
-        // Define which nodes this control should operate on
-        const targetElements = root.querySelectorAll('.custom-background-target');
-        return {
-            targetNodes: Array.from(targetElements)
-        };
-    }
+  getTargetNodes(root) {
+    // Define which nodes this control should operate on
+    const targetElements = root.querySelectorAll('.custom-background-target');
+    return {
+      targetNodes: Array.from(targetElements)
+    };
+  }
 
-    getLabels() {
-        return {
-            title: this.api.translate('Custom Background Color')
-        };
-    }
+  getLabels() {
+    return {
+      title: this.api.translate('Custom Background Color')
+    };
+  }
 
-    getModificationDescription() {
-        return new ModificationDescription('Applied custom background styling');
-    }
+  getModificationDescription() {
+    return new ModificationDescription('Applied custom background styling');
+  }
 
-    getAdditionalModifications(root) {
-        // Add custom modifications that should be applied alongside the parent control
-        return this.api.getDocumentModifier()
+  getAdditionalModifications(root) {
+    // Add custom modifications that should be applied alongside the parent control
+    return this.api.getDocumentModifier()
             .modifyHtml(root.querySelector('.additional-target'))
             .setAttribute('data-custom-bg', 'true');
-    }
+  }
 }
 ```
 
@@ -650,24 +664,24 @@ For extending background color functionality:
 import { BackgroundColorBuiltInControl } from '@stripoinc/ui-editor-extensions';
 
 export class CustomBackgroundControl extends BackgroundColorBuiltInControl {
-    getId() {
-        return 'enhanced-background-control';
-    }
+  getId() {
+    return 'enhanced-background-control';
+  }
 
-    getTargetNodes(root) {
-        // Target specific elements for background color changes
-        const containers = root.querySelectorAll('.custom-container');
-        return {
-            targetNodes: Array.from(containers)
-        };
-    }
+  getTargetNodes(root) {
+    // Target specific elements for background color changes
+    const containers = root.querySelectorAll('.custom-container');
+    return {
+      targetNodes: Array.from(containers)
+    };
+  }
 
-    getAdditionalModifications(root) {
-        // Add gradient support alongside solid colors
-        return this.api.getDocumentModifier()
+  getAdditionalModifications(root) {
+    // Add gradient support alongside solid colors
+    return this.api.getDocumentModifier()
             .modifyHtml(root.querySelector('.gradient-container'))
             .setAttribute('data-supports-gradient', 'true');
-    }
+  }
 }
 ```
 
@@ -679,23 +693,23 @@ For extending font family functionality:
 import { FontFamilyBuiltInControl } from '@stripoinc/ui-editor-extensions';
 
 export class CustomFontFamilyControl extends FontFamilyBuiltInControl {
-    getId() {
-        return 'enhanced-font-family-control';
-    }
+  getId() {
+    return 'enhanced-font-family-control';
+  }
 
-    getTargetNodes(root) {
-        // Target text elements for font family changes
-        const textElements = root.querySelectorAll('h1, h2, h3, p, span');
-        return {
-            targetNodes: Array.from(textElements)
-        };
-    }
+  getTargetNodes(root) {
+    // Target text elements for font family changes
+    const textElements = root.querySelectorAll('h1, h2, h3, p, span');
+    return {
+      targetNodes: Array.from(textElements)
+    };
+  }
 
-    getLabels() {
-        return {
-            title: this.api.translate('Enhanced Font Selection')
-        };
-    }
+  getLabels() {
+    return {
+      title: this.api.translate('Enhanced Font Selection')
+    };
+  }
 }
 ```
 
@@ -707,23 +721,23 @@ For extending text color functionality:
 import { TextColorBuiltInControl } from '@stripoinc/ui-editor-extensions';
 
 export class CustomTextColorControl extends TextColorBuiltInControl {
-    getId() {
-        return 'enhanced-text-color-control';
-    }
+  getId() {
+    return 'enhanced-text-color-control';
+  }
 
-    getTargetNodes(root) {
-        // Target text elements for color changes
-        const textElements = root.querySelectorAll('h1, h2, h3, p, span, a');
-        return {
-            targetNodes: Array.from(textElements)
-        };
-    }
+  getTargetNodes(root) {
+    // Target text elements for color changes
+    const textElements = root.querySelectorAll('h1, h2, h3, p, span, a');
+    return {
+      targetNodes: Array.from(textElements)
+    };
+  }
 
-    getLabels() {
-        return {
-            title: this.api.translate('Enhanced Text Color')
-        };
-    }
+  getLabels() {
+    return {
+      title: this.api.translate('Enhanced Text Color')
+    };
+  }
 }
 ```
 
@@ -733,7 +747,7 @@ Defines which DOM nodes the control should operate on:
 
 ```typescript
 interface ControlTargetNodes {
-    targetNodes: ImmutableHtmlNode[];
+  targetNodes: ImmutableHtmlNode[];
 }
 ```
 
@@ -743,7 +757,7 @@ Allows customization of control UI labels:
 
 ```typescript
 interface ControlLabels {
-    title: string;
+  title: string;
 }
 ```
 
@@ -753,9 +767,9 @@ Register your built-in control extensions using the `addControl` method:
 
 ```javascript
 const extension = new ExtensionBuilder()
-    .addControl(MyBackgroundColorExtension)
-    .addControl(CustomFontFamilyControl)
-    .build();
+        .addControl(MyBackgroundColorExtension)
+        .addControl(CustomFontFamilyControl)
+        .build();
 ```
 
 ### Settings Panel
@@ -772,33 +786,33 @@ To create a settings panel, implement the `SettingsPanelRegistry` abstract class
 
 ```javascript
 import {
-    GeneralControls,
-    SettingsPanelRegistry,
-    SettingsPanelTab,
-    SettingsTab,
-    TextControls, BlockType
+  GeneralControls,
+  SettingsPanelRegistry,
+  SettingsPanelTab,
+  SettingsTab,
+  TextControls, BlockType
 } from '@stripoinc/ui-editor-extensions';
 
 export class CustomSettingsPanelRegistry extends SettingsPanelRegistry {
-    registerBlockControls(blockControlsMap) {
-        blockControlsMap[BlockType.BLOCK_TEXT] = [
-            new SettingsPanelTab(
-                SettingsTab.SETTINGS,
-                [
-                    TextControls.PARAGRAPH_STYLE
-                ]),
-            new SettingsPanelTab(
-                'customStyles',
-                [
-                    GeneralControls.BACKGROUND_COLOR
-                ])
-                .withLabel('Custom styles'),
-        ]
+  registerBlockControls(blockControlsMap) {
+    blockControlsMap[BlockType.BLOCK_TEXT] = [
+      new SettingsPanelTab(
+              SettingsTab.SETTINGS,
+              [
+                TextControls.PARAGRAPH_STYLE
+              ]),
+      new SettingsPanelTab(
+              'customStyles',
+              [
+                GeneralControls.BACKGROUND_COLOR
+              ])
+              .withLabel('Custom styles'),
+    ]
 
-        // Add a control to an existing tab for a built-in block
-        blockControlsMap[BlockType.BLOCK_BUTTON].find(tabs => tabs.getTabId() == SettingsTab.SETTINGS).addControl('my-custom-control', 2);
+    // Add a control to an existing tab for a built-in block
+    blockControlsMap[BlockType.BLOCK_BUTTON].find(tabs => tabs.getTabId() == SettingsTab.SETTINGS).addControl('my-custom-control', 2);
 
-    }
+  }
 }
 ```
 
@@ -837,13 +851,13 @@ Unlike the simplified example in the previous documentation, the actual settings
 
 1. You implement `registerBlockControls` to define which controls appear for which blocks
 2. The `blockControlsMap` parameter is a record where:
-    - Keys are block identifiers (like 'useful-links-block')
-    - Values are arrays of `SettingsPanelTab` instances
+- Keys are block identifiers (like 'useful-links-block')
+- Values are arrays of `SettingsPanelTab` instances
 3. Each tab contains an array of control IDs that should be displayed in that tab
 4. You can:
-    - Create entirely new panels for blocks
-    - Modify existing panels by adding or removing controls
-    - Reorganize controls between tabs
+- Create entirely new panels for blocks
+- Modify existing panels by adding or removing controls
+- Reorganize controls between tabs
 
 
 ### Context Action
@@ -858,22 +872,22 @@ To create a custom context action, extend the `ContextAction` abstract class:
 import { ContextAction } from '@stripoinc/ui-editor-extensions';
 
 export class CustomContextAction extends ContextAction {
-    // Required: Provide a unique ID for your context action
-    getId() {
-        return 'ai-magic-context-action';
-    }
+  // Required: Provide a unique ID for your context action
+  getId() {
+    return 'ai-magic-context-action';
+  }
 
-    getIconClass() {
-        return 'plus';
-    }
+  getIconClass() {
+    return 'plus';
+  }
 
-    getLabel() {
-        return this.api.translate('Magic button');
-    }
+  getLabel() {
+    return this.api.translate('Magic button');
+  }
 
-    onClick(node) {
-        console.log(`Magic button clicked for block: ${node.getOuterHTML()}`);
-    }
+  onClick(node) {
+    console.log(`Magic button clicked for block: ${node.getOuterHTML()}`);
+  }
 }
 ```
 
@@ -890,11 +904,15 @@ The `ContextAction` abstract class provides the foundation for creating custom c
 
 The `ContextAction` class provides access to the editor API through the `api` property, which offers these useful methods:
 
-| API Method               | Description                                                 |
-|--------------------------|-------------------------------------------------------------|
-| `getDocumentModifier()`  | Returns a modifier that can be used to modify the document. |
-| `getEditorConfig()`      | Returns the current editor configuration.                   |
-| `translate(key, params)` | Translates a text key using the current language settings.  |
+| API Method                                | Description                                                                                                 |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| `getDocumentModifier()`                   | Returns a modifier that can be used to modify the document.                                                 |
+| `getEditorConfig()`                       | Returns the current editor configuration.                                                                   |
+| `translate(key, params)`                  | Translates a text key using the current language settings.                                                  |
+| `addCustomFont(font)`                     | Adds a custom font to the editor configuration. Accepts a `CustomFontFamily` object.                       |
+| `ignoreClickOutside(ignore)`              | Sets editor click outside behavior. When `true`, disables block deselect on click outside.                 |
+| `getEditorState()`                        | Returns information about the active state of the editor as a record object.                               |
+| `onEditorStatePropUpdated(prop, callback)` | Subscribes to property changes of the editor's active state. Accepts an `EditorStatePropertyType` and callback function. |
 
 #### Best Practices for Creating Context Actions
 
@@ -922,11 +940,11 @@ To create a custom tag registry, extend the `UIElementTagRegistry` abstract clas
 import {UIElementType, UIElementTagRegistry} from '@stripoinc/ui-editor-extensions';
 
 export class CustomTagRegistry extends UIElementTagRegistry {
-    registerUiElements(uiElementsTagsMap) {
-        // Override the default color picker with a custom one
-        uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap[UIElementType.COLOR];
-        uiElementsTagsMap[UIElementType.COLOR] = 'custom-color-picker-ui-element';
-    }
+  registerUiElements(uiElementsTagsMap) {
+    // Override the default color picker with a custom one
+    uiElementsTagsMap['original-ue-color'] = uiElementsTagsMap[UIElementType.COLOR];
+    uiElementsTagsMap[UIElementType.COLOR] = 'custom-color-picker-ui-element';
+  }
 }
 ```
 
@@ -944,8 +962,8 @@ The `UIElementTagRegistry` abstract class provides the foundation for mapping cu
 Key points to understand:
 
 1. The `uiElementsTagsMap` parameter in `registerUiElements` is a record where:
-    - Keys are HTML tag names
-    - Values are UI element IDs
+- Keys are HTML tag names
+- Values are UI element IDs
 2. When the editor encounters a tag from this mapping, it will render the corresponding UI element. Use it in `getTemplate` method of `Control`
 3. You can override existing mappings to replace built-in UI elements with custom ones
 
@@ -994,9 +1012,9 @@ To make changes to the template, you must use the `TemplateModifier` class, whic
 ```javascript
 // Example of using TemplateModifier to change a heading's color
 this.api.getDocumentModifier()
-    .modifyHtml(headingElement)
-    .setStyle('color', '#ff0000')
-    .apply(new ModificationDescription('Changed heading color to red'));
+        .modifyHtml(headingElement)
+        .setStyle('color', '#ff0000')
+        .apply(new ModificationDescription('Changed heading color to red'));
 ```
 
 The TemplateModifier provides two primary interfaces:
@@ -1043,7 +1061,7 @@ After specifying all the modifications you want to make, you must call the `appl
 
 ```javascript
 .apply(new ModificationDescription('Changed text color to {color}')
-    .withParams({color: '#ff0000'}));
+        .withParams({color: '#ff0000'}));
 ```
 
 When you call `apply()`, several important things happen:
@@ -1060,21 +1078,21 @@ One powerful feature of the TemplateModifier is the ability to chain multiple mo
 
 ```javascript
 this.api.getDocumentModifier()
-    // Modify the button element
-    .modifyHtml(buttonElement)
+        // Modify the button element
+        .modifyHtml(buttonElement)
         .setStyle('background-color', '#0078d4')
         .setStyle('color', 'white')
         .setAttribute('role', 'button')
-    // Then modify the parent container
-    .modifyHtml(containerElement)
+        // Then modify the parent container
+        .modifyHtml(containerElement)
         .setStyle('padding', '20px')
         .addClass('highlight-container')
-    // Then modify a CSS rule
-    .modifyCss(buttonRuleElement)
+        // Then modify a CSS rule
+        .modifyCss(buttonRuleElement)
         .setProperty('border-radius', '4px')
         .setProperty('box-shadow', '0 2px 4px rgba(0,0,0,0.2)')
-    // Apply all changes as a single operation
-    .apply(new ModificationDescription('Updated button styling'));
+        // Apply all changes as a single operation
+        .apply(new ModificationDescription('Updated button styling'));
 ```
 
 By chaining modifications, you can ensure all related changes are applied as a single, atomic operation, making the editing experience smoother and ensuring all changes are properly tracked and synchronized.
@@ -1087,17 +1105,17 @@ Extensions support multiple languages through the localization feature:
 
 ```javascript
 const extension = new ExtensionBuilder()
-    .withLocalization({
-        'en': {
+        .withLocalization({
+          'en': {
             'greeting': 'Hello',
             'farewell': 'Goodbye'
-        },
-        'fr': {
+          },
+          'fr': {
             'greeting': 'Bonjour',
             'farewell': 'Au revoir'
-        }
-    })
-    .build();
+          }
+        })
+        .build();
 ```
 
 Access translations in your components using the API:
@@ -1116,7 +1134,7 @@ Use `withStyles()` to add custom CSS that applies specifically to the editor UI:
 
 ```javascript
 const extension = new ExtensionBuilder()
-    .withStyles(`
+        .withStyles(`
         .my-custom-block {
             border: 1px solid #ccc;
             padding: 10px;
@@ -1131,7 +1149,7 @@ const extension = new ExtensionBuilder()
             border-radius: 3px;
         }
     `)
-    .build();
+        .build();
 ```
 
 #### Preview Styles
@@ -1140,7 +1158,7 @@ Use `withPreviewStyles()` to add custom CSS that applies specifically to the doc
 
 ```javascript
 const extension = new ExtensionBuilder()
-    .withPreviewStyles(`
+        .withPreviewStyles(`
         /* Styles that only apply in the document preview */
         .my-custom-block {
             border: 2px dashed #ccc;
@@ -1163,7 +1181,7 @@ const extension = new ExtensionBuilder()
             }
         }
     `)
-    .build();
+        .build();
 ```
 
 ### Custom Renderers
@@ -1192,9 +1210,9 @@ To create a custom renderer, extend the `BlockRenderer` abstract class:
 import { BlockRenderer } from '@stripoinc/ui-editor-extensions';
 
 export class MergeTagRenderer extends BlockRenderer {
-    getPreviewHtml(node) {
-        return node.getOuterHTML().replace(`#{CUSTOMER_NAME}`, 'John Doe');
-    }
+  getPreviewHtml(node) {
+    return node.getOuterHTML().replace(`#{CUSTOMER_NAME}`, 'John Doe');
+  }
 }
 ```
 
@@ -1207,22 +1225,22 @@ import { Block } from '@stripoinc/ui-editor-extensions';
 import { MergeTagRenderer } from './merge-tag-renderer';
 
 export class MyCustomBlock extends Block {
-    getId() {
-        return 'my-custom-block';
-    }
+  getId() {
+    return 'my-custom-block';
+  }
 
-    getTemplate() {
-        return `
+  getTemplate() {
+    return `
             <td align="left">
                 <h2>${this.api.translate('My Custom Block')}</h2>
                 <p>Hello #{CUSTOMER_NAME},</p>
             </td>
         `;
-    }
+  }
 
-    getCustomRenderer() {
-        return MergeTagRenderer;
-    }
+  getCustomRenderer() {
+    return MergeTagRenderer;
+  }
 }
 ```
 
@@ -1300,19 +1318,19 @@ import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
 import { MyCustomImageLibrary } from './my-custom-image-library'; // Your implementation
 
 const extension = new ExtensionBuilder()
-    .withExternalImageLibrary(MyCustomImageLibrary)
-    .build();
+        .withExternalImageLibrary(MyCustomImageLibrary)
+        .build();
 
 // Initialize the Stripo editor with your extension
 window.UIEditor.initEditor(
-    document.querySelector('#stripoEditorContainer'),
-    {
-        // Your editor configuration options
-        ...,
-        extensions: [
+        document.querySelector('#stripoEditorContainer'),
+        {
+          // Your editor configuration options
+          ...,
+          extensions: [
             extension
-        ]
-    }
+          ]
+        }
 );
 ```
 
@@ -1351,41 +1369,160 @@ The `ExternalGalleryImage` object passed to the `onImageSelectCallback` should c
 import { ExternalImageLibrary } from '@stripoinc/ui-editor-extensions';
 
 export class MyCustomImageLibrary extends ExternalImageLibrary {
-    openImageLibrary(currentImageUrl, onImageSelectCallback, onCancelCallback) {
-        // 1. Create and display your custom image library UI (e.g., a modal).
-        //    You might use currentImageUrl to pre-select an image if it's from your library.
+  openImageLibrary(currentImageUrl, onImageSelectCallback, onCancelCallback) {
+    // 1. Create and display your custom image library UI (e.g., a modal).
+    //    You might use currentImageUrl to pre-select an image if it's from your library.
 
-        const imageLibraryModal = document.createElement('div');
-        // ... logic to populate modal with images ...
+    const imageLibraryModal = document.createElement('div');
+    // ... logic to populate modal with images ...
 
-        // Example: User clicks an image in your library
-        const anImageElement = imageLibraryModal.querySelector('.some-image');
-        anImageElement.addEventListener('click', () => {
-            const selectedImage = {
-                originalName: 'selected-image.png',
-                width: 800,
-                height: 600,
-                sizeBytes: 123456,
-                url: 'https://your-service.com/path/to/selected-image.png'
-            };
-            onImageSelectCallback(selectedImage);
-            // Close your modal
-            imageLibraryModal.remove();
-        });
+    // Example: User clicks an image in your library
+    const anImageElement = imageLibraryModal.querySelector('.some-image');
+    anImageElement.addEventListener('click', () => {
+      const selectedImage = {
+        originalName: 'selected-image.png',
+        width: 800,
+        height: 600,
+        sizeBytes: 123456,
+        url: 'https://your-service.com/path/to/selected-image.png'
+      };
+      onImageSelectCallback(selectedImage);
+      // Close your modal
+      imageLibraryModal.remove();
+    });
 
-        // Example: User clicks a cancel button in your library
-        const cancelButton = imageLibraryModal.querySelector('.cancel-button');
-        cancelButton.addEventListener('click', () => {
-            onCancelCallback();
-            // Close your modal
-            imageLibraryModal.remove();
-        });
+    // Example: User clicks a cancel button in your library
+    const cancelButton = imageLibraryModal.querySelector('.cancel-button');
+    cancelButton.addEventListener('click', () => {
+      onCancelCallback();
+      // Close your modal
+      imageLibraryModal.remove();
+    });
 
-        document.body.appendChild(imageLibraryModal);
-    }
+    document.body.appendChild(imageLibraryModal);
+  }
 }
 ```
 This implementation provides a way for users to seamlessly integrate their preferred image management systems with the Stripo editor, enhancing workflow and asset management.
+
+### External Video Library
+
+The Stripo Editor Extensions system allows you to integrate an external video library, enabling users to select videos from your own video hosting or management system directly within the editor. This integration is achieved by implementing the `ExternalVideosLibrary` interface and registering it with the `ExtensionBuilder`.
+
+#### Enabling External Video Library
+
+To enable this feature, you use the `withExternalVideosLibrary` method on the `ExtensionBuilder` instance. This method accepts a constructor for a class that implements the `ExternalVideosLibrary` interface.
+
+```javascript
+import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
+import { MyCustomVideoLibrary } from './my-custom-video-library'; // Your implementation
+
+const extension = new ExtensionBuilder()
+        .withExternalVideosLibrary(MyCustomVideoLibrary)
+        .build();
+
+// Initialize the Stripo editor with your extension
+window.UIEditor.initEditor(
+        document.querySelector('#stripoEditorContainer'),
+        {
+          // Your editor configuration options
+          ...,
+          extensions: [
+            extension
+          ]
+        }
+);
+```
+
+#### `ExternalVideosLibrary` Interface
+
+Your custom video library class must implement the `ExternalVideosLibrary` interface, which defines a single method:
+
+| Method | Parameters | Description |
+|---|---|---|
+| `openExternalVideosLibraryDialog(currentValue, successCallback, cancelCallback)` | `currentValue: ExternalGalleryVideo`: The currently selected video, if any. <br> `successCallback: ExternalVideosLibrarySelectedCallback`: A callback function to be invoked when the user selects a video from your library. <br> `cancelCallback: ExternalVideosLibraryCancelCallback`: A callback function to be invoked if the user cancels the video selection process. | This method is called when the user attempts to select a video from an external source. Your implementation should open your custom video library UI. |
+
+##### Callback Types
+
+-   **`ExternalVideosLibrarySelectedCallback`**: `(video: ExternalGalleryVideo) => void;`
+    When a video is selected in your custom library, this callback must be called with an `ExternalGalleryVideo` object.
+
+-   **`ExternalVideosLibraryCancelCallback`**: `() => void;`
+    If the user closes or cancels the selection in your custom library without choosing a video, this callback must be invoked.
+
+#### `ExternalGalleryVideo` Interface
+
+The `ExternalGalleryVideo` object passed to the `successCallback` should conform to the following interface:
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `originalVideoName` | `string` | The original file name of the video. | `'product-demo.mp4'` |
+| `originalImageName` | `string` | The original file name of the video thumbnail image. | `'product-demo-thumbnail.jpg'` |
+| `urlImage` | `string` | The publicly accessible URL of the video thumbnail image. | `'https://your-cdn.com/thumbnails/product-demo.jpg'` |
+| `urlVideo` | `string` | The publicly accessible URL of the video file. | `'https://your-cdn.com/videos/product-demo.mp4'` |
+| `hasCustomButton` | `boolean` | Whether the video has a custom play button. | `true` |
+
+#### Example Implementation
+
+```javascript
+// ./my-custom-video-library.js
+import { ExternalVideosLibrary } from '@stripoinc/ui-editor-extensions';
+
+export class MyCustomVideoLibrary extends ExternalVideosLibrary {
+  openExternalVideosLibraryDialog(currentValue, successCallback, cancelCallback) {
+    // Create and display your custom video library UI
+    const videoLibraryModal = document.createElement('div');
+    videoLibraryModal.className = 'video-library-modal';
+
+    videoLibraryModal.innerHTML = `
+            <div class="video-modal-content">
+                <h3>Select Video</h3>
+                <div class="video-grid">
+                    <!-- Your video selection UI -->
+                </div>
+                <button class="cancel-btn">Cancel</button>
+            </div>
+        `;
+
+    // Populate with your videos
+    this.loadVideos().then(videos => {
+      const videoGrid = videoLibraryModal.querySelector('.video-grid');
+      videos.forEach(video => {
+        const videoElement = document.createElement('div');
+        videoElement.className = 'video-item';
+        videoElement.innerHTML = `
+                    <img src="${video.urlImage}" alt="${video.originalVideoName}">
+                    <span>${video.originalVideoName}</span>
+                `;
+
+        videoElement.addEventListener('click', () => {
+          successCallback(video);
+          videoLibraryModal.remove();
+        });
+
+        videoGrid.appendChild(videoElement);
+      });
+    });
+
+    // Handle cancel
+    const cancelButton = videoLibraryModal.querySelector('.cancel-btn');
+    cancelButton.addEventListener('click', () => {
+      cancelCallback();
+      videoLibraryModal.remove();
+    });
+
+    document.body.appendChild(videoLibraryModal);
+  }
+
+  async loadVideos() {
+    // Implement your video loading logic here
+    const response = await fetch('/api/videos');
+    return response.json();
+  }
+}
+```
+
+This implementation provides a way for users to seamlessly integrate their preferred video management systems with the Stripo editor, enhancing multimedia content workflow.
 
 ### External Smart Elements Library
 
@@ -1400,19 +1537,19 @@ import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
 import { MyCustomSmartElementsLibrary } from './my-custom-smart-elements-library'; // Your implementation
 
 const extension = new ExtensionBuilder()
-    .withExternalSmartElementsLibrary(MyCustomSmartElementsLibrary)
-    .build();
+        .withExternalSmartElementsLibrary(MyCustomSmartElementsLibrary)
+        .build();
 
 // Initialize the Stripo editor with your extension
 window.UIEditor.initEditor(
-    document.querySelector('#stripoEditorContainer'),
-    {
-        // Your editor configuration options
-        ...,
-        extensions: [
+        document.querySelector('#stripoEditorContainer'),
+        {
+          // Your editor configuration options
+          ...,
+          extensions: [
             extension
-        ]
-    }
+          ]
+        }
 );
 ```
 
@@ -1455,37 +1592,37 @@ Your extension or other editor logic would then be responsible for interpreting 
 import { ExternalSmartElementsLibrary } from '@stripoinc/ui-editor-extensions';
 
 export class MyCustomSmartElementsLibrary extends ExternalSmartElementsLibrary {
-    openSmartElementsLibrary(onDataSelectCallback, onCancelCallback) {
-        // 1. Create and display your custom smart elements library UI (e.g., a modal).
-        const smartElementsModal = document.createElement('div');
-        // ... logic to populate modal with smart elements ...
-        // For example, fetch from an API, list available elements, etc.
+  openSmartElementsLibrary(onDataSelectCallback, onCancelCallback) {
+    // 1. Create and display your custom smart elements library UI (e.g., a modal).
+    const smartElementsModal = document.createElement('div');
+    // ... logic to populate modal with smart elements ...
+    // For example, fetch from an API, list available elements, etc.
 
-        // Example: User clicks a smart element in your library
-        const aSmartElementButton = smartElementsModal.querySelector('.some-smart-element');
-        aSmartElementButton.addEventListener('click', () => {
-            const selectedSmartElement = { // This structure depends on your needs
-                p_name: 'Awesome T-Shirt',
-                p_image: 'https://example.com/images/t-shirt.jpg',
-                p_price: '19.99'
-                // ... other relevant data for your smart element
-            };
-            onDataSelectCallback(selectedSmartElement);
-            // Close your modal
-            smartElementsModal.remove();
-        });
+    // Example: User clicks a smart element in your library
+    const aSmartElementButton = smartElementsModal.querySelector('.some-smart-element');
+    aSmartElementButton.addEventListener('click', () => {
+      const selectedSmartElement = { // This structure depends on your needs
+        p_name: 'Awesome T-Shirt',
+        p_image: 'https://example.com/images/t-shirt.jpg',
+        p_price: '19.99'
+        // ... other relevant data for your smart element
+      };
+      onDataSelectCallback(selectedSmartElement);
+      // Close your modal
+      smartElementsModal.remove();
+    });
 
-        // Example: User clicks a cancel button in your library
-        const cancelButton = smartElementsModal.querySelector('.cancel-button');
-        cancelButton.addEventListener('click', () => {
-            onCancelCallback();
-            // Close your modal
-            smartElementsModal.remove();
-        });
+    // Example: User clicks a cancel button in your library
+    const cancelButton = smartElementsModal.querySelector('.cancel-button');
+    cancelButton.addEventListener('click', () => {
+      onCancelCallback();
+      // Close your modal
+      smartElementsModal.remove();
+    });
 
-        document.body.appendChild(smartElementsModal);
-        // Show the modal
-    }
+    document.body.appendChild(smartElementsModal);
+    // Show the modal
+  }
 }
 ```
 This integration allows for powerful customization by bringing your own curated or dynamically generated content elements directly into the Stripo editing experience.
@@ -1503,19 +1640,19 @@ import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
 import { MyCustomAiAssistant } from './my-custom-ai-assistant'; // Your implementation
 
 const extension = new ExtensionBuilder()
-    .withExternalAiAssistant(MyCustomAiAssistant)
-    .build();
+        .withExternalAiAssistant(MyCustomAiAssistant)
+        .build();
 
 // Initialize the Stripo editor with your extension
 window.UIEditor.initEditor(
-    document.querySelector('#stripoEditorContainer'),
-    {
-        // Your editor configuration options
-        ...,
-        extensions: [
+        document.querySelector('#stripoEditorContainer'),
+        {
+          // Your editor configuration options
+          ...,
+          extensions: [
             extension
-        ]
-    }
+          ]
+        }
 );
 ```
 
@@ -1552,26 +1689,26 @@ The `AiAssistantValueType` enum defines the types of content that can be process
 import { ExternalAiAssistant, AiAssistantValueType } from '@stripoinc/ui-editor-extensions';
 
 export class MyCustomAiAssistant extends ExternalAiAssistant {
-    openAiAssistant({value, onDataSelectCallback, onCancelCallback, type}) {
-        // Create and display your custom AI assistant UI
-        const aiModal = document.createElement('div');
-        aiModal.className = 'ai-assistant-modal';
+  openAiAssistant({value, onDataSelectCallback, onCancelCallback, type}) {
+    // Create and display your custom AI assistant UI
+    const aiModal = document.createElement('div');
+    aiModal.className = 'ai-assistant-modal';
 
-        // Different prompts based on content type
-        let prompt = '';
-        switch(type) {
-            case AiAssistantValueType.SUBJECT:
-                prompt = 'Generate a compelling email subject line';
-                break;
-            case AiAssistantValueType.HIDDEN_PREHEADER:
-                prompt = 'Generate preheader text to complement the subject line';
-                break;
-            case AiAssistantValueType.TEXT_BLOCK:
-                prompt = 'Improve this email content';
-                break;
-        }
+    // Different prompts based on content type
+    let prompt = '';
+    switch(type) {
+      case AiAssistantValueType.SUBJECT:
+        prompt = 'Generate a compelling email subject line';
+        break;
+      case AiAssistantValueType.HIDDEN_PREHEADER:
+        prompt = 'Generate preheader text to complement the subject line';
+        break;
+      case AiAssistantValueType.TEXT_BLOCK:
+        prompt = 'Improve this email content';
+        break;
+    }
 
-        aiModal.innerHTML = `
+    aiModal.innerHTML = `
             <div class="ai-modal-content">
                 <h3>AI Assistant - ${prompt}</h3>
                 <textarea class="current-content">${value}</textarea>
@@ -1585,54 +1722,205 @@ export class MyCustomAiAssistant extends ExternalAiAssistant {
             </div>
         `;
 
-        // Handle AI generation
-        const generateBtn = aiModal.querySelector('.generate-btn');
-        generateBtn.addEventListener('click', async () => {
-            try {
-                // Call your AI service
-                const generatedContent = await this.callAiService(value, type);
+    // Handle AI generation
+    const generateBtn = aiModal.querySelector('.generate-btn');
+    generateBtn.addEventListener('click', async () => {
+      try {
+        // Call your AI service
+        const generatedContent = await this.callAiService(value, type);
 
-                const contentDiv = aiModal.querySelector('.generated-content');
-                const textDiv = aiModal.querySelector('.generated-text');
-                textDiv.innerHTML = generatedContent;
-                contentDiv.style.display = 'block';
+        const contentDiv = aiModal.querySelector('.generated-content');
+        const textDiv = aiModal.querySelector('.generated-text');
+        textDiv.innerHTML = generatedContent;
+        contentDiv.style.display = 'block';
 
-                // Handle use generated content
-                const useBtn = aiModal.querySelector('.use-generated');
-                useBtn.addEventListener('click', () => {
-                    onDataSelectCallback(generatedContent);
-                    aiModal.remove();
-                });
-            } catch (error) {
-                console.error('AI generation failed:', error);
-            }
+        // Handle use generated content
+        const useBtn = aiModal.querySelector('.use-generated');
+        useBtn.addEventListener('click', () => {
+          onDataSelectCallback(generatedContent);
+          aiModal.remove();
         });
+      } catch (error) {
+        console.error('AI generation failed:', error);
+      }
+    });
 
-        // Handle cancel
-        const cancelButton = aiModal.querySelector('.cancel-btn');
-        cancelButton.addEventListener('click', () => {
-            onCancelCallback();
-            // Close your modal
-            aiModal.remove();
-        });
+    // Handle cancel
+    const cancelButton = aiModal.querySelector('.cancel-btn');
+    cancelButton.addEventListener('click', () => {
+      onCancelCallback();
+      // Close your modal
+      aiModal.remove();
+    });
 
-        document.body.appendChild(aiModal);
-    }
+    document.body.appendChild(aiModal);
+  }
 
-    async callAiService(content, type) {
-        // Implement your AI service integration here
-        const response = await fetch('/api/ai/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content, type })
-        });
+  async callAiService(content, type) {
+    // Implement your AI service integration here
+    const response = await fetch('/api/ai/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content, type })
+    });
 
-        const result = await response.json();
-        return result.generatedContent;
-    }
+    const result = await response.json();
+    return result.generatedContent;
+  }
 }
 ```
 This implementation provides a way for users to seamlessly integrate their preferred AI-powered content generation systems with the Stripo editor, enhancing workflow and productivity.
+
+### External Display Conditions
+
+The Stripo Editor Extensions system allows you to integrate an external display conditions, enabling users to create and manage advanced conditional display rules for email content directly within the editor. This integration is achieved by implementing the `ExternalDisplayConditionsLibrary` interface and registering it with the `ExtensionBuilder`.
+
+#### Enabling External Display Conditions
+
+To enable this feature, you use the `withExternalDisplayCondition` method on the `ExtensionBuilder` instance. This method accepts a constructor for a class that implements the `ExternalDisplayConditionsLibrary` interface.
+
+```javascript
+import { ExtensionBuilder } from '@stripoinc/ui-editor-extensions';
+import { MyCustomDisplayConditionsLibrary } from './my-custom-display-conditions-library'; // Your implementation
+
+const extension = new ExtensionBuilder()
+        .withExternalDisplayCondition(MyCustomDisplayConditionsLibrary)
+        .build();
+
+// Initialize the Stripo editor with your extension
+window.UIEditor.initEditor(
+        document.querySelector('#stripoEditorContainer'),
+        {
+          // Your editor configuration options
+          ...,
+          extensions: [
+            extension
+          ]
+        }
+);
+```
+Also
+```javascript
+conditionsEnabled: true
+```
+parameter should be passed during editor initialization.
+
+#### `ExternalDisplayConditionsLibrary` Interface
+
+Your custom display conditions library class must implement the `ExternalDisplayConditionsLibrary` interface, which defines the following methods:
+
+| Method | Parameters | Description |
+|---|---|---|
+| `getCategory()` | None | Returns properties that describe the category of the external display condition. This provides metadata about the type and category name. |
+| `openExternalDisplayConditionsDialog(currentCondition, successCallback, cancelCallback)` | `currentCondition: DisplayCondition`: The currently selected display condition to edit. <br> `successCallback: ExternalDisplayConditionSelectedCB`: Callback executed with the updated or newly created condition upon success. <br> `cancelCallback: () => void`: Callback executed when the dialog is closed without making changes. | Opens a popup dialog for creating or updating a display condition. |
+| `getIsContextActionEnabled()` | None | Determines if the context action associated with this library is enabled. Returns `true` if enabled, otherwise `false`. |
+| `getContextActionIndex()` | None | Retrieves the index of the context action associated with this library. The index represents the position/order of the action in the UI. |
+
+##### Callback Types
+
+-   **`ExternalDisplayConditionSelectedCB`**: `(condition: DisplayCondition) => void;`
+    When a display condition is created or updated, this callback must be called with the `DisplayCondition` object.
+
+#### `ExternalDisplayConditionCategory` Interface
+
+The `ExternalDisplayConditionCategory` object returned by `getCategory()` should conform to the following interface:
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `type` | `string` | The type identifier for the display condition. | `'custom-conditions'` |
+| `category` | `string` | The human-readable category name. | `'Advanced Personalization'` |
+
+#### Example Implementation
+
+```javascript
+// ./my-custom-display-conditions-library.js
+import { ExternalDisplayConditionsLibrary } from '@stripoinc/ui-editor-extensions';
+
+export class MyCustomDisplayConditionsLibrary extends ExternalDisplayConditionsLibrary {
+  getCategory() {
+    return {
+      type: 'custom-conditions',
+      category: 'Advanced Personalization'
+    };
+  }
+
+  openExternalDisplayConditionsDialog(currentCondition, successCallback, cancelCallback) {
+    // Create and display your custom display conditions UI
+    const conditionsModal = document.createElement('div');
+    conditionsModal.className = 'conditions-modal';
+
+    conditionsModal.innerHTML = `
+            <div class="conditions-modal-content">
+                <h3>Configure Display Conditions</h3>
+                <div class="conditions-form">
+                    <label>Condition Type:</label>
+                    <select class="condition-type">
+                        <option value="subscriber-tag">Subscriber Tag</option>
+                        <option value="purchase-history">Purchase History</option>
+                        <option value="location">Geographic Location</option>
+                    </select>
+                    
+                    <label>Condition Value:</label>
+                    <input type="text" class="condition-value" placeholder="Enter condition value">
+                    
+                    <div class="condition-preview">
+                        <!-- Show preview of the condition -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="save-btn">Save Condition</button>
+                    <button class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        `;
+
+    // Pre-populate with current condition if available
+    if (currentCondition) {
+      const typeSelect = conditionsModal.querySelector('.condition-type');
+      const valueInput = conditionsModal.querySelector('.condition-value');
+      typeSelect.value = currentCondition.type || '';
+      valueInput.value = currentCondition.value || '';
+    }
+
+    // Handle save
+    const saveButton = conditionsModal.querySelector('.save-btn');
+    saveButton.addEventListener('click', () => {
+      const type = conditionsModal.querySelector('.condition-type').value;
+      const value = conditionsModal.querySelector('.condition-value').value;
+
+      if (type && value) {
+        const newCondition = {
+          type: type,
+          value: value,
+          category: this.getCategory().type
+        };
+
+        successCallback(newCondition);
+        conditionsModal.remove();
+      }
+    });
+
+    // Handle cancel
+    const cancelButton = conditionsModal.querySelector('.cancel-btn');
+    cancelButton.addEventListener('click', () => {
+      cancelCallback();
+      conditionsModal.remove();
+    });
+
+    document.body.appendChild(conditionsModal);
+  }
+
+  getIsContextActionEnabled() {
+    return true; // Enable the context action
+  }
+
+  getContextActionIndex() {
+    return 0; // Position in the context menu
+  }
+}
+```
+
+This implementation provides a way for users to seamlessly integrate their preferred conditional content systems with the Stripo editor, enabling advanced personalization and targeting capabilities.
 
 ### Custom Font Management
 
@@ -1647,9 +1935,9 @@ import { CustomFontFamily } from '@stripoinc/ui-editor-extensions';
 
 // In your extension component (Block, Control, etc.)
 const customFont = {
-    name: 'Roboto Slab',
-    fontFamily: 'Roboto Slab, serif',
-    url: 'https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap'
+  name: 'Roboto Slab',
+  fontFamily: 'Roboto Slab, serif',
+  url: 'https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap'
 };
 
 this.api.addCustomFont(customFont);
@@ -1665,6 +1953,149 @@ The `CustomFontFamily` interface defines the structure for custom font configura
 | `fontFamily` | `string` | CSS font-family declaration |
 | `url` | `string` | URL to the font file or CSS import |
 
+### Blocks Panel Customization
+
+The Stripo Editor Extensions system allows you to customize the appearance of the blocks panel, providing control over how blocks are displayed, organized, and interacted with. This is achieved by implementing the `BlocksPanel` class and registering it with the `ExtensionBuilder`.
+
+#### Enabling Blocks Panel Customization
+
+To enable this feature, you use the `withBlocksPanel` method on the `ExtensionBuilder` instance. This method accepts a constructor for a class that extends the `BlocksPanel` class.
+
+```javascript
+import { ExtensionBuilder, BlocksPanel } from '@stripoinc/ui-editor-extensions';
+
+class CustomBlocksPanel extends BlocksPanel {
+  getBlockItemHtml(block) {
+    return `
+            <div class="custom-block-item">
+                <img src="${block.iconSrc}" alt="${block.title}">
+                <div class="block-info">
+                    <h4>${block.title}</h4>
+                    <p>${block.description}</p>
+                </div>
+            </div>
+        `;
+  }
+
+  getBlocksPanelHeaderHtml() {
+    return `
+            <div class="custom-panel-header">
+                <h3>Blocks</h3>
+            </div>
+        `;
+  }
+}
+
+const extension = new ExtensionBuilder()
+        .withBlocksPanel(CustomBlocksPanel)
+        .build();
+```
+
+#### `BlocksPanel` Class Methods
+
+The `BlocksPanel` class provides several methods you can override to customize the blocks panel:
+
+| Method | Parameters | Description | Default Behavior |
+|--------|------------|-------------|------------------|
+| `getBlockItemHtml(block)` | `block: BlockItem` | Generates HTML representation for a block item. | Returns `undefined` (uses default representation) |
+| `isBlockHintVisible(block)` | `block: BlockItem` | Determines whether a hint should be displayed for the block. | Returns `true` |
+| `getBlockHint(block)` | `block: BlockItem` | Gets the hint text for a block. | Returns default hint with block title and description |
+| `getBlocksPanelHeaderHtml()` | None | Generates HTML representation for the blocks panel header. | Returns `undefined` (no custom header) |
+| `getModulesPanelCollapsedHtml()` | None | Generates HTML representation for the modules panel in collapsed state. | Returns `undefined` (uses default representation) |
+| `isModulesPanelCollapsedHintVisible()` | None | Determines whether a hint should be displayed for the collapsed modules panel. | Returns `true` |
+| `getHintDelay()` | None | Gets the custom delay for showing hints in milliseconds. | Returns `undefined` (uses default delay) |
+| `getModulesPanelHint()` | None | Gets the hint text for the modules panel. | Returns `undefined` (uses default hint) |
+
+#### `BlockItem` Interface
+
+The `BlockItem` interface represents individual blocks in the panel:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | `string` | Unique identifier for the block |
+| `title` | `string` | Display title of the block |
+| `iconSrc` | `string` | URL or path to the block's icon image |
+| `description` | `string` | Description text for the block |
+| `disabled` | `boolean` | Whether the block is disabled (optional) |
+
+#### `BlockHint` Interface
+
+The `BlockHint` interface defines hint information:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `title` | `string` | Title of the hint |
+| `description` | `string` | Description text of the hint |
+
+#### Example Implementation
+
+```javascript
+import { BlocksPanel } from '@stripoinc/ui-editor-extensions';
+
+export class CustomBlocksPanel extends BlocksPanel {
+  getBlockItemHtml(block) {
+    if (block.disabled) {
+      return `
+                <div class="custom-block-item disabled">
+                    <div class="block-overlay">Coming Soon</div>
+                    <img src="${block.iconSrc}" alt="${block.title}">
+                    <span>${block.title}</span>
+                </div>
+            `;
+    }
+
+    return `
+            <div class="custom-block-item">
+                <div class="block-icon">
+                    <img src="${block.iconSrc}" alt="${block.title}">
+                </div>
+            </div>
+        `;
+  }
+
+  isBlockHintVisible(block) {
+    // Hide hints for disabled blocks
+    return !block.disabled;
+  }
+
+  getBlockHint(block) {
+    return {
+      title: `${block.title} Block`,
+      description: `${block.description}\n\nTip: Drag and drop to add to your email.`
+    };
+  }
+
+  getBlocksPanelHeaderHtml() {
+    return `
+            <div class="custom-blocks-header">
+                <h2>Blocks</h2>
+            </div>
+        `;
+  }
+
+  getHintDelay() {
+    return 800; // Show hints after 800ms delay
+  }
+
+  getModulesPanelHint() {
+    return {
+      title: this.api.translate('Saved Modules'),
+      description: this.api.translate('Access your saved email modules here')
+    };
+  }
+}
+```
+
+#### `BlocksPanelApi` Interface
+
+The `BlocksPanel` class provides access to the editor API through the `api` property:
+
+| API Method | Description |
+|------------|-------------|
+| `getEditorConfig()` | Returns the current editor configuration |
+| `translate(key, params)` | Translates a text key using the current language settings |
+
+This implementation allows for comprehensive customization of the blocks panel interface, enhancing the user experience with custom layouts, interactions, and visual styling.
 
 ### Editor State Management
 
@@ -1693,18 +2124,18 @@ import { EditorStatePropertyType, PreviewDeviceMode } from '@stripoinc/ui-editor
 
 // In your extension component
 this.api.onEditorStatePropUpdated(
-    EditorStatePropertyType.previewDeviceMode,
-    (newValue, oldValue) => {
-        console.log(`Device mode changed from ${oldValue} to ${newValue}`);
+        EditorStatePropertyType.previewDeviceMode,
+        (newValue, oldValue) => {
+          console.log(`Device mode changed from ${oldValue} to ${newValue}`);
 
-        if (newValue === PreviewDeviceMode.MOBILE) {
+          if (newValue === PreviewDeviceMode.MOBILE) {
             // Adapt your extension for mobile preview
             this.adaptForMobile();
-        } else if (newValue === PreviewDeviceMode.DESKTOP) {
+          } else if (newValue === PreviewDeviceMode.DESKTOP) {
             // Adapt your extension for desktop preview
             this.adaptForDesktop();
+          }
         }
-    }
 );
 ```
 
@@ -1733,24 +2164,24 @@ Control how the editor handles clicks outside of blocks using `ignoreClickOutsid
 ```javascript
 // In your extension component
 export class InteractiveBlock extends Block {
-    onSelect(node) {
-        // Disable block deselection when clicking outside
-        // Useful for blocks with external UI elements
-        this.api.ignoreClickOutside(true);
+  onSelect(node) {
+    // Disable block deselection when clicking outside
+    // Useful for blocks with external UI elements
+    this.api.ignoreClickOutside(true);
 
-        // Show custom toolbar or modal
-        this.showCustomToolbar();
-    }
+    // Show custom toolbar or modal
+    this.showCustomToolbar();
+  }
 
-    onToolbarClosed() {
-        // Re-enable normal click outside behavior
-        this.api.ignoreClickOutside(false);
-    }
+  onToolbarClosed() {
+    // Re-enable normal click outside behavior
+    this.api.ignoreClickOutside(false);
+  }
 
-    showCustomToolbar() {
-        const toolbar = document.createElement('div');
-        toolbar.className = 'custom-block-toolbar';
-        toolbar.innerHTML = `
+  showCustomToolbar() {
+    const toolbar = document.createElement('div');
+    toolbar.className = 'custom-block-toolbar';
+    toolbar.innerHTML = `
             <div class="toolbar-content">
                 <button onclick="this.editBlock()">Edit</button>
                 <button onclick="this.deleteBlock()">Delete</button>
@@ -1758,15 +2189,15 @@ export class InteractiveBlock extends Block {
             </div>
         `;
 
-        // Position toolbar near the block
-        document.body.appendChild(toolbar);
+    // Position toolbar near the block
+    document.body.appendChild(toolbar);
 
-        // Handle close
-        toolbar.querySelector('button:last-child').addEventListener('click', () => {
-            toolbar.remove();
-            this.onToolbarClosed();
-        });
-    }
+    // Handle close
+    toolbar.querySelector('button:last-child').addEventListener('click', () => {
+      toolbar.remove();
+      this.onToolbarClosed();
+    });
+  }
 }
 ```
 

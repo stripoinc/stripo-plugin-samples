@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Stripo Extensions Plugin Example - Blocks Panel</title>
+    <style>
+      html, body {
+        min-width: 1200px;
+        height: 100%;
+      }
+      #stripoEditorContainer {
+        height: calc(100% - 48px);
+      }
+      #externalSystemContainer {
+        background-color: darkgrey;
+        padding: 5px 20px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .control-button {
+        border-radius: 17px;
+        padding: 5px 10px;
+        border-color: grey;
+        cursor: pointer;
+      }
+      #exportButton,
+      #saveButton {
+        background: #b5e8b5;
+      }
+      .btn-group button {
+        padding: 5px 10px;
+        cursor: pointer;
+        float: left;
+      }
+      .btn-group button:first-child {
+        border-radius: 17px 0 0 17px;
+      }
+      .btn-group button:not(:last-child) {
+        border-right: none;
+      }
+      .btn-group button:last-child {
+        border-radius: 0 17px 17px 0;
+      }
+      .btn-group button.active {
+        background-color: darkgrey;
+      }
+      .avatar-preview {
+        width: 34px;
+        height: 34px;
+        border-radius: 15px;
+        background-size: cover;
+        display: inline-block;
+        margin-left: 5px;
+
+      }
+      /* Notifications styles */
+      .notification-zone {
+        position: fixed;
+        width: 700px;
+        z-index: 99999;
+        right: 30px;
+        bottom: 80px;
+      }
+      .alert-success {
+        color: #046904;
+        background: #b5e8b5;
+        padding: 5px 10px;
+        border: 2px solid #046904;
+        border-radius: 15px;
+      }
+      .alert-info {
+        color: hsla(215, 32%, 56%, 1);
+        background: hsla(215, 87%, 94%, 1);
+        padding: 5px 10px;
+        border: 2px solid #046904;
+        border-radius: 15px;
+      }
+    </style>
+  </head>
+  <body>
+
+  <div id="externalSystemContainer">
+    <div style="padding-top: 5px;color: black">
+      EXTERNAL HEADER OUTSIDE THE EDITOR
+    </div>
+
+    <div class="btn-group">
+      <button id="undoButton">Undo</button>
+      <button id="versionHistoryButton">History</button>
+      <button id="redoButton">Redo</button>
+    </div>
+    <div>
+      <button id="codeEditor" class="control-button">Code editor</button>
+    </div>
+    <div class="btn-group viewSwitcher">
+      <button id="desktopViewButton" class="active">Desktop</button>
+      <button id="mobileViewButton">Mobile</button>
+    </div>
+  </div>
+
+  <div id="no_plugin_id_info" class="notification-zone alert-info" style="display: none">
+    <p>Please set PLUGIN_ID and SECRET_KEY to run the editor</p>
+  </div>
+
+  <div id="stripoEditorContainer"/>
+
+  <!-- Vite will replace this with the correct script dynamically -->
+  <script type="module" src="/src/index.js"></script>
+  </body>
+</html>
