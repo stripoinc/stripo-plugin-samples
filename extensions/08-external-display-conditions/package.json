@@ -1,0 +1,16 @@
+{
+  "name": "external-display-conditions",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build-extension-only": "vite build --config vite.config.js --mode extension-only"
+  },
+  "dependencies": {
+    "@stripoinc/ui-editor-extensions": "^1.0.6"
+  },
+  "devDependencies": {
+    "vite": "^6.2.2",
+    "terser": "^5.39.0"
+  }
+}
