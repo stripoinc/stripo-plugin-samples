@@ -274,7 +274,7 @@
       const script = document.createElement('script');
       script.id = 'UiEditorScript';
       script.type = 'module';
-      script.src = 'https://dev-account.stripo.email/resources/coediting/UIEditor.js';
+      script.src = 'https://plugins.stripo.email/resources/uieditor/latest/UIEditor.js';
       script.onload = function () {
         window.UIEditor.initEditor(
           document.querySelector('#stripoEditorContainer'),
@@ -296,8 +296,8 @@
             onTokenRefreshRequest: function (callback) {
               request('POST', 'https://plugins.stripo.email/api/v1/auth',
                 JSON.stringify({
-                  pluginId: '127b225ce5b946a5b46ef05b1a241267',
-                  secretKey: 'cecc40a9939f464eabb4d0f0b394a0a4',
+                  pluginId: 'YOUR_PLUGIN_ID',
+                  secretKey: 'YOUR_SECRET_KEY',
                   userId: '1',
                   role: 'user'
                 }),

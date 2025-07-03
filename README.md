@@ -13,6 +13,10 @@
 | [Extensions. External smart elements](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/05-external-smart-elements-library) | An example of an integration with external smart elements.        |
 | [Extensions. External AI assistant](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/06-external-ai-assistant)             | An example of an integration with an external AI assistant.       |
 | [Extensions. External custom font](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/07-external-custom-font)               | An example of an integration with external custom fonts.          |
+| [Extensions. External display conditions](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/08-external-display-conditions)     | An example of an integration with external display conditions.     |
+| [Extensions. External display conditions with context menu](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/09-external-display-conditions-with-context-menu) | An example of external display conditions with context menu.       |
+| [Extensions. External video library](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/10-external-video-library)             | An example of an integration with an external video library.       |
+| [Extensions. Blocks panel](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/11-blocks-panel)                                   | An example of customizing the Blocks panel.                     |
 
 ## Extensions Documentation
 
