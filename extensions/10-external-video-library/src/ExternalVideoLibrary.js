@@ -138,12 +138,13 @@ export class ExternalVideoLibrary {
     createModal() {
         const modalHtml = this.generateModalHTML();
         const container = document.createElement('div');
-        container.style.visibility = 'hidden';
         container.innerHTML = modalHtml;
         document.body.appendChild(container);
         
         // Store reference to the modal element
         this.externalLibrary = document.getElementById('externalVideoLibrary');
+        // Initially hide the modal
+        this.externalLibrary.style.display = 'none';
     }
 
     /**
@@ -384,7 +385,7 @@ export class ExternalVideoLibrary {
      * Closes the modal by hiding it
      */
     close() {
-        this.externalLibrary.style.visibility = 'hidden';
+        this.externalLibrary.style.display = 'none';
     }
 
     /**
@@ -399,7 +400,7 @@ export class ExternalVideoLibrary {
         this.cancelCallback = onCancelCallback;
         
         // Show modal
-        this.externalLibrary.style.visibility = 'visible';
+        this.externalLibrary.style.display = 'flex';
         
         // Reset filters to show all videos
         this.filterVideos('all');

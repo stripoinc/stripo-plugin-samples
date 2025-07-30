@@ -150,12 +150,13 @@ export default class ExternalImagesLibraryExample {
     createModal() {
         const modalHtml = this.generateModalHTML();
         const container = document.createElement('div');
-        container.style.visibility = 'hidden';
         container.innerHTML = modalHtml;
         document.body.appendChild(container);
         
         // Store reference to the modal element
         this.externalLibrary = document.getElementById('externalImagesLibrary');
+        // Initially hide the modal
+        this.externalLibrary.style.display = 'none';
     }
 
     /**
@@ -392,7 +393,7 @@ export default class ExternalImagesLibraryExample {
      * Closes the modal by hiding it
      */
     close() {
-        this.externalLibrary.style.visibility = 'hidden';
+        this.externalLibrary.style.display = 'none';
     }
 
     /**
@@ -407,7 +408,7 @@ export default class ExternalImagesLibraryExample {
         this.cancelCallback = onCancelCallback;
         
         // Show modal
-        this.externalLibrary.style.visibility = 'visible';
+        this.externalLibrary.style.display = 'flex';
         
         // Reset filters to show all images
         this.filterImages('all');

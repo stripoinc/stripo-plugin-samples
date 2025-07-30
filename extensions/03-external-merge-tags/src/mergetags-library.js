@@ -159,12 +159,13 @@ export class ExternalMergeTagsLibrary {
   createModal() {
     const modalHtml = this.generateModalHTML();
     const container = document.createElement('div');
-    container.style.visibility = 'hidden';
     container.innerHTML = modalHtml;
     document.body.appendChild(container);
     
     // Store reference to the modal element
     this.externalLibrary = document.getElementById('externalMergeTags');
+    // Initially hide the modal
+    this.externalLibrary.style.display = 'none';
   }
 
   /**
@@ -446,7 +447,7 @@ export class ExternalMergeTagsLibrary {
    * Closes the modal by hiding it
    */
   close() {
-    this.externalLibrary.style.visibility = 'hidden';
+    this.externalLibrary.style.display = 'none';
   }
 
   /**
@@ -463,7 +464,7 @@ export class ExternalMergeTagsLibrary {
     this.updateSelectedTag();
     
     // Show modal
-    this.externalLibrary.style.visibility = 'visible';
+    this.externalLibrary.style.display = 'flex';
     
     // Reset filters to show all tags
     this.filterTags('all');
