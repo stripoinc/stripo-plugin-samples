@@ -54,7 +54,7 @@ export default class ExternalImagesLibraryExample {
         // Content container styles
         content: {
             padding: '32px',
-            height: '334px', // Fixed height to show exactly 2 rows
+            height: '420px', // Fixed height to show exactly 2 rows
             overflowY: 'auto',
             overflowX: 'hidden',
             boxSizing: 'border-box'
@@ -240,6 +240,11 @@ export default class ExternalImagesLibraryExample {
     generateContentHTML() {
         return `
             <div style="${this.styleObjToString(ExternalImagesLibraryExample.STYLES.content)}">
+                <div style="margin: 0 0 20px 0; padding: 10px 16px; background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px;">
+                    <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500; text-align: center;">
+                        <span style="font-weight: 700; color: #d97706;">⚠️ Notice:</span> This popup window is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
+                    </p>
+                </div>
                 <div class="image-grid" style="${this.styleObjToString(ExternalImagesLibraryExample.STYLES.grid)}">
                     ${this.generateImageThumbnails()}
                 </div>
