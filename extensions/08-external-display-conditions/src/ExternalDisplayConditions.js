@@ -636,6 +636,14 @@ export class ExternalDisplayConditions {
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Disclaimer Footer -->
+                    <div style="padding: 16px 32px; border-top: 1px solid #e5e7eb; background-color: #fef3c7; 
+                                border-radius: 0 0 12px 12px; text-align: center;">
+                        <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500;">
+                            <span style="font-weight: 700; color: #d97706;">⚠️ Notice:</span> This popup window is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
+                        </p>
+                    </div>
                 </div>
             </div>`;
         document.body.appendChild(div);
