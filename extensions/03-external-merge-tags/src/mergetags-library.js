@@ -54,7 +54,7 @@ export class ExternalMergeTagsLibrary {
     // Content container styles
     content: {
       padding: '32px',
-      height: '320px',
+      height: '315px',
       overflowY: 'auto',
       overflowX: 'hidden',
       boxSizing: 'border-box'
@@ -90,6 +90,15 @@ export class ExternalMergeTagsLibrary {
       fontWeight: '500',
       cursor: 'pointer',
       transition: 'all 0.2s'
+    },
+    
+    // Footer styles
+    footer: {
+      padding: '16px 32px',
+      borderTop: '1px solid #e5e7eb',
+      backgroundColor: '#fef3c7',
+      borderRadius: '0 0 12px 12px',
+      textAlign: 'center'
     }
   };
 
@@ -192,6 +201,7 @@ export class ExternalMergeTagsLibrary {
         <div style="${this.styleObjToString(ExternalMergeTagsLibrary.STYLES.modal)}">
           ${this.generateHeaderHTML()}
           ${this.generateContentHTML()}
+          ${this.generateFooterHTML()}
         </div>
       </div>
     `;
@@ -267,6 +277,20 @@ export class ExternalMergeTagsLibrary {
         <div class="tags-grid" style="${this.styleObjToString(ExternalMergeTagsLibrary.STYLES.grid)}">
           ${this.generateMergeTagCards()}
         </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Generates the footer section HTML with disclaimer
+   * @returns {string} HTML string for the footer
+   */
+  generateFooterHTML() {
+    return `
+      <div style="${this.styleObjToString(ExternalMergeTagsLibrary.STYLES.footer)}">
+        <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500;">
+          <span style="font-weight: 700; color: #d97706;">⚠️ Notice:</span> This popup window is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
+        </p>
       </div>
     `;
   }
