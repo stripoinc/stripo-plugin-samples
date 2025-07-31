@@ -104,6 +104,15 @@ export class ExternalAiAssistant {
       border: 'none',
       cursor: 'pointer',
       transition: 'all 0.3s ease'
+    },
+
+    // Disclaimer footer styles
+    disclaimerFooter: {
+      padding: '16px 30px',
+      borderTop: '1px solid #e5e7eb',
+      backgroundColor: '#fef3c7',
+      borderRadius: '0 0 12px 12px',
+      textAlign: 'center'
     }
   };
 
@@ -175,6 +184,7 @@ export class ExternalAiAssistant {
           ${this.generateHeaderHTML()}
           ${this.generateBodyHTML()}
           ${this.generateFooterHTML()}
+          ${this.generateDisclaimerFooterHTML()}
         </div>
       </div>
     `;
@@ -329,6 +339,20 @@ export class ExternalAiAssistant {
           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
           Apply Changes
         </button>
+      </div>
+    `;
+  }
+
+  /**
+   * Generates the disclaimer footer section HTML
+   * @returns {string} HTML string for the disclaimer footer
+   */
+  generateDisclaimerFooterHTML() {
+    return `
+      <div style="${this.styleObjToString(ExternalAiAssistant.STYLES.disclaimerFooter)}">
+        <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500;">
+          <span style="font-weight: 700; color: #d97706;">⚠️ Notice:</span> This popup window is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
+        </p>
       </div>
     `;
   }
