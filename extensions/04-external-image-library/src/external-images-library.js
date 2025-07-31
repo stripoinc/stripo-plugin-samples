@@ -54,7 +54,7 @@ export default class ExternalImagesLibraryExample {
         // Content container styles
         content: {
             padding: '32px',
-            height: '420px', // Fixed height to show exactly 2 rows
+            height: '340px', // Reduced height to accommodate footer
             overflowY: 'auto',
             overflowX: 'hidden',
             boxSizing: 'border-box'
@@ -91,6 +91,15 @@ export default class ExternalImagesLibraryExample {
             fontWeight: '500',
             cursor: 'pointer',
             transition: 'all 0.2s'
+        },
+        
+        // Footer styles
+        footer: {
+            padding: '16px 32px',
+            borderTop: '1px solid #e5e7eb',
+            backgroundColor: '#fef3c7',
+            borderRadius: '0 0 12px 12px',
+            textAlign: 'center'
         }
     };
 
@@ -169,6 +178,7 @@ export default class ExternalImagesLibraryExample {
                 <div style="${this.styleObjToString(ExternalImagesLibraryExample.STYLES.modal)}">
                     ${this.generateHeaderHTML()}
                     ${this.generateContentHTML()}
+                    ${this.generateFooterHTML()}
                 </div>
             </div>
         `;
@@ -240,14 +250,23 @@ export default class ExternalImagesLibraryExample {
     generateContentHTML() {
         return `
             <div style="${this.styleObjToString(ExternalImagesLibraryExample.STYLES.content)}">
-                <div style="margin: 0 0 20px 0; padding: 10px 16px; background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px;">
-                    <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500; text-align: center;">
-                        <span style="font-weight: 700; color: #d97706;">⚠️ Notice:</span> This popup window is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
-                    </p>
-                </div>
                 <div class="image-grid" style="${this.styleObjToString(ExternalImagesLibraryExample.STYLES.grid)}">
                     ${this.generateImageThumbnails()}
                 </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Generates the footer section HTML with disclaimer
+     * @returns {string} HTML string for the footer
+     */
+    generateFooterHTML() {
+        return `
+            <div style="${this.styleObjToString(ExternalImagesLibraryExample.STYLES.footer)}">
+                <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500;">
+                    <span style="font-weight: 700; color: #d97706;">⚠️ Please be advised:</span> This popup window is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
+                </p>
             </div>
         `;
     }
