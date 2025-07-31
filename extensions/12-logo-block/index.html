@@ -1,110 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Stripo Extensions Plugin Example - Blocks Panel</title>
-    <style>
-      html, body {
-        min-width: 1200px;
-        height: 100%;
-      }
-      #stripoEditorContainer {
-        height: calc(100% - 48px);
-      }
-      #externalSystemContainer {
-        background-color: darkgrey;
-        padding: 5px 20px;
-        display: flex;
-        justify-content: space-between;
-      }
-      .control-button {
-        border-radius: 17px;
-        padding: 5px 10px;
-        border-color: grey;
-        cursor: pointer;
-      }
-      #exportButton,
-      #saveButton {
-        background: #b5e8b5;
-      }
-      .btn-group button {
-        padding: 5px 10px;
-        cursor: pointer;
-        float: left;
-      }
-      .btn-group button:first-child {
-        border-radius: 17px 0 0 17px;
-      }
-      .btn-group button:not(:last-child) {
-        border-right: none;
-      }
-      .btn-group button:last-child {
-        border-radius: 0 17px 17px 0;
-      }
-      .btn-group button.active {
-        background-color: darkgrey;
-      }
-      .avatar-preview {
-        width: 34px;
-        height: 34px;
-        border-radius: 15px;
-        background-size: cover;
-        display: inline-block;
-        margin-left: 5px;
+<head>
+  <meta charset="UTF-8">
+  <title>Stripo Plugin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-      }
-      /* Notifications styles */
-      .notification-zone {
-        position: fixed;
-        width: 700px;
-        z-index: 99999;
-        right: 30px;
-        bottom: 80px;
-      }
-      .alert-success {
-        color: #046904;
-        background: #b5e8b5;
-        padding: 5px 10px;
-        border: 2px solid #046904;
-        border-radius: 15px;
-      }
-      .alert-info {
-        color: hsla(215, 32%, 56%, 1);
-        background: hsla(215, 87%, 94%, 1);
-        padding: 5px 10px;
-        border: 2px solid #046904;
-        border-radius: 15px;
-      }
-    </style>
-  </head>
-  <body>
+    html, body {
+      min-width: 1200px;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
 
-  <div id="externalSystemContainer">
-    <div style="padding-top: 5px;color: black">
-      EXTERNAL HEADER OUTSIDE THE EDITOR
-    </div>
+    #stripoEditorContainer {
+      height: calc(100% - 103px); /* 65px header + 38px disclaimer */
+      background-color: #f5f5f7;
+    }
 
-    <div class="btn-group">
-      <button id="undoButton">Undo</button>
-      <button id="versionHistoryButton">History</button>
-      <button id="redoButton">Redo</button>
-    </div>
-    <div>
-      <button id="codeEditor" class="control-button">Code editor</button>
-    </div>
-    <div class="btn-group viewSwitcher">
-      <button id="desktopViewButton" class="active">Desktop</button>
-      <button id="mobileViewButton">Mobile</button>
-    </div>
+    #externalSystemContainer {
+      background: linear-gradient(to right, #ffffff, #fafafa);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-bottom: 1px solid #e1e1e1;
+      height: 65px;
+    }
+
+    #externalSystemContainer > div:first-child {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+      letter-spacing: -0.02em;
+    }
+
+    .control-button {
+      background: #ffffff;
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #4a4a4a;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .control-button:hover {
+      background: #f8f8f8;
+      border-color: #c5c5c5;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .control-button:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .control-button.active {
+      background: #34c759;
+      border-color: #34c759;
+      color: white;
+    }
+
+    .control-button.active:hover {
+      background: #2ca548;
+      border-color: #2ca548;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1px;
+      background: #e1e1e1;
+      border-radius: 8px;
+      padding: 1px;
+    }
+
+    .btn-group button {
+      background: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #6b6b6b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-group button:first-child {
+      border-radius: 7px 0 0 7px;
+    }
+
+    .btn-group button:last-child {
+      border-radius: 0 7px 7px 0;
+    }
+
+    .btn-group button:hover {
+      background: #f8f8f8;
+    }
+
+    .btn-group button.active {
+      background: #34c759;
+      color: white;
+    }
+
+    .btn-group button.active:hover {
+      background: #2ca548;
+    }
+
+    .avatar-preview {
+      width: 34px;
+      height: 34px;
+      border-radius: 15px;
+      background-size: cover;
+      display: inline-block;
+      margin-left: 5px;
+    }
+
+    /* Notifications styles */
+    .notification-zone {
+      position: fixed;
+      width: 700px;
+      max-width: 90%;
+      z-index: 99999;
+      right: 30px;
+      bottom: 80px;
+    }
+
+    .alert-success {
+      color: #0f5d0f;
+      background: #e6f7e6;
+      padding: 16px 20px;
+      border-left: 4px solid #28a745;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-info {
+      color: #004085;
+      background: #e7f3ff;
+      padding: 16px 20px;
+      border-left: 4px solid #007bff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const desktopButton = document.getElementById('desktopViewButton');
+    const mobileButton = document.getElementById('mobileViewButton');
+    const codeEditorButton = document.getElementById('codeEditor');
+    const historyButton = document.getElementById('versionHistoryButton');
+
+    function setActiveButton(activeButton, inactiveButton) {
+      activeButton.classList.add('active');
+      inactiveButton.classList.remove('active');
+    }
+
+    desktopButton.addEventListener('click', function() {
+      setActiveButton(desktopButton, mobileButton);
+    });
+
+    mobileButton.addEventListener('click', function() {
+      setActiveButton(mobileButton, desktopButton);
+    });
+
+    // Code Editor button toggle
+    codeEditorButton.addEventListener('click', function() {
+      codeEditorButton.classList.toggle('active');
+    });
+
+    // History button toggle
+    historyButton.addEventListener('click', function() {
+      historyButton.classList.toggle('active');
+    });
+  });
+</script>
+
+<div id="externalSystemContainer">
+  <div style="padding-top: 5px; color: #6B6B6B">
+    Stripo Plugin
   </div>
 
-  <div id="no_plugin_id_info" class="notification-zone alert-info" style="display: none">
-    <p>Please set PLUGIN_ID and SECRET_KEY to run the editor</p>
+  <div class="btn-group">
+    <button id="undoButton">Undo</button>
+    <button id="versionHistoryButton">History</button>
+    <button id="redoButton">Redo</button>
   </div>
+  <div>
+    <button id="codeEditor" class="control-button">Code editor</button>
+  </div>
+  <div class="btn-group viewSwitcher">
+    <button id="desktopViewButton" class="active">Desktop</button>
+    <button id="mobileViewButton">Mobile</button>
+  </div>
+</div>
 
-  <div id="stripoEditorContainer"/>
+<div style="background-color: #fef3c7; border-bottom: 1px solid #f59e0b; padding: 8px 24px; text-align: center;">
+  <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500;">
+    <span style="font-weight: 700; color: #d97706;">⚠️ Please be advised:</span> The header shown above is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
+  </p>
+</div>
 
-  <!-- Vite will replace this with the correct script dynamically -->
-  <script type="module" src="/src/index.js"></script>
-  </body>
+<div id="no_plugin_id_info" class="notification-zone alert-info" style="display: none">
+  <p>Please set PLUGIN_ID and SECRET_KEY to run the editor</p>
+</div>
+
+<div id="stripoEditorContainer"/>
+
+<!-- Vite will replace this with the correct script dynamically -->
+<script type="module" src="/src/index.js"></script>
+</body>
 </html>
