@@ -198,6 +198,21 @@ class CustomFontFamilySelect extends UIElement {
                         </button>
                     </div>
                 </div>
+                <div style="
+                    padding: 16px 24px;
+                    border-top: 1px solid #e5e7eb;
+                    background-color: #fef3c7;
+                    border-radius: 0 0 8px 8px;
+                    text-align: center;">
+                    <p style="
+                        margin: 0;
+                        font-size: 13px;
+                        color: #92400e;
+                        font-weight: 500;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                        <span style="font-weight: 700; color: #d97706;">⚠️ Notice:</span> This popup window is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
+                    </p>
+                </div>
             </div>
         </div>
         <style>
