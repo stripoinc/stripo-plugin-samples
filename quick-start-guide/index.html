@@ -4,42 +4,99 @@
     <meta charset="UTF-8">
     <title>Stripo Plugin Example</title>
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       html, body {
         min-width: 1200px;
         height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       }
       #stripoEditorContainer {
-        height: calc(100% - 48px);
+        height: calc(100% - 103px); /* 65px header + 38px disclaimer */
+        background-color: #f5f5f7;
       }
       #externalSystemContainer {
-        background-color: darkgrey;
-        padding: 5px 20px;
+        background: linear-gradient(to right, #ffffff, #fafafa);
+        padding: 12px 24px;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid #e1e1e1;
+        height: 65px;
+      }
+      #externalSystemContainer > div:first-child {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+        letter-spacing: -0.02em;
       }
       .control-button {
-        border-radius: 17px;
-        padding: 5px 10px;
-        border-color: grey;
+        background: #ffffff;
+        border: 1px solid #e1e1e1;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #4a4a4a;
         cursor: pointer;
+        transition: all 0.2s ease;
       }
-      #exportButton,
-      #saveButton {
-        background: #b5e8b5;
+      .control-button:hover {
+        background: #f8f8f8;
+        border-color: #c5c5c5;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
+      .control-button:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+      .control-button.active {
+        background: #34c759;
+        border-color: #34c759;
+        color: white;
+      }
+      .control-button.active:hover {
+        background: #2ca548;
+        border-color: #2ca548;
+      }
+      .btn-group {
+        display: flex;
+        gap: 1px;
+        background: #e1e1e1;
+        border-radius: 8px;
+        padding: 1px;
       }
       .btn-group button {
-        padding: 5px 10px;
+        background: #ffffff;
+        border: none;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b6b6b;
         cursor: pointer;
-        float: left;
+        transition: all 0.2s ease;
       }
-      .btn-group button.rounded-left {
-        border-radius: 17px 0 0 17px;
+      .btn-group button:first-child {
+        border-radius: 7px 0 0 7px;
       }
-      .btn-group button.rounded-right {
-        border-radius: 0 17px 17px 0;
+      .btn-group button:last-child {
+        border-radius: 0 7px 7px 0;
+      }
+      .btn-group button:hover {
+        background: #f8f8f8;
       }
       .btn-group button.active {
-        background-color: darkgrey;
+        background: #34c759;
+        color: white;
+      }
+      .btn-group button.active:hover {
+        background: #2ca548;
       }
       .avatar-preview {
         width: 34px;
@@ -48,29 +105,31 @@
         background-size: cover;
         display: inline-block;
         margin-left: 5px;
-
       }
       /* Notifications styles */
       .notification-zone {
         position: fixed;
-        width: 400px;
+        width: 700px;
+        max-width: 90%;
         z-index: 99999;
         right: 30px;
         bottom: 80px;
       }
       .alert-success {
-        color: #046904;
-        background: #b5e8b5;
-        padding: 5px 10px;
-        border: 2px solid #046904;
-        border-radius: 15px;
+        color: #0f5d0f;
+        background: #e6f7e6;
+        padding: 16px 20px;
+        border-left: 4px solid #28a745;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
       .alert-info {
-        color: hsla(215, 32%, 56%, 1);
-        background: hsla(215, 87%, 94%, 1);
-        padding: 5px 10px;
-        border: 2px solid #046904;
-        border-radius: 15px;
+        color: #004085;
+        background: #e7f3ff;
+        padding: 16px 20px;
+        border-left: 4px solid #007bff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
     </style>
   </head>
@@ -78,28 +137,28 @@
 
   <!--This is your own external header where you can place plugin buttons -->
   <div id="externalSystemContainer">
-    <div style="padding-top: 5px;color: black">
-      EXTERNAL HEADER OUTSIDE THE EDITOR
+    <div style="padding-top: 5px; color: #6B6B6B">
+      Stripo Plugin
     </div>
 
     <div class="btn-group">
-      <button id="undoButton" class="rounded-left">Undo</button>
-      <button id="versionHistoryUndoButton" class="rounded-left" style="display: none;" disabled onclick="undo()">Undo</button>
+      <button id="undoButton">Undo</button>
+      <button id="versionHistoryUndoButton" style="display: none;" disabled onclick="undo()">Undo</button>
       <button id="versionHistoryButton" onclick="toggleVersionHistory()">History</button>
-      <button id="redoButton" class="rounded-right">Redo</button>
-      <button id="versionHistoryRedoButton" class="rounded-right" style="display: none;" disabled onclick="redo()">Redo</button>
+      <button id="redoButton">Redo</button>
+      <button id="versionHistoryRedoButton" style="display: none;" disabled onclick="redo()">Redo</button>
     </div>
     <div>
       <button id="codeEditor" class="control-button">Code editor</button>
     </div>
     <div id="viewSwitcher" class="btn-group viewSwitcher">
-      <button id="desktopViewButton" class="active rounded-left">Desktop</button>
-      <button id="mobileViewButton" class="rounded-right">Mobile</button>
+      <button id="desktopViewButton" class="active">Desktop</button>
+      <button id="mobileViewButton">Mobile</button>
     </div>
 
     <div id="versionHistoryViewSwitcher" class="btn-group" style="display: none;">
-      <button class="active rounded-left" onclick="switchVersionHistoryToDesktopPreview()">Desktop</button>
-      <button class="rounded-right" onclick="switchVersionHistoryToMobilePreview()">Mobile</button>
+      <button class="active" onclick="switchVersionHistoryToDesktopPreview()">Desktop</button>
+      <button onclick="switchVersionHistoryToMobilePreview()">Mobile</button>
     </div>
     <div>
       <button id="saveButton" class="control-button">Manual Save</button>
@@ -109,11 +168,17 @@
     <div class="avatars"></div>
   </div>
 
+  <div style="background-color: #fef3c7; border-bottom: 1px solid #f59e0b; padding: 8px 24px; text-align: center;">
+    <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500;">
+      <span style="font-weight: 700; color: #d97706;">⚠️ Please be advised:</span> The header shown above is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
+    </p>
+  </div>
+
   <!--This is your own area for notification messages -->
   <div class="notification-zone"></div>
 
   <!--This is a Stripo plugin container -->
-  <div id="stripoEditorContainer"/> <!-- PLACE IN THE CODE WHERE TO PLACE A STRIPO EDITOR -->
+  <div id="stripoEditorContainer"></div> <!-- PLACE IN THE CODE WHERE TO PLACE A STRIPO EDITOR -->
 
   <!--External utility methods to interact with UI and load demo template code -->
   <script>
@@ -148,6 +213,16 @@
         });
         e.target.classList.add('active');
       })
+    });
+
+    // Code Editor button toggle
+    document.getElementById('codeEditor').addEventListener('click', function() {
+      this.classList.toggle('active');
+    });
+
+    // History button toggle
+    document.getElementById('versionHistoryButton').addEventListener('click', function() {
+      this.classList.toggle('active');
     });
   </script>
 
