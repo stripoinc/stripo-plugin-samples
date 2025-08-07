@@ -20,10 +20,15 @@ function runPlugin(template, extension) {
         window.UIEditor.initEditor(
             document.querySelector('#stripoEditorContainer'),
             {
+                onSettingsPanelBlockSorting: () => [
+                    'BLOCK_TEXT',
+                    'BLOCK_IMAGE',
+                    'BLOCK_BUTTON',
+                ],
                 html: template.html,
                 css: template.css,
                 metadata: {
-                    emailId: `plugin_${PLUGIN_ID}_demo_1`,
+                    emailId: `plugin_${PLUGIN_ID}_demo_product_1`,
                     userId: '1',
                     username: 'Plugin Demo User',
                     avatarUrl: 'https://plugin.stripocdn.email/content/guids/CABINET_eab4e7d5a4603ac03f4120652a3a5a540f0c79c688514939f095f67433ed4a67/images/photo256.png'

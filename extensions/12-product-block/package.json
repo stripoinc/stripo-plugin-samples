@@ -1,5 +1,5 @@
 {
-  "name": "hello-world-stripo-extension",
+  "name": "product-block-stripo-extension",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
@@ -7,7 +7,7 @@
     "build-extension-only": "vite build --config vite.config.js --mode extension-only"
   },
   "dependencies": {
-    "@stripoinc/ui-editor-extensions": "^1.0.0"
+    "@stripoinc/ui-editor-extensions": "^1.0.6"
   },
   "devDependencies": {
     "vite": "^6.2.2",
