@@ -16,10 +16,17 @@ export class SimpleBlockContextAction extends ContextAction {
     }
 
     /**
+     * Deprecated
+     */
+    getIconClass() {
+        return 'plus';
+    }
+
+    /**
      * Returns the CSS class name for the icon of this context action.
      * @returns {string} The icon class name.
      */
-    getIconClass() {
+    getIcon() {
         return 'plus';
     }
 
