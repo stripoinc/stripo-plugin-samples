@@ -550,6 +550,10 @@ export class ExternalDisplayConditions {
         }
     }
 
+    getCategoryName() {
+        return 'External display conditions';
+    }
+
     activateConditionsPopup(appliedCondition) {
         if (!this.conditionsPopupElement) {
             this.createConditionsPopup();
