@@ -1,0 +1,20 @@
+{
+  "name": "external-ai-assistant-typescript",
+  "version": "1.0.0",
+  "description": "External AI Assistant Extension for Stripo Editor (TypeScript)",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@stripoinc/ui-editor-extensions": "3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^7.1.9"
+  }
+}
