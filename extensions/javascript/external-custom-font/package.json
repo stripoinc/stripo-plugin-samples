@@ -1,0 +1,19 @@
+{
+  "name": "external-custom-font",
+  "version": "1.0.0",
+  "description": "External Custom Font Extension for Stripo Editor",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@stripoinc/ui-editor-extensions": "3.0.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.9"
+  }
+}

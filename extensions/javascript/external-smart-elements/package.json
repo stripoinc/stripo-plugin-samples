@@ -1,0 +1,19 @@
+{
+  "name": "external-smart-elements",
+  "version": "1.0.0",
+  "description": "External Smart Elements Extension for Stripo Editor",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@stripoinc/ui-editor-extensions": "3.0.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.9"
+  }
+}
