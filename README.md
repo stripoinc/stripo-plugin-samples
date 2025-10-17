@@ -1,25 +1,83 @@
 <img src="https://stripo-cdn.stripo.email/img/front/press-kit/logo-horizontal.svg" alt="Stripo Logo" style="width: 198px"/>
 <br/>
 
-# Stripo plugin samples
+# Stripo Plugin Samples
 
-| Topic                                                                                                                                             | Description                                                      |
-|---------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
-| [Quick start guide](https://github.com/stripoinc/stripo-plugin-samples/tree/main/quick-start-guide)                                               | An example of how to quickly integrate an editor into a web page. |
-| [Extensions. Simple block](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/01-simple-block)                               | An example of a simple custom block extension.                   |
-| [Extensions. Structure block](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/02-structure-block)                         | An example of a custom structure block extension.                |
-| [Extensions. External merge tags](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/03-external-merge-tags)                 | An example of an integration with external merge tags.           |
-| [Extensions. External image library](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/04-external-image-library)           | An example of an integration with an external image library.     |
-| [Extensions. External smart elements](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/05-external-smart-elements-library) | An example of an integration with external smart elements.       |
-| [Extensions. External AI assistant](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/06-external-ai-assistant)             | An example of an integration with an external AI assistant.      |
-| [Extensions. External custom font](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/07-external-custom-font)               | An example of an integration with external custom fonts.         |
-| [Extensions. External display conditions](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/08-external-display-conditions)     | An example of an integration with external display conditions.    |
-| [Extensions. External display conditions with context menu](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/09-external-display-conditions-with-context-menu) | An example of external display conditions with context menu.      |
-| [Extensions. External video library](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/10-external-video-library)             | An example of an integration with an external video library.      |
-| [Extensions. Blocks panel](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/11-blocks-panel)                                   | An example of customizing the Blocks panel.                    |
-| [Extensions. Logo block](https://github.com/stripoinc/stripo-plugin-samples/tree/main/extensions/12-logo-block)                                       | An example of a custom logo block.                    |
+This repository contains comprehensive examples demonstrating how to integrate and extend the Stripo Email Editor. Each example is available in both JavaScript and TypeScript implementations.
 
-## Extensions Documentation
+## Getting Started
 
-Detailed documentation for extensions can be found [here](https://plugin.stripo.email/extensions/introduction).
+### Quick Start Guide
+
+**Location:** [`quick-start-guide/`](./quick-start-guide)
+
+A minimal implementation example showing how to quickly integrate the Stripo Editor into your web application. This is the recommended starting point for new integrations.
+
+## Extension Examples
+
+All extension examples are organized by programming language:
+
+- **JavaScript:** [`extensions/javascript/`](./extensions/javascript)
+- **TypeScript:** [`extensions/typescript/`](./extensions/typescript)
+
+### Available Extensions
+
+#### Foundation
+
+| Extension | Description |
+|-----------|-------------|
+| [Extension Starter](./extensions/javascript/extension-starter) | Template project for creating custom Stripo Editor extensions |
+
+#### Custom Blocks
+
+| Extension | Description |
+|-----------|-------------|
+| [Coupon Block](./extensions/javascript/coupon-block) | Custom block extension for promotional coupon codes |
+
+#### External Integrations
+
+| Extension | Description |
+|-----------|-------------|
+| [External Merge Tags](./extensions/javascript/external-merge-tags) | Integration with external merge tag providers |
+| [External Image Library](./extensions/javascript/external-image-library) | Integration with third-party image storage services |
+| [External Video Library](./extensions/javascript/external-video-library) | Integration with external video hosting platforms |
+| [External Smart Elements](./extensions/javascript/external-smart-elements) | Integration with dynamic content element providers |
+| [External AI Assistant](./extensions/javascript/external-ai-assistant) | Integration with AI-powered content generation services |
+| [External Custom Font](./extensions/javascript/external-custom-font) | Integration with custom font libraries |
+| [External Display Conditions](./extensions/javascript/external-display-conditions) | Advanced conditional display logic integration |
+
+## Documentation
+
+For detailed information about building extensions and using the Stripo Editor API, please refer to the [official documentation](https://plugin.stripo.email/extensions/introduction).
+
+## Requirements
+
+- Node.js 22.x or higher
+- npm or yarn package manager
+- Modern web browser with JavaScript enabled
+
+## Running Examples
+
+Each example contains its own `package.json` with the following standard commands:
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## Support
+
+For questions, issues, or feature requests, please visit:
+- [Stripo Plugin Documentation](https://plugin.stripo.email)
+- [Getting Started Guide](https://plugin.stripo.email/getting-started/creating-an-application)
+
+## License
+
+These samples are provided as-is for demonstration purposes.
 
