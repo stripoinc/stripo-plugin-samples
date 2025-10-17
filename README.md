@@ -21,5 +21,5 @@
 
 ## Extensions Documentation
 
-Detailed documentation for extensions can be found [here](extensions/docs/README.md).
+Detailed documentation for extensions can be found [here](https://plugin.stripo.email/extensions/introduction).
 
