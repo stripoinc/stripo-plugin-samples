@@ -1,0 +1,20 @@
+.empty-product-block {
+    height: 100px;
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    text-align: center;
+}
+
+.empty-product-block-title {
+    font-size: 20px; font-weight: 500; margin-bottom: 8px; color: #495057;
+}
+
+.empty-product-block-description {
+    font-size: 14px; line-height: 1.5; color: #6c757d;
+}
