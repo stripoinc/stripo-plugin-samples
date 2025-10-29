@@ -9,7 +9,7 @@ export class RowBackgroundColorControl extends StructureBackgroundColorBuiltInCo
 
     getTargetNodes(root) {
         let querySelectorAll = root.querySelectorAll(`${BlockSelector.STRUCTURE}:not(.esd-extension-block)`);
-        console.log(querySelectorAll);
+        console.log('==>> getTargetNodes ', querySelectorAll);
         return querySelectorAll;
     }
 
