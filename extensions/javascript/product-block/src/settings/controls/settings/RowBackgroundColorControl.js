@@ -7,11 +7,11 @@ export class RowBackgroundColorControl extends StructureBackgroundColorBuiltInCo
         return CONTROL_ID_ROW_BACKGROUND_COLOR;
     }
 
-    // getTargetNodes(root) {
-    //     let querySelectorAll = root.querySelectorAll(`${BlockSelector.STRUCTURE}:not(.esd-extension-block)`);
-    //     console.log(querySelectorAll);
-    //     return querySelectorAll;
-    // }
+    getTargetNodes(root) {
+        let querySelectorAll = root.querySelectorAll(`${BlockSelector.STRUCTURE}:not(.esd-extension-block)`);
+        console.log(querySelectorAll);
+        return querySelectorAll;
+    }
 
     isVisible(_node) {
         return !!_node.getNodeConfig().orientation;
