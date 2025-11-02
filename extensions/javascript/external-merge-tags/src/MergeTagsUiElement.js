@@ -4,6 +4,7 @@ import {MyExternalMergeTagsLibrary} from './MyExternalMergeTagsLibrary';
 export const EXTERNAL_MERGE_TAGS_UI_ELEMENT_ID = 'external-merge-tags-ui-element';
 
 export class MergeTagsUiElement extends UIElement {
+    isModuleNode = false;
     /**
      * Returns the unique identifier for this UI element
      */
@@ -53,7 +54,7 @@ export class MergeTagsUiElement extends UIElement {
         if (!this.mergeTagsLibrary) {
             this.mergeTagsLibrary = new MyExternalMergeTagsLibrary();
         }
-        this.mergeTagsLibrary.openMergeTagsLibrary(this.selectedMergeTag?.value, (data) => {
+        this.mergeTagsLibrary.openMergeTagsLibrary(this.selectedMergeTag?.value, this.isModuleNode, (data) => {
             this.api.triggerValueChange(data);
         });
     }
@@ -64,6 +65,9 @@ export class MergeTagsUiElement extends UIElement {
      * @param {any} value - New attribute value
      */
     onAttributeUpdated(name, value) {
+        if (name === 'blockNode') {
+            this.isModuleNode = !!value.getClosestModuleId();
+        }
         if (name === 'mergeTag') {
             this.selectedMergeTag = value;
             // If a merge tag is selected, open the library immediately

@@ -154,6 +154,7 @@ export class MyExternalMergeTagsLibrary {
     selectedMergetag = null;
     dataSelectCallback = () => {};
     activeCategory = 'all';
+    isModule = false;
 
     constructor() {
         this.createModal();
@@ -167,10 +168,17 @@ export class MyExternalMergeTagsLibrary {
      * @param {string} mergeTag - Currently selected merge tag value (if any)
      * @param {Function} onDataSelectCallback - Callback invoked when a tag is selected
      */
-    openMergeTagsLibrary(mergeTag, onDataSelectCallback) {
+    openMergeTagsLibrary(mergeTag, isModule, onDataSelectCallback) {
         // Store callback and selected tag
         this.selectedMergetag = mergeTag;
+        this.isModule = isModule;
         this.dataSelectCallback = onDataSelectCallback;
+
+        // Update module badge visibility
+        const moduleBadge = this.externalLibrary.querySelector('.module-badge');
+        if (moduleBadge) {
+            moduleBadge.style.display = this.isModule ? 'inline-block' : 'none';
+        }
 
         // Update selected state
         this.updateSelectedTag();
@@ -257,6 +265,9 @@ export class MyExternalMergeTagsLibrary {
                 <h2 style="margin: 0; font-size: 24px; font-weight: 600; color: #111827; letter-spacing: -0.025em;">
                     Merge Tags
                 </h2>
+                <span class="module-badge" style="display: none; background-color: #3b82f6; color: white; padding: 4px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; letter-spacing: 0.025em;">
+                    Module
+                </span>
                 <div class="filter-buttons" style="display: flex; gap: 8px; margin-left: 24px;">
                     ${this.generateFilterButtons()}
                 </div>

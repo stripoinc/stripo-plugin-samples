@@ -178,6 +178,7 @@ export class MyExternalMergeTagsLibrary {
     private selectedMergetag: string | null = null;
     private dataSelectCallback: (data: MergeTagData) => void = () => {};
     private activeCategory: string = 'all';
+    private isModule: boolean = false;
 
     constructor() {
         this.createModal();
@@ -189,12 +190,20 @@ export class MyExternalMergeTagsLibrary {
     /**
      * Opens the merge tags library modal
      * @param {string} mergeTag - Currently selected merge tag value (if any)
+     * @param {boolean} isModule - Whether the merge tag is within a module
      * @param {Function} onDataSelectCallback - Callback invoked when a tag is selected
      */
-    openMergeTagsLibrary(mergeTag: string | undefined, onDataSelectCallback: (data: MergeTagData) => void): void {
+    openMergeTagsLibrary(mergeTag: string | undefined, isModule: boolean, onDataSelectCallback: (data: MergeTagData) => void): void {
         // Store callback and selected tag
         this.selectedMergetag = mergeTag || null;
+        this.isModule = isModule;
         this.dataSelectCallback = onDataSelectCallback;
+
+        // Update module badge visibility
+        const moduleBadge = this.externalLibrary.querySelector('.module-badge') as HTMLElement;
+        if (moduleBadge) {
+            moduleBadge.style.display = this.isModule ? 'inline-block' : 'none';
+        }
 
         // Update selected state
         this.updateSelectedTag();
@@ -281,6 +290,9 @@ export class MyExternalMergeTagsLibrary {
                 <h2 style="margin: 0; font-size: 24px; font-weight: 600; color: #111827; letter-spacing: -0.025em;">
                     Merge Tags
                 </h2>
+                <span class="module-badge" style="display: none; background-color: #3b82f6; color: white; padding: 4px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; letter-spacing: 0.025em;">
+                    Module
+                </span>
                 <div class="filter-buttons" style="display: flex; gap: 8px; margin-left: 24px;">
                     ${this.generateFilterButtons()}
                 </div>
@@ -390,7 +402,6 @@ export class MyExternalMergeTagsLibrary {
         </div>
     `).join('');
     }
-
     /**
      * Generates the modal footer section HTML with disclaimer notice
      * @returns {string} HTML string for the footer section
