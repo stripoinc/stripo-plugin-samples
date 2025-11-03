@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@stripoinc/ui-editor-extensions": "^3.0.0"
+    "@stripoinc/ui-editor-extensions": "^3.1.0"
   },
   "devDependencies": {
     "typescript": "^5.7.3",
