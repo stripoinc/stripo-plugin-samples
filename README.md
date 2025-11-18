@@ -40,6 +40,7 @@ All extension examples are organized by programming language:
 |-----------|-------------|
 | [External Merge Tags](./extensions/javascript/external-merge-tags) | Integration with external merge tag providers |
 | [External Image Library](./extensions/javascript/external-image-library) | Integration with third-party image storage services |
+| [External Image Library Tab](./extensions/javascript/external-image-library-tab) | Custom tab interface for external image library integration |
 | [External Video Library](./extensions/javascript/external-video-library) | Integration with external video hosting platforms |
 | [External Smart Elements](./extensions/javascript/external-smart-elements) | Integration with dynamic content element providers |
 | [External AI Assistant](./extensions/javascript/external-ai-assistant) | Integration with AI-powered content generation services |

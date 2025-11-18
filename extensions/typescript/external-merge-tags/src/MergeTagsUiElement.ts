@@ -13,6 +13,7 @@ export class MergeTagsUiElement extends UIElement {
     private mergeTagsButton?: HTMLElement;
     private mergeTagsLibrary?: MyExternalMergeTagsLibrary;
     private selectedMergeTag?: MergeTagData;
+    private isModuleNode: boolean = false;
 
     /**
      * Returns the unique identifier for this UI element
@@ -65,7 +66,7 @@ export class MergeTagsUiElement extends UIElement {
         if (!this.mergeTagsLibrary) {
             this.mergeTagsLibrary = new MyExternalMergeTagsLibrary();
         }
-        this.mergeTagsLibrary.openMergeTagsLibrary(this.selectedMergeTag?.value, (data: MergeTagData) => {
+        this.mergeTagsLibrary.openMergeTagsLibrary(this.selectedMergeTag?.value, this.isModuleNode, (data: MergeTagData) => {
             this.api.triggerValueChange(data);
         });
     }
@@ -76,6 +77,9 @@ export class MergeTagsUiElement extends UIElement {
      * @param {any} value - New attribute value
      */
     onAttributeUpdated(name: string, value: any): void {
+        if (name === 'blockNode') {
+            this.isModuleNode = !!value.getClosestModuleId();
+        }
         if (name === 'mergeTag') {
             this.selectedMergeTag = value;
             // If a merge tag is selected, open the library immediately
