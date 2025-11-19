@@ -1,5 +1,37 @@
 .composition-control {
-    border-top: 1px solid #dddddd;
+    /*border-top: 1px solid #dddddd;*/
+    /*display: block;*/
+    /*padding: 10px 0;*/
+}
+
+.card-controls {
+    padding: 0 !important;
+    margin-bottom: -15px;
+}
+
+.card-controls .droppable-container {
+    padding-bottom: 0;
+}
+
+.card-controls .ue-orderable-item-wrapper > table {
+    border-collapse: collapse;
+}
+
+.card-controls  td {
+    padding: 0;
+}
+
+.card-controls  td.orderable-drag-handle-cell {
+    vertical-align: top;
+    padding-top: 23px;
+}
+
+.card-control {
     display: block;
-    padding: 10px 0;
+    padding: 15px 20px 15px 0;
+}
+
+.card-control .container.parent-container > .container {
+    padding: 0;
+    border: 0;
 }

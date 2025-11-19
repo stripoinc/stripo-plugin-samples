@@ -11,14 +11,13 @@ export class CardCompositionControl extends Control {
 
     getTemplate() {
         return `
-            <div class="container">
-                <${UIElementType.LABEL} ${UEAttr.LABEL.text}="${this.api.translate('Composition')}:"></${UIElementType.LABEL}>
+            <${UIElementType.LABEL} ${UEAttr.LABEL.text}="${this.api.translate('Composition')}:"></${UIElementType.LABEL}>
             
-                <${UIElementType.ORDERABLE} name="orderableCardComposition" ${UEAttr.ORDERABLE.position}="LEFT">
-                    ${Object.values(CardItem).map(itemName => this.#buildCompositionItem(itemName, ControlUtils.controlsList
-                        .filter(control => control.itemName === itemName))).join('')}
-                </${UIElementType.ORDERABLE}>
-            </div>`;
+            <${UIElementType.ORDERABLE} name="orderableCardComposition" ${UEAttr.ORDERABLE.position}="LEFT" class="container inner-full-width-container card-controls">
+              ${Object.values(CardItem).map(itemName => this.#buildCompositionItem(itemName, ControlUtils.controlsList
+            .filter(control => control.itemName === itemName))).join('')}
+            </${UIElementType.ORDERABLE}>
+        `;
     }
 
     onRender() {
@@ -52,22 +51,23 @@ export class CardCompositionControl extends Control {
 
 
     #buildCompositionItem(itemName, itemControls) {
-        return `<${UIElementType.ORDERABLE_ITEM} ${UEAttr.ORDERABLE.name}="${itemName}">
-                <${UIElementType.EXPANDABLE} ${UEAttr.EXPANDABLE.name}="${itemName}Expandable">
+        return `
+            <${UIElementType.ORDERABLE_ITEM} ${UEAttr.ORDERABLE.name}="${itemName}"    >
+                <${UIElementType.EXPANDABLE} ${UEAttr.EXPANDABLE.name}="${itemName}Expandable" class="card-control">
                     <${UIElementType.EXPANDABLE_HEADER}>
                         <div class="container two-columns">
                             <${UIElementType.SWITCHER} ${UEAttr.SWITCHER.name}="${itemName}Visibility"></${UIElementType.SWITCHER}>
                             <${UIElementType.LABEL} ${UEAttr.LABEL.text}="${this.api.translate(`control.composition.${itemName}`)}"></${UIElementType.LABEL}>
                         </div>
                     </${UIElementType.EXPANDABLE_HEADER}>
-                    <${UIElementType.EXPANDABLE_CONTENT}>
+                    <${UIElementType.EXPANDABLE_CONTENT} >
+                      <div class="secondary-control-group">
                         ${itemControls.map(itemControl => `<${UIElementType.NESTED_CONTROL} class="composition-control"
                             ${UEAttr.NESTED_CONTROL.controlId}="${itemControl.id}">
                         </${UIElementType.NESTED_CONTROL}>`).join('')}
+                      </div> 
                     </${UIElementType.EXPANDABLE_CONTENT}>
                 </${UIElementType.EXPANDABLE}>
             </${UIElementType.ORDERABLE_ITEM}>`
     }
 }
-
-
