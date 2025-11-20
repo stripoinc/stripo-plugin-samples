@@ -79,7 +79,7 @@ const DEFAULT_BLOCK_PRICE = `
 
 const DEFAULT_BLOCK_BUTTON = `
     <${BlockType.BLOCK_BUTTON} 
-        ${BlockAttr.BLOCK_BUTTON.href}="${ItemMergeTag.ACTION_HREF.description}">
+        ${BlockAttr.BLOCK_BUTTON.href}="${ItemMergeTag.ACTION_HREF}">
         Buy
     </${BlockType.BLOCK_BUTTON}>
 `;
