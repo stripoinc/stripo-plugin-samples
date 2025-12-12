@@ -1,4 +1,4 @@
-import {ExternalGalleryImage, ExternalImageLibraryTab} from '@stripoinc/ui-editor-extensions';
+import {ExternalGalleryImage, ExternalImageLibraryTab, ImmutableHtmlNode} from '@stripoinc/ui-editor-extensions';
 
 import {ImageLibraryTabUI} from './ImageLibraryTabUI';
 
@@ -31,11 +31,12 @@ export default class MyExternalImageLibraryTab extends ExternalImageLibraryTab {
      * Delegates rendering to the UI class
      * @param container - DOM container where content should be rendered
      * @param onImageSelect - Callback to invoke when an image is selected
-     * @param onCancel - Callback to invoke when the user cancels
+     * @param selectedNode - Optional node context (NEW in v3.4.0)
      */
   public openImageLibraryTab(
     container: HTMLElement,
     onImageSelect: (imageData: ExternalGalleryImage) => void,
+    _selectedNode?: ImmutableHtmlNode
   ): void {
     this.ui.initialize(container, onImageSelect);
   }

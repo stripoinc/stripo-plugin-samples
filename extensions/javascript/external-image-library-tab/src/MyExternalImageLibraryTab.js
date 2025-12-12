@@ -27,8 +27,9 @@ export default class MyExternalImageLibraryTab extends ExternalImageLibraryTab {
      * Delegates rendering to the UI class
      * @param {HTMLElement} container - DOM container where content should be rendered
      * @param {Function} onImageSelect - Callback to invoke when an image is selected
+     * @param {ImmutableHtmlNode} [_selectedNode] - Optional node context (NEW in v3.4.0)
      */
-    openImageLibraryTab(container, onImageSelect) {
+    openImageLibraryTab(container, onImageSelect, _selectedNode) {
         this.ui.initialize(container, onImageSelect);
     }
 }
