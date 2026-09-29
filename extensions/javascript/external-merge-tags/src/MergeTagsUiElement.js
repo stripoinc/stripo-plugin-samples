@@ -1,5 +1,5 @@
 import {UIElement, UIElementType} from '@stripoinc/ui-editor-extensions';
-import {MyExternalMergeTagsLibrary} from './MyExternalMergeTagsLibrary';
+import {MergeTagsModal} from './MergeTagsModal';
 
 export const EXTERNAL_MERGE_TAGS_UI_ELEMENT_ID = 'external-merge-tags-ui-element';
 
@@ -44,18 +44,17 @@ export class MergeTagsUiElement extends UIElement {
      * Handles button click events
      */
     _onClick(event) {
-        this.openMergeTagLibrary();
+        this.openMergeTagsModal();
     }
 
     /**
-     * Opens the external merge tags library modal
+     * Opens the merge tags modal
      */
-    openMergeTagLibrary() {
-        if (!this.mergeTagsLibrary) {
-            this.mergeTagsLibrary = new MyExternalMergeTagsLibrary();
-        }
-        this.mergeTagsLibrary.openMergeTagsLibrary(this.selectedMergeTag?.value, this.isModuleNode, (data) => {
-            this.api.triggerValueChange(data);
+    openMergeTagsModal() {
+        MergeTagsModal.getInstance().open({
+            selectedValue: this.selectedMergeTag?.value,
+            isModule: this.isModuleNode,
+            onSelect: (data) => this.api.triggerValueChange(data)
         });
     }
 
@@ -70,8 +69,8 @@ export class MergeTagsUiElement extends UIElement {
         }
         if (name === 'mergeTag') {
             this.selectedMergeTag = value;
-            // If a merge tag is selected, open the library immediately
-            this.selectedMergeTag && this.openMergeTagLibrary();
+            // If a merge tag is selected, open the modal immediately
+            this.selectedMergeTag && this.openMergeTagsModal();
         }
     }
 }

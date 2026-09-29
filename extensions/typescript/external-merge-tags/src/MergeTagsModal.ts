@@ -1,14 +1,14 @@
 /**
- * External Merge Tags Library Implementation
- * This class implements a modal merge tags selector with filtering capabilities
- * for the Stripo Email Editor extension system.
+ * Merge Tags Modal Implementation
+ * This class implements a modal merge tags selector with filtering capabilities.
+ * A single instance is shared by the text block merge tags control and the input fields merge tags library.
  */
 
 interface StyleObject {
     [key: string]: string;
 }
 
-interface MergeTag {
+export interface MergeTag {
     category: string;
     value: string;
     label: string;
@@ -16,7 +16,7 @@ interface MergeTag {
     description: string;
 }
 
-interface MergeTagData {
+export interface MergeTagData {
     value: string;
     label: string;
 }
@@ -27,7 +27,15 @@ interface CategoryConfig {
     active: boolean;
 }
 
-export class MyExternalMergeTagsLibrary {
+export interface MergeTagsModalOptions {
+    selectedValue?: string;
+    isModule?: boolean;
+    category?: string;
+    onSelect: (data: MergeTagData) => void;
+    onCancel?: () => void;
+}
+
+export class MergeTagsModal {
     // UI Style configurations
     private static readonly STYLES = {
         // Modal overlay styles
@@ -121,7 +129,7 @@ export class MyExternalMergeTagsLibrary {
     } as const;
 
     // Sample merge tags data
-    private static readonly MERGE_TAGS: MergeTag[] = [
+    static readonly MERGE_TAGS: MergeTag[] = [
         {
             category: 'personal',
             value: '*|FNAME|*',
@@ -170,15 +178,44 @@ export class MyExternalMergeTagsLibrary {
             label: 'Custom Field',
             preview: 'Custom Value',
             description: 'Custom merge field'
+        },
+        {
+            category: 'links',
+            value: '*|UNSUB|*',
+            label: 'Unsubscribe Link',
+            preview: 'https://example.com/unsubscribe',
+            description: 'Link to unsubscribe from emails'
+        },
+        {
+            category: 'links',
+            value: '*|ARCHIVE|*',
+            label: 'View in Browser Link',
+            preview: 'https://example.com/archive',
+            description: 'Link to the web version of the email'
         }
     ];
+
+    // Shared instance
+    private static instance: MergeTagsModal | null = null;
 
     // Instance properties
     private externalLibrary!: HTMLElement;
     private selectedMergetag: string | null = null;
-    private dataSelectCallback: (data: MergeTagData) => void = () => {};
+    private selectCallback: (data: MergeTagData) => void = () => {};
+    private cancelCallback: () => void = () => {};
     private activeCategory: string = 'all';
     private isModule: boolean = false;
+
+    /**
+     * Returns the shared modal instance, creating it on first use
+     * @returns {MergeTagsModal} The modal instance
+     */
+    static getInstance(): MergeTagsModal {
+        if (!MergeTagsModal.instance) {
+            MergeTagsModal.instance = new MergeTagsModal();
+        }
+        return MergeTagsModal.instance;
+    }
 
     constructor() {
         this.createModal();
@@ -188,16 +225,20 @@ export class MyExternalMergeTagsLibrary {
     }
 
     /**
-     * Opens the merge tags library modal
-     * @param {string} mergeTag - Currently selected merge tag value (if any)
-     * @param {boolean} isModule - Whether the merge tag is within a module
-     * @param {Function} onDataSelectCallback - Callback invoked when a tag is selected
+     * Opens the merge tags modal
+     * @param {MergeTagsModalOptions} options - Modal options
+     * @param {string} [options.selectedValue] - Merge tag value to highlight (if any)
+     * @param {boolean} [options.isModule] - Whether the merge tag is being used in a module context
+     * @param {string} [options.category] - Category to display when the modal opens
+     * @param {Function} options.onSelect - Callback invoked with the selected merge tag
+     * @param {Function} [options.onCancel] - Callback invoked when the modal is closed without selection
      */
-    openMergeTagsLibrary(mergeTag: string | undefined, isModule: boolean, onDataSelectCallback: (data: MergeTagData) => void): void {
-        // Store callback and selected tag
-        this.selectedMergetag = mergeTag || null;
+    open({selectedValue, isModule = false, category = 'all', onSelect, onCancel = () => {}}: MergeTagsModalOptions): void {
+        // Store callbacks and selected tag
+        this.selectedMergetag = selectedValue || null;
         this.isModule = isModule;
-        this.dataSelectCallback = onDataSelectCallback;
+        this.selectCallback = onSelect;
+        this.cancelCallback = onCancel;
 
         // Update module badge visibility
         const moduleBadge = this.externalLibrary.querySelector('.module-badge') as HTMLElement;
@@ -211,11 +252,11 @@ export class MyExternalMergeTagsLibrary {
         // Show modal
         this.externalLibrary.style.display = 'flex';
 
-        // Reset filters to show all tags
-        this.filterTags('all');
-        const allButton = this.externalLibrary.querySelector('[data-category="all"]') as HTMLElement;
-        if (allButton) {
-            this.updateActiveButton(allButton);
+        // Show the requested category
+        this.filterTags(category);
+        const categoryButton = this.externalLibrary.querySelector(`.filter-buttons [data-category="${category}"]`) as HTMLElement;
+        if (categoryButton) {
+            this.updateActiveButton(categoryButton);
         }
     }
 
@@ -240,8 +281,8 @@ export class MyExternalMergeTagsLibrary {
      */
     private generateModalHTML(): string {
         return `
-        <div id="externalMergeTags" style="${this.styleObjToString(MyExternalMergeTagsLibrary.STYLES.overlay)}">
-            <div style="${this.styleObjToString(MyExternalMergeTagsLibrary.STYLES.modal)}">
+        <div id="externalMergeTags" style="${this.styleObjToString(MergeTagsModal.STYLES.overlay)}">
+            <div style="${this.styleObjToString(MergeTagsModal.STYLES.modal)}">
                 ${this.generateHeaderHTML()}
                 ${this.generateContentHTML()}
                 ${this.generateFooterHTML()}
@@ -285,7 +326,7 @@ export class MyExternalMergeTagsLibrary {
      */
     private generateHeaderHTML(): string {
         return `
-        <div style="${this.styleObjToString(MyExternalMergeTagsLibrary.STYLES.header)}">
+        <div style="${this.styleObjToString(MergeTagsModal.STYLES.header)}">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <h2 style="margin: 0; font-size: 24px; font-weight: 600; color: #111827; letter-spacing: -0.025em;">
                     Merge Tags
@@ -313,13 +354,14 @@ export class MyExternalMergeTagsLibrary {
             { id: 'contact', label: 'Contact', active: false },
             { id: 'company', label: 'Company', active: false },
             { id: 'date', label: 'Date/Time', active: false },
-            { id: 'custom', label: 'Custom', active: false }
+            { id: 'custom', label: 'Custom', active: false },
+            { id: 'links', label: 'Links', active: false }
         ];
 
         return categories.map(cat => `
         <button
             data-category="${cat.id}"
-            style="${this.styleObjToString(cat.active ? MyExternalMergeTagsLibrary.STYLES.buttonActive : MyExternalMergeTagsLibrary.STYLES.buttonInactive)}">
+            style="${this.styleObjToString(cat.active ? MergeTagsModal.STYLES.buttonActive : MergeTagsModal.STYLES.buttonInactive)}">
             ${cat.label}
         </button>
     `).join('');
@@ -348,8 +390,8 @@ export class MyExternalMergeTagsLibrary {
      */
     private generateContentHTML(): string {
         return `
-        <div style="${this.styleObjToString(MyExternalMergeTagsLibrary.STYLES.content)}">
-            <div class="tags-grid" style="${this.styleObjToString(MyExternalMergeTagsLibrary.STYLES.grid)}">
+        <div style="${this.styleObjToString(MergeTagsModal.STYLES.content)}">
+            <div class="tags-grid" style="${this.styleObjToString(MergeTagsModal.STYLES.grid)}">
                 ${this.generateMergeTagCards()}
             </div>
         </div>
@@ -361,7 +403,7 @@ export class MyExternalMergeTagsLibrary {
      * @returns {string} HTML string for all merge tag cards
      */
     private generateMergeTagCards(): string {
-        return MyExternalMergeTagsLibrary.MERGE_TAGS.map(tag => `
+        return MergeTagsModal.MERGE_TAGS.map(tag => `
         <div class="tag-card"
              data-category="${tag.category}"
              data-value="${tag.value}"
@@ -408,7 +450,7 @@ export class MyExternalMergeTagsLibrary {
      */
     private generateFooterHTML(): string {
         return `
-        <div style="${this.styleObjToString(MyExternalMergeTagsLibrary.STYLES.footer)}">
+        <div style="${this.styleObjToString(MergeTagsModal.STYLES.footer)}">
             <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 500;">
                 <span style="font-weight: 700; color: #d97706;">⚠️ Notice:</span> This popup window is not part of the plugin. It is intended solely for demonstration purposes and can be implemented independently in any desired way.
             </p>
@@ -445,7 +487,7 @@ export class MyExternalMergeTagsLibrary {
 
         // Close modal and execute callback
         this.close();
-        this.dataSelectCallback(tagData);
+        this.selectCallback(tagData);
     }
 
     /**
@@ -464,7 +506,7 @@ export class MyExternalMergeTagsLibrary {
 
         // Add selected class to current tag
         if (this.selectedMergetag) {
-            const currentTag = this.externalLibrary.querySelector(`[data-value="${this.selectedMergetag}"]`);
+            const currentTag = this.externalLibrary.querySelector(`[data-value="${CSS.escape(this.selectedMergetag)}"]`);
             if (currentTag) {
                 currentTag.classList.add('selected');
             }
@@ -476,6 +518,7 @@ export class MyExternalMergeTagsLibrary {
      */
     private cancelAndClose(): void {
         this.close();
+        this.cancelCallback();
     }
 
     /**
@@ -525,8 +568,8 @@ export class MyExternalMergeTagsLibrary {
         buttons.forEach(button => {
             const isActive = button === activeButton;
             const styles = isActive ?
-                MyExternalMergeTagsLibrary.STYLES.buttonActive :
-                MyExternalMergeTagsLibrary.STYLES.buttonInactive;
+                MergeTagsModal.STYLES.buttonActive :
+                MergeTagsModal.STYLES.buttonInactive;
 
             // Apply styles
             Object.assign((button as HTMLElement).style, styles);

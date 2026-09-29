@@ -1,17 +1,11 @@
 import {UIElement, UIElementType, UIElementApi} from '@stripoinc/ui-editor-extensions';
-import {MyExternalMergeTagsLibrary} from './MyExternalMergeTagsLibrary';
+import {MergeTagData, MergeTagsModal} from './MergeTagsModal';
 
 export const EXTERNAL_MERGE_TAGS_UI_ELEMENT_ID = 'external-merge-tags-ui-element';
-
-interface MergeTagData {
-    value: string;
-    label: string;
-}
 
 export class MergeTagsUiElement extends UIElement {
     private listener?: (event: Event) => void;
     private mergeTagsButton?: HTMLElement;
-    private mergeTagsLibrary?: MyExternalMergeTagsLibrary;
     private selectedMergeTag?: MergeTagData;
     private isModuleNode: boolean = false;
 
@@ -56,18 +50,17 @@ export class MergeTagsUiElement extends UIElement {
      * Handles button click events
      */
     private _onClick(event: Event): void {
-        this.openMergeTagLibrary();
+        this.openMergeTagsModal();
     }
 
     /**
-     * Opens the external merge tags library modal
+     * Opens the merge tags modal
      */
-    openMergeTagLibrary(): void {
-        if (!this.mergeTagsLibrary) {
-            this.mergeTagsLibrary = new MyExternalMergeTagsLibrary();
-        }
-        this.mergeTagsLibrary.openMergeTagsLibrary(this.selectedMergeTag?.value, this.isModuleNode, (data: MergeTagData) => {
-            this.api.triggerValueChange(data);
+    openMergeTagsModal(): void {
+        MergeTagsModal.getInstance().open({
+            selectedValue: this.selectedMergeTag?.value,
+            isModule: this.isModuleNode,
+            onSelect: (data: MergeTagData) => this.api.triggerValueChange(data)
         });
     }
 
@@ -82,8 +75,8 @@ export class MergeTagsUiElement extends UIElement {
         }
         if (name === 'mergeTag') {
             this.selectedMergeTag = value;
-            // If a merge tag is selected, open the library immediately
-            this.selectedMergeTag && this.openMergeTagLibrary();
+            // If a merge tag is selected, open the modal immediately
+            this.selectedMergeTag && this.openMergeTagsModal();
         }
     }
 }
