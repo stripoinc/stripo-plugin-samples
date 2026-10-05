@@ -38,7 +38,7 @@ All extension examples are organized by programming language:
 
 | Extension | Description |
 |-----------|-------------|
-| [External Merge Tags](./extensions/javascript/external-merge-tags) | Integration with external merge tag providers |
+| [External Merge Tags](./extensions/javascript/external-merge-tags) | Ready-made popup for toolbar and text/URL input icons; includes an upgrade guide |
 | [External Image Library](./extensions/javascript/external-image-library) | Integration with third-party image storage services |
 | [External Image Library Tab](./extensions/javascript/external-image-library-tab) | Custom tab interface for external image library integration |
 | [External Video Library](./extensions/javascript/external-video-library) | Integration with external video hosting platforms |
@@ -81,4 +81,3 @@ For questions, issues, or feature requests, please visit:
 ## License
 
 These samples are provided as-is for demonstration purposes.
-
